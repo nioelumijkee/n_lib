@@ -1991,7 +1991,7 @@ resize \$1 \; a_dmin2 resize \$1;
 #X connect 228 0 221 0;
 #X connect 229 0 225 0;
 #X restore 140 546 pd trigonometry;
-#N canvas 406 45 882 718 comparison 1;
+#N canvas 406 45 882 718 comparison 0;
 #X obj 129 183 n_array;
 #N canvas 0 50 450 250 (subpatch) 0;
 #X array a_cmp0 100 float 2;
