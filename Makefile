@@ -16,7 +16,12 @@ $(SOURCESDIR)/n_array.c \
 $(SOURCESDIR)/n_canvas.c \
 $(SOURCESDIR)/n_scope~.c \
 $(SOURCESDIR)/n_spectr~.c \
-$(SOURCESDIR)/n_life.c
+$(SOURCESDIR)/n_life.c \
+$(SOURCESDIR)/n_browser.c \
+$(SOURCESDIR)/n_date.c \
+$(SOURCESDIR)/n_sysgui.c \
+$(SOURCESDIR)/n_cnvinfo.c \
+$(SOURCESDIR)/n_cnvrcv.c
 LIBS =
 
 #------------------------------------------------------------------------------#
