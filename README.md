@@ -12,4 +12,5 @@
 **n_sysgui** - interface to function "vsys_gui"  
 **n_stretch** - another one time stretch algorithm  
 **n_peakdetect** - peak detector  
+**n_env** - get and set environments  
 
