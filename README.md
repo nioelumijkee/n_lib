@@ -10,4 +10,6 @@
 **n_cnvinfo** - return info canvas  
 **n_cnvrcv** - receive messages from canvas  
 **n_sysgui** - interface to function "vsys_gui"  
+**n_stretch** - another one time stretch algorithm  
+**n_peakdetect** - peak detector  
 
