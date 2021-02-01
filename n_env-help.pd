@@ -1,0 +1,31 @@
+#N canvas 404 221 659 276 10;
+#X obj 60 136 bng 15 250 50 0 empty empty get_all 17 7 0 10 -262144
+-1 -1;
+#X obj 60 157 n_env;
+#X obj 60 178 print -n;
+#X obj 176 175 n_env;
+#X obj 176 196 print -n;
+#X msg 176 95 getenv HOME;
+#X msg 186 115 getenv PWD;
+#X msg 196 135 getenv PD_PATH;
+#X msg 206 155 getenv SOMETHING;
+#X text 13 9 get and set enviroments. limited by the maximum line length
+in pd., f 66;
+#X obj 346 175 n_env;
+#X obj 346 196 print -n;
+#X msg 346 95 setenv HOME /home/null;
+#X msg 356 115 setenv PWD /usr/bin;
+#X msg 366 135 setenv PD_PATH /usr/local;
+#X msg 376 155 setenv SOMETHING Nothing;
+#X connect 0 0 1 0;
+#X connect 1 0 2 0;
+#X connect 3 0 4 0;
+#X connect 5 0 3 0;
+#X connect 6 0 3 0;
+#X connect 7 0 3 0;
+#X connect 8 0 3 0;
+#X connect 10 0 11 0;
+#X connect 12 0 10 0;
+#X connect 13 0 10 0;
+#X connect 14 0 10 0;
+#X connect 15 0 10 0;
