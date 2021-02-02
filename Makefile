@@ -24,7 +24,9 @@ $(SOURCESDIR)/n_cnvinfo.c \
 $(SOURCESDIR)/n_cnvrcv.c \
 $(SOURCESDIR)/n_stretch.c \
 $(SOURCESDIR)/n_peakdetect.c \
-$(SOURCESDIR)/n_env.c
+$(SOURCESDIR)/n_env.c \
+$(SOURCESDIR)/n_mux~.c \
+$(SOURCESDIR)/n_demux~.c
 LIBS =
 
 #------------------------------------------------------------------------------#
