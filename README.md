@@ -13,4 +13,6 @@
 **n_stretch** - another one time stretch algorithm  
 **n_peakdetect** - peak detector  
 **n_env** - get and set environments  
+**n_mux~** - multiplex 1-of-n signals to 1 outlet  
+**n_demux~** - demultiplex 1 signal to 1-of-n outlets  
 
