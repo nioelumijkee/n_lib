@@ -39,65 +39,6 @@
 
 #define W(N,I) w[(N)][(I)].w_float
 
-
-
-// open array
-#define USE_ARRAY0					     \
-  t_word *w0;						     \
-  t_garray *g0;						     \
-  int l0;						     \
-  l0 = pd_open_array(s0, &w0, &g0);			     \
-  if (l0 <= 0)						     \
-    {							     \
-      error("n_array: open array: %s", s0->s_name);	     \
-      outlet_float(x->out, (t_float)O_ERROR);		     \
-      return;						     \
-    }
-
-// open array
-#define USE_ARRAY1					     \
-  t_word *w1;						     \
-  t_garray *g1;						     \
-  int l1;						     \
-  l1 = pd_open_array(s1, &w1, &g1);			     \
-  if (l1 <= 0)						     \
-    {							     \
-      error("n_array: open array: %s", s1->s_name);	     \
-      outlet_float(x->out, (t_float)O_ERROR);		     \
-      return;						     \
-    }
-
-// open array
-#define USE_ARRAY2					     \
-  t_word *w2;						     \
-  t_garray *g2;						     \
-  int l2;						     \
-  l2 = pd_open_array(s2, &w2, &g2);			     \
-  if (l2 <= 0)						     \
-    {							     \
-      error("n_array: open array: %s", s2->s_name);	     \
-      outlet_float(x->out, (t_float)O_ERROR);		     \
-      return;						     \
-    }
-
-// open array
-#define USE_ARRAY3					     \
-  t_word *w3;						     \
-  t_garray *g3;						     \
-  int l3;						     \
-  l3 = pd_open_array(s3, &w3, &g3);			     \
-  if (l3 <= 0)						     \
-    {							     \
-      error("n_array: open array: %s", s3->s_name);	     \
-      outlet_float(x->out, (t_float)O_ERROR);		     \
-      return;						     \
-    }
-
-#define W0(i) w0[(i)].w_float
-#define W1(i) w1[(i)].w_float
-#define W2(i) w2[(i)].w_float
-#define W3(i) w3[(i)].w_float
-
 int debug = 0;
 
 void mayer_init( void);
@@ -1858,9 +1799,9 @@ void n_array_clipmin_s(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1,
 
   // body 
   int i;
-  for (i = 0; i < len; i++)
+  for (i = start; i < end; i++)
     {
-      AF_CLIP_MIN(min, W(0, i+start));
+      AF_CLIP_MIN(min, W(0, i));
     }
 
   garray_redraw(g[0]);
@@ -1931,9 +1872,9 @@ void n_array_clipmax_s(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1,
 
   // body 
   int i;
-  for (i = 0; i < len; i++)
+  for (i = start; i < end; i++)
     {
-      AF_CLIP_MAX(max, W(0, i+start));
+      AF_CLIP_MAX(max, W(0, i));
     }
 
   garray_redraw(g[0]);
@@ -2020,38 +1961,9 @@ void n_array_clipminmax_s(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg 
 
   // body 
   int i;
-  for (i = 0; i < len; i++)
-    {
-      AF_CLIP_MINMAX(min, max, W(0, i+start));
-    }
-
-  garray_redraw(g[0]);
-  outlet_float(x->out, (t_float)O_DONE);
-}
-
-//----------------------------------------------------------------------------//
-// math
-//----------------------------------------------------------------------------//
-void n_array_abs(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1)
-{
-  ARRAYS;
-  s[0] = s0;
-  USE_ARRAY(0);
-  int start = f0;
-  int len = f1;
-  int end;
-  n_array_validate_sl(l[0], &start, &end, &len);
-  if (len == 0)
-    {
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  // body 
-  int i;
   for (i = start; i < end; i++)
     {
-      AF_ABS(W(0,i), W(0,i));
+      AF_CLIP_MINMAX(min, max, W(0, i));
     }
 
   garray_redraw(g[0]);
@@ -2059,69 +1971,15 @@ void n_array_abs(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1)
 }
 
 //----------------------------------------------------------------------------//
-void n_array_floor(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1)
-{
-  ARRAYS;
-  s[0] = s0;
-  USE_ARRAY(0);
-  int start = f0;
-  int len = f1;
-  int end;
-  n_array_validate_sl(l[0], &start, &end, &len);
-  if (len == 0)
-    {
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  // body 
-  int i,buf_i;
-  for (i = start; i < end; i++)
-    {
-      AF_FLOOR(W(0,i), buf_i);
-      W(0,i) = buf_i;
-    }
-
-  garray_redraw(g[0]);
-  outlet_float(x->out, (t_float)O_DONE);
-}
-
+// arithmetic
 //----------------------------------------------------------------------------//
-void n_array_ceil(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1)
+void n_array_arithmetic(t_n_array *x, t_symbol *sym, int ac, t_atom *av)
 {
   ARRAYS;
-  s[0] = s0;
+  s[0] = atom_getsymbolarg(0, ac, av);
   USE_ARRAY(0);
-  int start = f0;
-  int len = f1;
-  int end;
-  n_array_validate_sl(l[0], &start, &end, &len);
-  if (len == 0)
-    {
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  // body 
-  int i,buf_i;
-  for (i = start; i < end; i++)
-    {
-      AF_CEIL(W(0,i), buf_i);
-      W(0,i) = buf_i;
-    }
-
-  garray_redraw(g[0]);
-  outlet_float(x->out, (t_float)O_DONE);
-}
-
-//----------------------------------------------------------------------------//
-void n_array_wrap1(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1)
-{
-  ARRAYS;
-  s[0] = s0;
-  USE_ARRAY(0);
-  int start = f0;
-  int len = f1;
+  int start = atom_getfloatarg(1, ac, av);
+  int len = atom_getfloatarg(2, ac, av);
   int end;
   n_array_validate_sl(l[0], &start, &end, &len);
   if (len == 0)
@@ -2131,10 +1989,88 @@ void n_array_wrap1(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1)
     }
 
   // body
-  int i, buf_i;
-  for (i = start; i < end; i++)
+  int i,buf_i;
+  t_float buf_f;
+  if (strcmp("abs",sym->s_name) == 0)
     {
-      AF_WRAP(W(0,i), buf_i, W(0,i));
+      for (i = start; i < end; i++)
+	{
+	  AF_ABS(W(0,i), W(0,i));
+	}
+    }
+  else if (strcmp("floor",sym->s_name) == 0)
+    {
+      for (i = start; i < end; i++)
+	{
+	  AF_FLOOR(W(0,i), buf_i);
+	  W(0,i) = buf_i;
+ 	}
+    }
+  else if (strcmp("ceil",sym->s_name) == 0)
+    {
+      for (i = start; i < end; i++)
+	{
+	  AF_CEIL(W(0,i), buf_i);
+	  W(0,i) = buf_i;
+	}
+    }
+  else if (strcmp("wrap1",sym->s_name) == 0)
+    {
+      for (i = start; i < end; i++)
+	{
+	  AF_WRAP(W(0,i), buf_i, W(0,i));
+	}
+    }
+  else if (strcmp("wrap2",sym->s_name) == 0)
+    {
+      for (i = start; i < end; i++)
+	{
+	  buf_f = W(0,i) * 0.5;
+	  AF_WRAP(buf_f, buf_i, buf_f);
+	  W(0,i) = buf_f + buf_f;
+	}
+    }
+  else if (strcmp("sqrt",sym->s_name) == 0)
+    {
+      for (i = start; i < end; i++)
+	{
+	  W(0, i) = sqrt(W(0, i));
+	}
+    }
+  else if (strcmp("log",sym->s_name) == 0)
+    {
+      for (i = start; i < end; i++)
+	{
+	  W(0, i) = log(W(0, i));
+	}
+    }
+  else if (strcmp("log2",sym->s_name) == 0)
+    {
+      for (i = start; i < end; i++)
+	{
+	  W(0, i) = log2(W(0, i));
+	}
+    }
+  else if (strcmp("log10",sym->s_name) == 0)
+    {
+      for (i = start; i < end; i++)
+	{
+	  W(0, i) = log10(W(0, i));
+	}
+    }
+  else if (strcmp("exp",sym->s_name) == 0)
+    {
+      for (i = start; i < end; i++)
+	{
+	  W(0, i) = exp(W(0, i));
+	}
+    }
+  else if (strcmp("exp2",sym->s_name) == 0)
+    {
+      for (i = start; i < end; i++)
+	{
+	  W(0, i) = exp2(W(0, i));
+	}
     }
 
   garray_redraw(g[0]);
@@ -2142,13 +2078,105 @@ void n_array_wrap1(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1)
 }
 
 //----------------------------------------------------------------------------//
-void n_array_wrap2(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1)
+// math
+//----------------------------------------------------------------------------//
+void n_array_math(t_n_array *x, t_symbol *sym, int ac, t_atom *av)
 {
   ARRAYS;
-  s[0] = s0;
+  s[0] = atom_getsymbolarg(0, ac, av);
+  s[1] = atom_getsymbolarg(1, ac, av);
   USE_ARRAY(0);
-  int start = f0;
-  int len = f1;
+  USE_ARRAY(1);
+  int start_s = atom_getfloatarg(2, ac, av);
+  int len_s = atom_getfloatarg(3, ac, av);
+  int end_s;
+  n_array_validate_sl(l[0], &start_s, &end_s, &len_s);
+  if (len_s == 0)
+    {
+      outlet_float(x->out, (t_float)O_ERROR);
+      return;
+    }
+
+  int start_a = atom_getfloatarg(4, ac, av);
+  int len_a = len_s;
+  int end_a;
+  n_array_validate_sl(l[1], &start_a, &end_a, &len_a);
+  if (len_a == 0)
+    {
+      outlet_float(x->out, (t_float)O_ERROR);
+      return;
+    }
+
+  if (len_s != len_a )
+    {
+      post("n_array: math: length");
+      outlet_float(x->out, (t_float)O_ERROR);
+      return;
+    }
+
+  // body 
+  int i;
+  int buf_i;
+  int buf_s;
+  if (strcmp("add",sym->s_name) == 0)
+    {
+      for (i = 0; i < len_s; i++)
+	{
+	  W(0, i+start_s) = W(0, i+start_s) + W(1, i+start_a);
+	}
+    }
+  else if (strcmp("sub",sym->s_name) == 0)
+    {
+      for (i = 0; i < len_s; i++)
+	{
+	  W(0, i+start_s) = W(0, i+start_s) - W(1, i+start_a);
+	}
+    }
+  else if (strcmp("mult",sym->s_name) == 0)
+    {
+      for (i = 0; i < len_s; i++)
+	{
+	  W(0, i+start_s) = W(0, i+start_s) * W(1, i+start_a);
+	}
+    }
+  else if (strcmp("div",sym->s_name) == 0)
+    {
+      for (i = 0; i < len_s; i++)
+	{
+	  W(0, i+start_s) = W(0, i+start_s) / W(1, i+start_a);
+	}
+    }
+  else if (strcmp("mod",sym->s_name) == 0)
+    {
+      for (i = 0; i < len_s; i++)
+	{
+	  buf_i = W(1, i+start_a);
+	  if (buf_i < 0)  buf_i = 0 - buf_i;
+	  if (buf_i == 0) buf_i = 1;
+	  buf_s = W(0, i+start_s);
+	  W(0, i+start_s) = buf_s % buf_i;
+	}
+    }
+  else if (strcmp("pow",sym->s_name) == 0)
+    {
+      for (i = 0; i < len_s; i++)
+	{
+	  W(0, i+start_s) = pow(W(0, i+start_s), W(1, i+start_a));
+	}
+    }
+
+  garray_redraw(g[0]);
+  outlet_float(x->out, (t_float)O_DONE);
+}
+
+//----------------------------------------------------------------------------//
+void n_array_math_s(t_n_array *x, t_symbol *sym, int ac, t_atom *av)
+{
+  ARRAYS;
+  s[0] = atom_getsymbolarg(0, ac, av);
+  USE_ARRAY(0);
+  int start = atom_getfloatarg(1, ac, av);
+  int len = atom_getfloatarg(2, ac, av);
   int end;
   n_array_validate_sl(l[0], &start, &end, &len);
   if (len == 0)
@@ -2157,14 +2185,58 @@ void n_array_wrap2(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1)
       return;
     }
 
+  t_float val = atom_getfloatarg(3, ac, av);
+
   // body 
-  int i, buf_i;
-  t_float buf_f;
-  for (i = start; i < end; i++)
+  int i;
+  int buf_i;
+  int buf_s;
+  if (strcmp("add_s",sym->s_name) == 0)
     {
-      buf_f = W(0,i) * 0.5;
-      AF_WRAP(buf_f, buf_i, buf_f);
-      W(0,i) = buf_f + buf_f;
+      for (i = start; i < end; i++)
+	{
+	  W(0, i) = W(0, i) + val;
+	}
+    }
+  else if (strcmp("sub_s",sym->s_name) == 0)
+    {
+      for (i = start; i < end; i++)
+	{
+	  W(0, i) = W(0, i) - val;
+	}
+    }
+  else if (strcmp("mult_s",sym->s_name) == 0)
+    {
+      for (i = start; i < end; i++)
+	{
+	  W(0, i) = W(0, i) * val;
+	}
+    }
+  else if (strcmp("div_s",sym->s_name) == 0)
+    {
+      if (val == 0) return; /* divzero ??? */
+      for (i = start; i < end; i++)
+	{
+	  W(0, i) = W(0, i) / val;
+	}
+    }
+  else if (strcmp("mod_s",sym->s_name) == 0)
+    {
+      buf_i = val;
+      if (buf_i < 0)  buf_i = 0 - buf_i;
+      if (buf_i == 0) buf_i = 1;
+      for (i = start; i < end; i++)
+	{
+	  buf_s = W(0, i);
+	  W(0, i) = buf_s % buf_i;
+	}
+    }
+  else if (strcmp("pow",sym->s_name) == 0)
+    {
+      for (i = start; i < end; i++)
+	{
+	  W(0, i) = pow(W(0, i), val);
+	}
     }
 
   garray_redraw(g[0]);
@@ -2172,903 +2244,143 @@ void n_array_wrap2(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1)
 }
 
 //----------------------------------------------------------------------------//
-void n_array_add(t_n_array *x, t_symbol *s0, t_symbol *s1, t_floatarg f0, t_floatarg f1, t_floatarg f2)
-{
-  USE_ARRAY0;
-  USE_ARRAY1;
-  int start_s = f0;
-  int len_s = f1;
-  int end_s;
-  n_array_validate_sl(l0, &start_s, &end_s, &len_s);
-  if (len_s == 0)
-    {
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  int start_add = f2;
-  int len_add = len_s;
-  int end_add;
-  n_array_validate_sl(l0, &start_add, &end_add, &len_add);
-  if (len_add == 0)
-    {
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  if (len_s != len_add )
-    {
-      post("n_array: add: length");
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  // body 
-  int i;
-  for (i = 0; i < len_s; i++)
-    {
-      W0(i+start_s) = W0(i+start_s) + W1(i+start_add);
-    }
-
-  garray_redraw(g0);
-  outlet_float(x->out, (t_float)O_DONE);
-}
-
-//----------------------------------------------------------------------------//
-void n_array_add_s(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1, t_floatarg add)
-{
-  USE_ARRAY0;
-  int start_s = f0;
-  int len_s = f1;
-  int end_s;
-  n_array_validate_sl(l0, &start_s, &end_s, &len_s);
-  if (len_s == 0)
-    {
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  // body 
-  int i;
-  for (i = start_s; i < end_s; i++)
-    {
-      W0(i) = W0(i) + add;
-    }
-
-  garray_redraw(g0);
-  outlet_float(x->out, (t_float)O_DONE);
-}
-
-//----------------------------------------------------------------------------//
-void n_array_sub(t_n_array *x, t_symbol *s0, t_symbol *s1, t_floatarg f0, t_floatarg f1, t_floatarg f2)
-{
-  USE_ARRAY0;
-  USE_ARRAY1;
-  int start_s = f0;
-  int len_s = f1;
-  int end_s;
-  n_array_validate_sl(l0, &start_s, &end_s, &len_s);
-  if (len_s == 0)
-    {
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  int start_sub = f2;
-  int len_sub = len_s;
-  int end_sub;
-  n_array_validate_sl(l0, &start_sub, &end_sub, &len_sub);
-  if (len_sub == 0)
-    {
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  if (len_s != len_sub )
-    {
-      post("n_array: sub: length");
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  // body 
-  int i;
-  for (i = 0; i < len_s; i++)
-    {
-      W0(i+start_s) = W0(i+start_s) - W1(i+start_sub);
-    }
-
-  garray_redraw(g0);
-  outlet_float(x->out, (t_float)O_DONE);
-}
-
-//----------------------------------------------------------------------------//
-void n_array_sub_s(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1, t_floatarg sub)
-{
-  USE_ARRAY0;
-  int start_s = f0;
-  int len_s = f1;
-  int end_s;
-  n_array_validate_sl(l0, &start_s, &end_s, &len_s);
-  if (len_s == 0)
-    {
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  // body 
-  int i;
-  for (i = start_s; i < end_s; i++)
-    {
-      W0(i) = W0(i) - sub;
-    }
-
-  garray_redraw(g0);
-  outlet_float(x->out, (t_float)O_DONE);
-}
-
-//----------------------------------------------------------------------------//
-void n_array_mult(t_n_array *x, t_symbol *s0, t_symbol *s1, t_floatarg f0, t_floatarg f1, t_floatarg f2)
-{
-  USE_ARRAY0;
-  USE_ARRAY1;
-  int start_s = f0;
-  int len_s = f1;
-  int end_s;
-  n_array_validate_sl(l0, &start_s, &end_s, &len_s);
-  if (len_s == 0)
-    {
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  int start_mult = f2;
-  int len_mult = len_s;
-  int end_mult;
-  n_array_validate_sl(l0, &start_mult, &end_mult, &len_mult);
-  if (len_mult == 0)
-    {
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  if (len_s != len_mult )
-    {
-      post("n_array: mult: length");
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  // body 
-  int i;
-  for (i = 0; i < len_s; i++)
-    {
-      W0(i+start_s) = W0(i+start_s) * W1(i+start_mult);
-    }
-
-  garray_redraw(g0);
-  outlet_float(x->out, (t_float)O_DONE);
-}
-
-//----------------------------------------------------------------------------//
-void n_array_mult_s(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1, t_floatarg mult)
-{
-  USE_ARRAY0;
-  int start_s = f0;
-  int len_s = f1;
-  int end_s;
-  n_array_validate_sl(l0, &start_s, &end_s, &len_s);
-  if (len_s == 0)
-    {
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  // body 
-  int i;
-  for (i = start_s; i < end_s; i++)
-    {
-      W0(i) = W0(i) * mult;
-    }
-
-  garray_redraw(g0);
-  outlet_float(x->out, (t_float)O_DONE);
-}
-
-//----------------------------------------------------------------------------//
-void n_array_div(t_n_array *x, t_symbol *s0, t_symbol *s1, t_floatarg f0, t_floatarg f1, t_floatarg f2)
-{
-  USE_ARRAY0;
-  USE_ARRAY1;
-  int start_s = f0;
-  int len_s = f1;
-  int end_s;
-  n_array_validate_sl(l0, &start_s, &end_s, &len_s);
-  if (len_s == 0)
-    {
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  int start_div = f2;
-  int len_div = len_s;
-  int end_div;
-  n_array_validate_sl(l0, &start_div, &end_div, &len_div);
-  if (len_div == 0)
-    {
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  if (len_s != len_div )
-    {
-      post("n_array: div: length");
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  // body 
-  int i;
-  for (i = 0; i < len_s; i++)
-    {
-      W0(i+start_s) = W0(i+start_s) / W1(i+start_div);
-    }
-
-  garray_redraw(g0);
-  outlet_float(x->out, (t_float)O_DONE);
-}
-
-//----------------------------------------------------------------------------//
-void n_array_div_s(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1, t_floatarg div)
-{
-  USE_ARRAY0;
-  int start_s = f0;
-  int len_s = f1;
-  int end_s;
-  n_array_validate_sl(l0, &start_s, &end_s, &len_s);
-  if (len_s == 0)
-    {
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  // body 
-  int i;
-  for (i = start_s; i < end_s; i++)
-    {
-      W0(i) = W0(i) / div;
-    }
-
-  garray_redraw(g0);
-  outlet_float(x->out, (t_float)O_DONE);
-}
-
-//----------------------------------------------------------------------------//
-void n_array_mod(t_n_array *x, t_symbol *s0, t_symbol *s1, t_floatarg f0, t_floatarg f1, t_floatarg f2)
-{
-  USE_ARRAY0;
-  USE_ARRAY1;
-  int start_s = f0;
-  int len_s = f1;
-  int end_s;
-  n_array_validate_sl(l0, &start_s, &end_s, &len_s);
-  if (len_s == 0)
-    {
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  int start_mod = f2;
-  int len_mod = len_s;
-  int end_mod;
-  n_array_validate_sl(l0, &start_mod, &end_mod, &len_mod);
-  if (len_mod == 0)
-    {
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  if (len_s != len_mod )
-    {
-      post("n_array: mod: length");
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  // body 
-  int i;
-  int buf_i;
-  int buf_s;
-  for (i = 0; i < len_s; i++)
-    {
-      buf_i = W1(i+start_mod);
-      if (buf_i < 0)  buf_i = 0 - buf_i;
-      if (buf_i == 0) buf_i = 1;
-      buf_s = W0(i+start_s);
-      W0(i+start_s) = buf_s % buf_i;
-    }
-
-  garray_redraw(g0);
-  outlet_float(x->out, (t_float)O_DONE);
-}
-
-//----------------------------------------------------------------------------//
-void n_array_mod_s(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1, t_floatarg mod)
-{
-  USE_ARRAY0;
-  int start_s = f0;
-  int len_s = f1;
-  int end_s;
-  n_array_validate_sl(l0, &start_s, &end_s, &len_s);
-  if (len_s == 0)
-    {
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  // body 
-  int i;
-  int buf_i;
-  int buf_s;
-  buf_i = mod;
-  if (buf_i < 0)  buf_i = 0 - buf_i;
-  if (buf_i == 0) buf_i = 1;
-  for (i = start_s; i < end_s; i++)
-    {
-      buf_s = W0(i);
-      W0(i) = buf_s % buf_i;
-    }
-
-  garray_redraw(g0);
-  outlet_float(x->out, (t_float)O_DONE);
-}
-
-//----------------------------------------------------------------------------//
-void n_array_pow(t_n_array *x, t_symbol *s0, t_symbol *s1, t_floatarg f0, t_floatarg f1, t_floatarg f2)
-{
-  USE_ARRAY0;
-  USE_ARRAY1;
-  int start_s = f0;
-  int len_s = f1;
-  int end_s;
-  n_array_validate_sl(l0, &start_s, &end_s, &len_s);
-  if (len_s == 0)
-    {
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  int start_pow = f2;
-  int len_pow = len_s;
-  int end_pow;
-  n_array_validate_sl(l0, &start_pow, &end_pow, &len_pow);
-  if (len_pow == 0)
-    {
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  if (len_s != len_pow )
-    {
-      post("n_array: pow: length");
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  // body 
-  int i;
-  for (i = 0; i < len_s; i++)
-    {
-      W0(i+start_s) = pow(W0(i+start_s), W1(i+start_pow));
-    }
-
-  garray_redraw(g0);
-  outlet_float(x->out, (t_float)O_DONE);
-}
-
-//----------------------------------------------------------------------------//
-void n_array_pow_s(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1, t_floatarg p)
-{
-  USE_ARRAY0;
-  int start_s = f0;
-  int len_s = f1;
-  int end_s;
-  n_array_validate_sl(l0, &start_s, &end_s, &len_s);
-  if (len_s == 0)
-    {
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  // body 
-  int i;
-  for (i = start_s; i < end_s; i++)
-    {
-      W0(i) = pow(W0(i), p);
-    }
-
-  garray_redraw(g0);
-  outlet_float(x->out, (t_float)O_DONE);
-}
-
-//----------------------------------------------------------------------------//
-void n_array_sqrt(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1)
-{
-  USE_ARRAY0;
-  int start_s = f0;
-  int len_s = f1;
-  int end_s;
-  n_array_validate_sl(l0, &start_s, &end_s, &len_s);
-  if (len_s == 0)
-    {
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  // body 
-  int i;
-  for (i = start_s; i < end_s; i++)
-    {
-      W0(i) = sqrt(W0(i));
-    }
-
-  garray_redraw(g0);
-  outlet_float(x->out, (t_float)O_DONE);
-}
-
-//----------------------------------------------------------------------------//
-void n_array_log(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1)
-{
-  USE_ARRAY0;
-  int start_s = f0;
-  int len_s = f1;
-  int end_s;
-  n_array_validate_sl(l0, &start_s, &end_s, &len_s);
-  if (len_s == 0)
-    {
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  // body 
-  int i;
-  for (i = start_s; i < end_s; i++)
-    {
-      W0(i) = log(W0(i));
-    }
-
-  garray_redraw(g0);
-  outlet_float(x->out, (t_float)O_DONE);
-}
-
-//----------------------------------------------------------------------------//
-void n_array_log2(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1)
-{
-  USE_ARRAY0;
-  int start_s = f0;
-  int len_s = f1;
-  int end_s;
-  n_array_validate_sl(l0, &start_s, &end_s, &len_s);
-  if (len_s == 0)
-    {
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  // body 
-  int i;
-  for (i = start_s; i < end_s; i++)
-    {
-      W0(i) = log2(W0(i));
-    }
-
-  garray_redraw(g0);
-  outlet_float(x->out, (t_float)O_DONE);
-}
-
-//----------------------------------------------------------------------------//
-void n_array_log10(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1)
-{
-  USE_ARRAY0;
-  int start_s = f0;
-  int len_s = f1;
-  int end_s;
-  n_array_validate_sl(l0, &start_s, &end_s, &len_s);
-  if (len_s == 0)
-    {
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  // body 
-  int i;
-  for (i = start_s; i < end_s; i++)
-    {
-      W0(i) = log10(W0(i));
-    }
-
-  garray_redraw(g0);
-  outlet_float(x->out, (t_float)O_DONE);
-}
-
-//----------------------------------------------------------------------------//
-void n_array_exp(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1)
-{
-  USE_ARRAY0;
-  int start_s = f0;
-  int len_s = f1;
-  int end_s;
-  n_array_validate_sl(l0, &start_s, &end_s, &len_s);
-  if (len_s == 0)
-    {
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  // body 
-  int i;
-  for (i = start_s; i < end_s; i++)
-    {
-      W0(i) = exp(W0(i));
-    }
-
-  garray_redraw(g0);
-  outlet_float(x->out, (t_float)O_DONE);
-}
-
-//----------------------------------------------------------------------------//
-void n_array_exp2(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1)
-{
-  USE_ARRAY0;
-  int start_s = f0;
-  int len_s = f1;
-  int end_s;
-  n_array_validate_sl(l0, &start_s, &end_s, &len_s);
-  if (len_s == 0)
-    {
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  // body 
-  int i;
-  for (i = start_s; i < end_s; i++)
-    {
-      W0(i) = exp2(W0(i));
-    }
-
-  garray_redraw(g0);
-  outlet_float(x->out, (t_float)O_DONE);
-}
-
-//----------------------------------------------------------------------------//
 // trigonometry
 //----------------------------------------------------------------------------//
-void n_array_sin(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1)
+void n_array_trigonometry(t_n_array *x, t_symbol *sym, int ac, t_atom *av)
 {
-  USE_ARRAY0;
-  int start_s = f0;
-  int len_s = f1;
-  int end_s;
-  n_array_validate_sl(l0, &start_s, &end_s, &len_s);
-  if (len_s == 0)
+  ARRAYS;
+  s[0] = atom_getsymbolarg(0, ac, av);
+  USE_ARRAY(0);
+  int start = atom_getfloatarg(1, ac, av);
+  int len = atom_getfloatarg(2, ac, av);
+  int end;
+  n_array_validate_sl(l[0], &start, &end, &len);
+  if (len == 0)
     {
       outlet_float(x->out, (t_float)O_ERROR);
       return;
     }
 
-  // body 
+  // body
   int i;
-  for (i = start_s; i < end_s; i++)
+  if (strcmp("sin",sym->s_name) == 0)
     {
-      W0(i) = sin(W0(i));
+      for (i = start; i < end; i++)
+	{
+	  W(0, i) = sin(W(0, i));
+	}
+    }
+  else if (strcmp("asin",sym->s_name) == 0)
+    {
+      for (i = start; i < end; i++)
+	{
+	  W(0, i) = asin(W(0, i));
+	}
+    }
+  else if (strcmp("sinh",sym->s_name) == 0)
+    {
+      for (i = start; i < end; i++)
+	{
+	  W(0, i) = sinh(W(0, i));
+	}
+    }
+  else if (strcmp("asinh",sym->s_name) == 0)
+    {
+      for (i = start; i < end; i++)
+	{
+	  W(0, i) = asinh(W(0, i));
+	}
+    }
+  else if (strcmp("cos",sym->s_name) == 0)
+    {
+      for (i = start; i < end; i++)
+	{
+	  W(0, i) = cos(W(0, i));
+	}
+    }
+  else if (strcmp("acos",sym->s_name) == 0)
+    {
+      for (i = start; i < end; i++)
+	{
+	  W(0, i) = acos(W(0, i));
+	}
+    }
+  else if (strcmp("cosh",sym->s_name) == 0)
+    {
+      for (i = start; i < end; i++)
+	{
+	  W(0, i) = cosh(W(0, i));
+	}
+    }
+  else if (strcmp("acosh",sym->s_name) == 0)
+    {
+      for (i = start; i < end; i++)
+	{
+	  W(0, i) = acosh(W(0, i));
+	}
+    }
+  else if (strcmp("tan",sym->s_name) == 0)
+    {
+      for (i = start; i < end; i++)
+	{
+	  W(0, i) = tan(W(0, i));
+	}
+    }
+  else if (strcmp("atan",sym->s_name) == 0)
+    {
+      for (i = start; i < end; i++)
+	{
+	  W(0, i) = atan(W(0, i));
+	}
+    }
+  else if (strcmp("tanh",sym->s_name) == 0)
+    {
+      for (i = start; i < end; i++)
+	{
+	  W(0, i) = tanh(W(0, i));
+	}
+    }
+  else if (strcmp("atanh",sym->s_name) == 0)
+    {
+      for (i = start; i < end; i++)
+	{
+	  W(0, i) = atanh(W(0, i));
+	}
     }
 
-  garray_redraw(g0);
-  outlet_float(x->out, (t_float)O_DONE);
-}
-
-//----------------------------------------------------------------------------//
-void n_array_asin(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1)
-{
-  USE_ARRAY0;
-  int start_s = f0;
-  int len_s = f1;
-  int end_s;
-  n_array_validate_sl(l0, &start_s, &end_s, &len_s);
-  if (len_s == 0)
-    {
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  // body 
-  int i;
-  for (i = start_s; i < end_s; i++)
-    {
-      W0(i) = asin(W0(i));
-    }
-
-  garray_redraw(g0);
-  outlet_float(x->out, (t_float)O_DONE);
-}
-
-//----------------------------------------------------------------------------//
-void n_array_sinh(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1)
-{
-  USE_ARRAY0;
-  int start_s = f0;
-  int len_s = f1;
-  int end_s;
-  n_array_validate_sl(l0, &start_s, &end_s, &len_s);
-  if (len_s == 0)
-    {
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  // body 
-  int i;
-  for (i = start_s; i < end_s; i++)
-    {
-      W0(i) = sinh(W0(i));
-    }
-
-  garray_redraw(g0);
-  outlet_float(x->out, (t_float)O_DONE);
-}
-
-//----------------------------------------------------------------------------//
-void n_array_asinh(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1)
-{
-  USE_ARRAY0;
-  int start_s = f0;
-  int len_s = f1;
-  int end_s;
-  n_array_validate_sl(l0, &start_s, &end_s, &len_s);
-  if (len_s == 0)
-    {
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  // body 
-  int i;
-  for (i = start_s; i < end_s; i++)
-    {
-      W0(i) = asinh(W0(i));
-    }
-
-  garray_redraw(g0);
-  outlet_float(x->out, (t_float)O_DONE);
-}
-
-//----------------------------------------------------------------------------//
-void n_array_cos(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1)
-{
-  USE_ARRAY0;
-  int start_s = f0;
-  int len_s = f1;
-  int end_s;
-  n_array_validate_sl(l0, &start_s, &end_s, &len_s);
-  if (len_s == 0)
-    {
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  // body 
-  int i;
-  for (i = start_s; i < end_s; i++)
-    {
-      W0(i) = cos(W0(i));
-    }
-
-  garray_redraw(g0);
-  outlet_float(x->out, (t_float)O_DONE);
-}
-
-//----------------------------------------------------------------------------//
-void n_array_acos(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1)
-{
-  USE_ARRAY0;
-  int start_s = f0;
-  int len_s = f1;
-  int end_s;
-  n_array_validate_sl(l0, &start_s, &end_s, &len_s);
-  if (len_s == 0)
-    {
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  // body 
-  int i;
-  for (i = start_s; i < end_s; i++)
-    {
-      W0(i) = acos(W0(i));
-    }
-
-  garray_redraw(g0);
-  outlet_float(x->out, (t_float)O_DONE);
-}
-
-//----------------------------------------------------------------------------//
-void n_array_cosh(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1)
-{
-  USE_ARRAY0;
-  int start_s = f0;
-  int len_s = f1;
-  int end_s;
-  n_array_validate_sl(l0, &start_s, &end_s, &len_s);
-  if (len_s == 0)
-    {
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  // body 
-  int i;
-  for (i = start_s; i < end_s; i++)
-    {
-      W0(i) = cosh(W0(i));
-    }
-
-  garray_redraw(g0);
-  outlet_float(x->out, (t_float)O_DONE);
-}
-
-//----------------------------------------------------------------------------//
-void n_array_acosh(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1)
-{
-  USE_ARRAY0;
-  int start_s = f0;
-  int len_s = f1;
-  int end_s;
-  n_array_validate_sl(l0, &start_s, &end_s, &len_s);
-  if (len_s == 0)
-    {
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  // body 
-  int i;
-  for (i = start_s; i < end_s; i++)
-    {
-      W0(i) = acosh(W0(i));
-    }
-
-  garray_redraw(g0);
-  outlet_float(x->out, (t_float)O_DONE);
-}
-
-//----------------------------------------------------------------------------//
-void n_array_tan(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1)
-{
-  USE_ARRAY0;
-  int start_s = f0;
-  int len_s = f1;
-  int end_s;
-  n_array_validate_sl(l0, &start_s, &end_s, &len_s);
-  if (len_s == 0)
-    {
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  // body 
-  int i;
-  for (i = start_s; i < end_s; i++)
-    {
-      W0(i) = tan(W0(i));
-    }
-
-  garray_redraw(g0);
-  outlet_float(x->out, (t_float)O_DONE);
-}
-
-//----------------------------------------------------------------------------//
-void n_array_atan(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1)
-{
-  USE_ARRAY0;
-  int start_s = f0;
-  int len_s = f1;
-  int end_s;
-  n_array_validate_sl(l0, &start_s, &end_s, &len_s);
-  if (len_s == 0)
-    {
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  // body 
-  int i;
-  for (i = start_s; i < end_s; i++)
-    {
-      W0(i) = atan(W0(i));
-    }
-
-  garray_redraw(g0);
-  outlet_float(x->out, (t_float)O_DONE);
-}
-
-//----------------------------------------------------------------------------//
-void n_array_tanh(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1)
-{
-  USE_ARRAY0;
-  int start_s = f0;
-  int len_s = f1;
-  int end_s;
-  n_array_validate_sl(l0, &start_s, &end_s, &len_s);
-  if (len_s == 0)
-    {
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  // body 
-  int i;
-  for (i = start_s; i < end_s; i++)
-    {
-      W0(i) = tanh(W0(i));
-    }
-
-  garray_redraw(g0);
-  outlet_float(x->out, (t_float)O_DONE);
-}
-
-//----------------------------------------------------------------------------//
-void n_array_atanh(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1)
-{
-  USE_ARRAY0;
-  int start_s = f0;
-  int len_s = f1;
-  int end_s;
-  n_array_validate_sl(l0, &start_s, &end_s, &len_s);
-  if (len_s == 0)
-    {
-      outlet_float(x->out, (t_float)O_ERROR);
-      return;
-    }
-
-  // body 
-  int i;
-  for (i = start_s; i < end_s; i++)
-    {
-      W0(i) = atanh(W0(i));
-    }
-
-  garray_redraw(g0);
+  garray_redraw(g[0]);
   outlet_float(x->out, (t_float)O_DONE);
 }
 
 //----------------------------------------------------------------------------//
 void n_array_atan2(t_n_array *x, t_symbol *s0, t_symbol *s1, t_floatarg f0, t_floatarg f1, t_floatarg f2)
 {
-  USE_ARRAY0;
-  USE_ARRAY1;
+  ARRAYS;
+  s[0] = s0;
+  s[1] = s1;
+  USE_ARRAY(0);
+  USE_ARRAY(1);
   int start_s = f0;
   int len_s = f1;
   int end_s;
-  n_array_validate_sl(l0, &start_s, &end_s, &len_s);
+  n_array_validate_sl(l[0], &start_s, &end_s, &len_s);
   if (len_s == 0)
     {
       outlet_float(x->out, (t_float)O_ERROR);
       return;
     }
 
-  int start_atan2 = f2;
-  int len_atan2 = len_s;
-  int end_atan2;
-  n_array_validate_sl(l0, &start_atan2, &end_atan2, &len_atan2);
-  if (len_atan2 == 0)
+  int start_a = f2;
+  int len_a = f1;
+  int end_a;
+  n_array_validate_sl(l[1], &start_a, &end_a, &len_a);
+  if (len_a == 0)
     {
       outlet_float(x->out, (t_float)O_ERROR);
       return;
     }
 
-  if (len_s != len_atan2 )
+  if (len_s != len_a )
     {
       post("n_array: atan2: length");
       outlet_float(x->out, (t_float)O_ERROR);
@@ -3079,22 +2391,24 @@ void n_array_atan2(t_n_array *x, t_symbol *s0, t_symbol *s1, t_floatarg f0, t_fl
   int i;
   for (i = 0; i < len_s; i++)
     {
-      W0(i+start_s) = atan2(W0(i+start_s), W1(i+start_atan2));
+      W(0, i+start_s) = atan2(W(0, i+start_s), W(1, i+start_a));
     }
 
-  garray_redraw(g0);
+  garray_redraw(g[0]);
   outlet_float(x->out, (t_float)O_DONE);
 }
 
 //----------------------------------------------------------------------------//
 void n_array_atan2_s(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1, t_floatarg p)
 {
-  USE_ARRAY0;
-  int start_s = f0;
-  int len_s = f1;
-  int end_s;
-  n_array_validate_sl(l0, &start_s, &end_s, &len_s);
-  if (len_s == 0)
+  ARRAYS;
+  s[0] = s0;
+  USE_ARRAY(0);
+  int start = f0;
+  int len = f1;
+  int end;
+  n_array_validate_sl(l[0], &start, &end, &len);
+  if (len == 0)
     {
       outlet_float(x->out, (t_float)O_ERROR);
       return;
@@ -3102,12 +2416,12 @@ void n_array_atan2_s(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1, t
 
   // body 
   int i;
-  for (i = start_s; i < end_s; i++)
+  for (i = start; i < end; i++)
     {
-      W0(i) = atan2(W0(i), p);
+      W(0, i) = atan2(W(0, i), p);
     }
 
-  garray_redraw(g0);
+  garray_redraw(g[0]);
   outlet_float(x->out, (t_float)O_DONE);
 }
 
@@ -4688,43 +4002,45 @@ void n_array_setup(void)
    class_addmethod(n_array_class, (t_method)n_array_clipmax_s, gensym("clipmax_s"), A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
    class_addmethod(n_array_class, (t_method)n_array_clipminmax, gensym("clipminmax"), A_GIMME, 0);
    class_addmethod(n_array_class, (t_method)n_array_clipminmax_s, gensym("clipminmax_s"), A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
+   /* arithmetic */
+   class_addmethod(n_array_class, (t_method)n_array_arithmetic, gensym("abs"),A_GIMME, 0);
+   class_addmethod(n_array_class, (t_method)n_array_arithmetic, gensym("floor"),A_GIMME, 0);
+   class_addmethod(n_array_class, (t_method)n_array_arithmetic, gensym("ceil"),A_GIMME, 0);
+   class_addmethod(n_array_class, (t_method)n_array_arithmetic, gensym("wrap1"),A_GIMME, 0);
+   class_addmethod(n_array_class, (t_method)n_array_arithmetic, gensym("wrap2"),A_GIMME, 0);
+   class_addmethod(n_array_class, (t_method)n_array_arithmetic, gensym("sqrt"),A_GIMME, 0);
+   class_addmethod(n_array_class, (t_method)n_array_arithmetic, gensym("log"),A_GIMME, 0);
+   class_addmethod(n_array_class, (t_method)n_array_arithmetic, gensym("log2"),A_GIMME, 0);
+   class_addmethod(n_array_class, (t_method)n_array_arithmetic, gensym("log10"),A_GIMME, 0);
+   class_addmethod(n_array_class, (t_method)n_array_arithmetic, gensym("exp"),A_GIMME, 0);
+   class_addmethod(n_array_class, (t_method)n_array_arithmetic, gensym("exp2"),A_GIMME, 0);
    /* math */
-   class_addmethod(n_array_class, (t_method)n_array_abs, gensym("abs"), A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, 0);
-   class_addmethod(n_array_class, (t_method)n_array_floor, gensym("floor"), A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, 0);
-   class_addmethod(n_array_class, (t_method)n_array_ceil, gensym("ceil"), A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, 0);
-   class_addmethod(n_array_class, (t_method)n_array_wrap1, gensym("wrap1"), A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, 0);
-   class_addmethod(n_array_class, (t_method)n_array_wrap2, gensym("wrap2"), A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, 0);
-   class_addmethod(n_array_class, (t_method)n_array_add, gensym("add"), A_SYMBOL, A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
-   class_addmethod(n_array_class, (t_method)n_array_add_s, gensym("add_s"), A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
-   class_addmethod(n_array_class, (t_method)n_array_sub, gensym("sub"), A_SYMBOL, A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
-   class_addmethod(n_array_class, (t_method)n_array_sub_s, gensym("sub_s"), A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
-   class_addmethod(n_array_class, (t_method)n_array_mult, gensym("mult"), A_SYMBOL, A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
-   class_addmethod(n_array_class, (t_method)n_array_mult_s, gensym("mult_s"), A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
-   class_addmethod(n_array_class, (t_method)n_array_div, gensym("div"), A_SYMBOL, A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
-   class_addmethod(n_array_class, (t_method)n_array_div_s, gensym("div_s"), A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
-   class_addmethod(n_array_class, (t_method)n_array_mod, gensym("mod"), A_SYMBOL, A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
-   class_addmethod(n_array_class, (t_method)n_array_mod_s, gensym("mod_s"), A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
-   class_addmethod(n_array_class, (t_method)n_array_pow, gensym("pow"), A_SYMBOL, A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
-   class_addmethod(n_array_class, (t_method)n_array_pow_s, gensym("pow_s"), A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
-   class_addmethod(n_array_class, (t_method)n_array_sqrt, gensym("sqrt"), A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, 0);
-   class_addmethod(n_array_class, (t_method)n_array_log, gensym("log"), A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, 0);
-   class_addmethod(n_array_class, (t_method)n_array_log2, gensym("log2"), A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, 0);
-   class_addmethod(n_array_class, (t_method)n_array_log10, gensym("log10"), A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, 0);
-   class_addmethod(n_array_class, (t_method)n_array_exp, gensym("exp"), A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, 0);
-   class_addmethod(n_array_class, (t_method)n_array_exp2, gensym("exp2"), A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, 0);
+   class_addmethod(n_array_class, (t_method)n_array_math, gensym("add"), A_GIMME, 0);
+   class_addmethod(n_array_class, (t_method)n_array_math, gensym("sub"), A_GIMME, 0);
+   class_addmethod(n_array_class, (t_method)n_array_math, gensym("mult"), A_GIMME, 0);
+   class_addmethod(n_array_class, (t_method)n_array_math, gensym("div"), A_GIMME, 0);
+   class_addmethod(n_array_class, (t_method)n_array_math, gensym("mod"), A_GIMME, 0);
+   class_addmethod(n_array_class, (t_method)n_array_math, gensym("pow"), A_GIMME, 0);
+   /* math scalar */
+   class_addmethod(n_array_class, (t_method)n_array_math_s, gensym("add_s"), A_GIMME, 0);
+   class_addmethod(n_array_class, (t_method)n_array_math_s, gensym("sub_s"), A_GIMME, 0);
+   class_addmethod(n_array_class, (t_method)n_array_math_s, gensym("mult_s"), A_GIMME, 0);
+   class_addmethod(n_array_class, (t_method)n_array_math_s, gensym("div_s"), A_GIMME, 0);
+   class_addmethod(n_array_class, (t_method)n_array_math_s, gensym("mod_s"), A_GIMME, 0);
+   class_addmethod(n_array_class, (t_method)n_array_math_s, gensym("pow_s"), A_GIMME, 0);
    /* trigonometry */
-   class_addmethod(n_array_class, (t_method)n_array_sin, gensym("sin"), A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, 0);
-   class_addmethod(n_array_class, (t_method)n_array_asin, gensym("asin"), A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, 0);
-   class_addmethod(n_array_class, (t_method)n_array_sinh, gensym("sinh"), A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, 0);
-   class_addmethod(n_array_class, (t_method)n_array_asinh, gensym("asinh"), A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, 0);
-   class_addmethod(n_array_class, (t_method)n_array_cos, gensym("cos"), A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, 0);
-   class_addmethod(n_array_class, (t_method)n_array_acos, gensym("acos"), A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, 0);
-   class_addmethod(n_array_class, (t_method)n_array_cosh, gensym("cosh"), A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, 0);
-   class_addmethod(n_array_class, (t_method)n_array_acosh, gensym("acosh"), A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, 0);
-   class_addmethod(n_array_class, (t_method)n_array_tan, gensym("tan"), A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, 0);
-   class_addmethod(n_array_class, (t_method)n_array_atan, gensym("atan"), A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, 0);
-   class_addmethod(n_array_class, (t_method)n_array_tanh, gensym("tanh"), A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, 0);
-   class_addmethod(n_array_class, (t_method)n_array_atanh, gensym("atanh"), A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, 0);
+   class_addmethod(n_array_class, (t_method)n_array_trigonometry, gensym("sin"), A_GIMME, 0);
+   class_addmethod(n_array_class, (t_method)n_array_trigonometry, gensym("sinh"), A_GIMME, 0);
+   class_addmethod(n_array_class, (t_method)n_array_trigonometry, gensym("asin"), A_GIMME, 0);
+   class_addmethod(n_array_class, (t_method)n_array_trigonometry, gensym("asinh"), A_GIMME, 0);
+   class_addmethod(n_array_class, (t_method)n_array_trigonometry, gensym("cos"), A_GIMME, 0);
+   class_addmethod(n_array_class, (t_method)n_array_trigonometry, gensym("cosh"), A_GIMME, 0);
+   class_addmethod(n_array_class, (t_method)n_array_trigonometry, gensym("acos"), A_GIMME, 0);
+   class_addmethod(n_array_class, (t_method)n_array_trigonometry, gensym("acosh"), A_GIMME, 0);
+   class_addmethod(n_array_class, (t_method)n_array_trigonometry, gensym("tan"), A_GIMME, 0);
+   class_addmethod(n_array_class, (t_method)n_array_trigonometry, gensym("tanh"), A_GIMME, 0);
+   class_addmethod(n_array_class, (t_method)n_array_trigonometry, gensym("atan"), A_GIMME, 0);
+   class_addmethod(n_array_class, (t_method)n_array_trigonometry, gensym("atanh"), A_GIMME, 0);
    class_addmethod(n_array_class, (t_method)n_array_atan2, gensym("atan2"), A_SYMBOL, A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
    class_addmethod(n_array_class, (t_method)n_array_atan2_s, gensym("atan2_s"), A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
    /* comparison */
@@ -4734,6 +4050,7 @@ void n_array_setup(void)
    class_addmethod(n_array_class, (t_method)n_array_comparison, gensym("gt"), A_GIMME, 0);
    class_addmethod(n_array_class, (t_method)n_array_comparison, gensym("le"), A_GIMME, 0);
    class_addmethod(n_array_class, (t_method)n_array_comparison, gensym("lt"), A_GIMME, 0);
+   /* comparison scalar */
    class_addmethod(n_array_class, (t_method)n_array_comparison_s, gensym("eq_s"), A_GIMME, 0);
    class_addmethod(n_array_class, (t_method)n_array_comparison_s, gensym("ne_s"), A_GIMME, 0);
    class_addmethod(n_array_class, (t_method)n_array_comparison_s, gensym("ge_s"), A_GIMME, 0);
