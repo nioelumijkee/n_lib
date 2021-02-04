@@ -26,7 +26,8 @@ $(SOURCESDIR)/n_stretch.c \
 $(SOURCESDIR)/n_peakdetect.c \
 $(SOURCESDIR)/n_env.c \
 $(SOURCESDIR)/n_mux~.c \
-$(SOURCESDIR)/n_demux~.c
+$(SOURCESDIR)/n_demux~.c \
+$(SOURCESDIR)/n_key2n.c
 LIBS =
 
 #------------------------------------------------------------------------------#
