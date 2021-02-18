@@ -429,7 +429,7 @@ void n_array_find(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1, t_fl
   j = NOT_FOUND;
   float min = val - tol;
   float max = val + tol;
-  for (i = start; i < end-1; i++)
+  for (i = start; i < end; i++)
     {
       if (W(0,i) >= min && W(0,i) <= max)
 	{
@@ -470,6 +470,7 @@ void n_array_find_cross(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1
 	  i = end;
 	}
     }
+
   if (j != NOT_FOUND)
     {
       SETFLOAT(a    , (t_float)j);
