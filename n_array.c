@@ -437,9 +437,18 @@ void n_array_find(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1, t_fl
 	  i = end;
 	}
     }
-  SETFLOAT(a    , (t_float)j);
-  SETFLOAT(a + 1, (t_float)W(0,j));
-  outlet_list(x->out, &s_list, 2, a);
+  if (j != NOT_FOUND)
+    {
+      SETFLOAT(a    , (t_float)j);
+      SETFLOAT(a + 1, (t_float)W(0,j));
+      outlet_list(x->out, &s_list, 2, a);
+    }
+  else
+    {
+      SETFLOAT(a    , (t_float)NOT_FOUND);
+      SETFLOAT(a + 1, (t_float)NOT_FOUND);
+      outlet_list(x->out, &s_list, 2, a);
+    }
 }
 
 //----------------------------------------------------------------------------//
@@ -592,7 +601,7 @@ void n_array_dc(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1)
       W(0,i) = W(0,i) + offset;
     } 
   garray_redraw(g[0]);
-  outlet_float(x->out, offset);
+  outlet_float(x->out, (t_float)O_DONE);
 }
 
 //----------------------------------------------------------------------------//
@@ -629,7 +638,7 @@ void n_array_norm(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1, t_fl
   t_float diff = (max - min) * 0.5;
   if (diff == 0)
     {
-      outlet_float(x->out, (t_float)0);
+      outlet_float(x->out, (t_float)O_DONE);
     }
   else
     {
@@ -639,7 +648,7 @@ void n_array_norm(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1, t_fl
 	  W(0,i) = W(0,i) * mult;
 	} 
       garray_redraw(g[0]);
-      outlet_float(x->out, mult);
+      outlet_float(x->out, (t_float)O_DONE);
     }
 }
 
@@ -666,7 +675,7 @@ void n_array_constant(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1, 
       W(0,i) = val;
     }
   garray_redraw(g[0]);
-  outlet_float(x->out, (t_float)val);
+  outlet_float(x->out, (t_float)O_DONE);
 }
 
 //----------------------------------------------------------------------------//
@@ -693,7 +702,7 @@ void n_array_random(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1, t_
       W(0,i) = x->seed * AC_RND_NORM * val;
     }
   garray_redraw(g[0]);
-  outlet_float(x->out, (t_float)val);
+  outlet_float(x->out, (t_float)O_DONE);
 }
 
 //----------------------------------------------------------------------------//
