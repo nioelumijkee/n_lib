@@ -486,6 +486,74 @@ void n_array_find_cross(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1
 }
 
 //----------------------------------------------------------------------------//
+void n_array_find_periods(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1, t_floatarg val, t_floatarg min)
+{
+  ARRAYS;
+  s[0] = s0;
+  USE_ARRAY(0);
+  int start = f0;
+  int len = f1;
+  int end;
+  n_array_validate_sl(l[0], &start, &end, &len);
+  if (len == 0)
+    {
+      outlet_float(x->out, (t_float)O_ERROR);
+      return;
+    }
+
+  // body
+  int i,j;
+  t_atom a[4];
+  int st;
+  int ln;
+  t_float v;
+
+  i = start;
+  st = NOT_FOUND;
+  ln = NOT_FOUND;
+  j = 0;
+  while (i < end-1)
+    {
+      if (W(0,i) < val && W(0,i+1) >= val)
+	{
+	  if (st == NOT_FOUND)
+	    {
+	      st = i;
+	      v = W(0, i);
+	    }
+	  else if (ln == NOT_FOUND)
+	    {
+	      ln = i - st;
+	      if (ln < min)
+		{
+		  ln = NOT_FOUND;
+		}
+	    }
+	  else
+	    {
+	      SETFLOAT(a    , (t_float)j);
+	      SETFLOAT(a + 1, (t_float)v);
+	      SETFLOAT(a + 2, (t_float)st);
+	      SETFLOAT(a + 3, (t_float)ln);
+	      outlet_list(x->out, &s_list, 4, a);
+	      st = NOT_FOUND;
+	      ln = NOT_FOUND;
+	      j++;
+	    }
+	}
+      i++;
+    }
+  if (j == 0)
+    {
+      SETFLOAT(a    , (t_float)NOT_FOUND);
+      SETFLOAT(a + 1, (t_float)NOT_FOUND);
+      SETFLOAT(a + 2, (t_float)NOT_FOUND);
+      SETFLOAT(a + 3, (t_float)NOT_FOUND);
+      outlet_list(x->out, &s_list, 4, a);
+    }
+}
+
+//----------------------------------------------------------------------------//
 // various
 //----------------------------------------------------------------------------//
 void n_array_dc(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1)
@@ -3981,6 +4049,7 @@ void n_array_setup(void)
    class_addmethod(n_array_class, (t_method)n_array_centroid, gensym("centroid"), A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, 0);
    class_addmethod(n_array_class, (t_method)n_array_find, gensym("find"), A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
    class_addmethod(n_array_class, (t_method)n_array_find_cross, gensym("find_cross"), A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
+   class_addmethod(n_array_class, (t_method)n_array_find_periods, gensym("find_periods"), A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
    /* various */
    class_addmethod(n_array_class, (t_method)n_array_dc, gensym("dc"), A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, 0);
    class_addmethod(n_array_class, (t_method)n_array_norm, gensym("norm"), A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
