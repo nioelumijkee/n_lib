@@ -470,9 +470,18 @@ void n_array_find_cross(t_n_array *x, t_symbol *s0, t_floatarg f0, t_floatarg f1
 	  i = end;
 	}
     }
-  SETFLOAT(a    , (t_float)j);
-  SETFLOAT(a + 1, (t_float)W(0,j));
-  outlet_list(x->out, &s_list, 2, a);
+  if (j != NOT_FOUND)
+    {
+      SETFLOAT(a    , (t_float)j);
+      SETFLOAT(a + 1, (t_float)W(0,j));
+      outlet_list(x->out, &s_list, 2, a);
+    }
+  else
+    {
+      SETFLOAT(a    , (t_float)NOT_FOUND);
+      SETFLOAT(a + 1, (t_float)NOT_FOUND);
+      outlet_list(x->out, &s_list, 2, a);
+    }
 }
 
 //----------------------------------------------------------------------------//
