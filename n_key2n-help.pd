@@ -1,4 +1,4 @@
-#N canvas 546 115 746 551 10;
+#N canvas 550 105 746 551 10;
 #X obj 40 265 n_key2n;
 #X obj 40 247 r \$0-to;
 #X obj 42 26 tgl 15 1 empty empty on 17 7 0 10 -262144 -1 -1 1 1;
@@ -20,14 +20,14 @@
 -1 -1 0 256;
 #X obj 40 193 s \$0-to;
 #X obj 40 157 nbx 5 14 1 32 0 0 empty empty voice 0 -8 0 10 -262144
--1 -1 8 256;
+-1 -1 4 256;
 #X msg 40 175 voice \$1;
 #X obj 130 193 s \$0-to;
 #X obj 130 157 nbx 5 14 0 127 0 0 empty empty velocity 0 -8 0 10 -262144
 -1 -1 0 256;
 #X msg 130 175 vel \$1;
 #X obj 288 142 vradio 15 1 1 2 empty empty mode 0 -8 0 10 -262144 -1
--1 0;
+-1 1;
 #X text 303 143 _CYCLE;
 #X text 303 158 _FREE;
 #X obj 288 193 s \$0-to;
