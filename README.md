@@ -17,4 +17,5 @@
 **n_demux~** - demultiplex 1 signal to 1-of-n outlets  
 **n_key2n** - convert keyboard input to note  
 **n_print** - object analogy of pd print  
+**n_clock~** - clock source  
 
