@@ -1821,6 +1821,43 @@ void n_array_insert(t_n_array *x, t_symbol *s0, t_symbol *s1, t_floatarg f0, t_f
 }
 
 //----------------------------------------------------------------------------//
+void n_array_replace(t_n_array *x, t_symbol *s0, t_symbol *s1, t_floatarg f0, t_floatarg f1, t_floatarg f2)
+{
+  ARRAYS;
+  s[0] = s0;
+  s[1] = s1;
+  USE_ARRAY(0);
+  USE_ARRAY(1);
+
+  int start_s = f0;
+  int len_s =  f1;
+  int end_s;
+  n_array_validate_sl(l[0], &start_s, &end_s, &len_s);
+  if (len_s == 0)
+    {
+      outlet_float(x->out, (t_float)O_ERROR);
+      return;
+    }
+
+  int start_d = f2;
+  int len_d = len_s;
+  int end_d;
+  n_array_validate_sl(l[1], &start_d, &end_d, &len_d);
+
+  // body 
+  int i;
+
+  // copy
+  for (i = 0; i < len_s; i++)
+    {
+      W(1,start_d + i) = W(0,start_s + i);
+    }
+
+  garray_redraw(g[1]);
+  outlet_float(x->out, (t_float)O_DONE);
+}
+
+//----------------------------------------------------------------------------//
 // clip
 //----------------------------------------------------------------------------//
 void n_array_clipmin(t_n_array *x, t_symbol *s0, t_symbol *s1, t_floatarg f0, t_floatarg f1, t_floatarg f2)
@@ -4083,6 +4120,7 @@ void n_array_setup(void)
    class_addmethod(n_array_class, (t_method)n_array_concat, gensym("concat"), A_SYMBOL, A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, 0);
    class_addmethod(n_array_class, (t_method)n_array_copy, gensym("copy"), A_SYMBOL, A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, 0);
    class_addmethod(n_array_class, (t_method)n_array_insert, gensym("insert"), A_SYMBOL, A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
+   class_addmethod(n_array_class, (t_method)n_array_replace, gensym("replace"), A_SYMBOL, A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
    /* clip */
    class_addmethod(n_array_class, (t_method)n_array_clipmin, gensym("clipmin"), A_SYMBOL, A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
    class_addmethod(n_array_class, (t_method)n_array_clipmin_s, gensym("clipmin_s"), A_SYMBOL, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
