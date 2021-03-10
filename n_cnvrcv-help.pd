@@ -1,4 +1,4 @@
-#N canvas 703 76 468 533 10;
+#N canvas 784 88 468 533 10;
 #X obj 21 440 unpack f f f;
 #X floatatom 21 460 5 0 0 0 - - -;
 #X floatatom 55 460 5 0 0 0 - - -;
@@ -18,7 +18,7 @@
 #X floatatom 173 339 5 0 0 0 - - -;
 #X floatatom 207 339 5 0 0 0 - - -;
 #X floatatom 241 339 5 0 0 0 - - -;
-#X msg 217 274 0 23 0;
+#X msg 217 274 1 Control_L 0;
 #X msg 217 255 set \, add2 \$1 \, add2 \$2 \, add2 \$3;
 #X obj 257 233 bng 15 250 50 0 empty empty menusave 17 7 0 10 -262144
 -1 -1;
@@ -119,6 +119,7 @@ editmode;
 #X connect 36 0 37 0;
 #X connect 37 0 34 0;
 #X restore 104 496 pd ...;
+#X obj 113 81 print;
 #X connect 0 0 1 0;
 #X connect 0 1 2 0;
 #X connect 0 2 3 0;
@@ -149,5 +150,6 @@ editmode;
 #X connect 33 0 35 0;
 #X connect 34 0 24 0;
 #X connect 35 0 36 0;
+#X connect 35 0 39 0;
 #X connect 36 0 37 0;
 #X connect 37 0 34 0;
