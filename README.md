@@ -18,4 +18,5 @@
 **n_key2n** - convert keyboard input to note  
 **n_print** - object analogy of pd print  
 **n_clock~** - clock source  
+**n_peak~** - peak amplitude  
 

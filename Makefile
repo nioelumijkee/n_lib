@@ -29,7 +29,8 @@ $(SOURCESDIR)/n_mux~.c \
 $(SOURCESDIR)/n_demux~.c \
 $(SOURCESDIR)/n_key2n.c \
 $(SOURCESDIR)/n_print.c \
-$(SOURCESDIR)/n_clock~.c
+$(SOURCESDIR)/n_clock~.c \
+$(SOURCESDIR)/n_peak~.c
 LIBS =
 
 #------------------------------------------------------------------------------#
