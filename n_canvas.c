@@ -1092,6 +1092,8 @@ static void n_canvas_dialog(t_n_canvas *x, t_symbol *s, int ac, t_atom *av)
     }
 }
 
+
+
 //----------------------------------------------------------------------------//
 static void *n_canvas_new(t_symbol *s, int ac, t_atom *av)
 {
@@ -1176,7 +1178,7 @@ static void *n_canvas_new(t_symbol *s, int ac, t_atom *av)
   
   // outlet
   outlet_new(&x->x_obj, 0);
-  
+
   return (x);
 }
 
@@ -1213,6 +1215,7 @@ static void n_canvas_delete(t_gobj *z, t_glist *glist)
 static void n_canvas_vis(t_gobj *z, t_glist *glist, int vis)
 {
   t_n_canvas *x = (t_n_canvas *)z;
+  t_canvas *cv = glist_getcanvas(glist);
   
   if (vis)
     {
@@ -1241,13 +1244,13 @@ void n_canvas_setup(void)
   class_addmethod(n_canvas_class, (t_method)n_canvas_label_font, gensym("label_font"), A_DEFFLOAT, 0);
   class_addmethod(n_canvas_class, (t_method)n_canvas_color, gensym("color"), A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
   class_addmethod(n_canvas_class, (t_method)n_canvas_dialog, gensym("dialog"), A_GIMME, 0);
-  n_canvas_widgetbehavior.w_getrectfn = n_canvas_getrect;
-  n_canvas_widgetbehavior.w_displacefn = n_canvas_displace;
-  n_canvas_widgetbehavior.w_selectfn = NULL;
-  n_canvas_widgetbehavior.w_activatefn = NULL;
-  n_canvas_widgetbehavior.w_deletefn = n_canvas_delete;
-  n_canvas_widgetbehavior.w_visfn = n_canvas_vis;
-  n_canvas_widgetbehavior.w_clickfn = n_canvas_newclick;
+  n_canvas_widgetbehavior.w_getrectfn    = n_canvas_getrect;
+  n_canvas_widgetbehavior.w_displacefn   = n_canvas_displace;
+  n_canvas_widgetbehavior.w_selectfn     = NULL;
+  n_canvas_widgetbehavior.w_activatefn   = NULL;
+  n_canvas_widgetbehavior.w_deletefn     = n_canvas_delete;
+  n_canvas_widgetbehavior.w_visfn        = n_canvas_vis;
+  n_canvas_widgetbehavior.w_clickfn      = n_canvas_newclick;
   class_setwidget(n_canvas_class, &n_canvas_widgetbehavior);
   class_setsavefn(n_canvas_class, n_canvas_save);
   class_setpropertiesfn(n_canvas_class, n_canvas_properties);
