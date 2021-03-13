@@ -12,7 +12,6 @@ META_FILE = $(LIBRARY_NAME)-meta.pd
 #
 SOURCESDIR = .
 SOURCES = \
-$(SOURCESDIR)/n_array.c \
 $(SOURCESDIR)/n_canvas.c \
 $(SOURCESDIR)/n_scope~.c \
 $(SOURCESDIR)/n_spectr~.c \
@@ -22,8 +21,6 @@ $(SOURCESDIR)/n_date.c \
 $(SOURCESDIR)/n_sysgui.c \
 $(SOURCESDIR)/n_cnvinfo.c \
 $(SOURCESDIR)/n_cnvrcv.c \
-$(SOURCESDIR)/n_stretch.c \
-$(SOURCESDIR)/n_peakdetect.c \
 $(SOURCESDIR)/n_env.c \
 $(SOURCESDIR)/n_mux~.c \
 $(SOURCESDIR)/n_demux~.c \
