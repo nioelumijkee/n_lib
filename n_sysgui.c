@@ -26,6 +26,7 @@ void n_sysgui_anything(t_n_sysgui *x, t_symbol *s, int ac, t_atom *av)
     }
   strcat(str, " ;\n");
   sys_gui(str);
+  if (x) {} // disabled
 }
 
 //----------------------------------------------------------------------------//

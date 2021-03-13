@@ -577,6 +577,7 @@ static void n_canvas_list(t_n_canvas *x, t_symbol *s, int ac, t_atom *av)
 	}
       break;
     }
+  if (s) {} // disabled
 }
 
 //----------------------------------------------------------------------------//
@@ -1051,6 +1052,7 @@ static void n_canvas_properties(t_gobj *z, t_glist *owner)
 	  0xffffff & x->x_lcol,
 	  x->maxel);
   gfxstub_new(&x->x_obj.ob_pd, x, buf);
+  if (owner) {} // disabled
 }
 
 //----------------------------------------------------------------------------//
@@ -1090,6 +1092,7 @@ static void n_canvas_dialog(t_n_canvas *x, t_symbol *s, int ac, t_atom *av)
     {
       n_canvas_maxel(x, maxel);
     }
+  if (s) {} // disabled
 }
 
 
@@ -1180,6 +1183,7 @@ static void *n_canvas_new(t_symbol *s, int ac, t_atom *av)
   outlet_new(&x->x_obj, 0);
 
   return (x);
+  if (s) {} // disabled
 }
 
 //----------------------------------------------------------------------------//
@@ -1215,7 +1219,6 @@ static void n_canvas_delete(t_gobj *z, t_glist *glist)
 static void n_canvas_vis(t_gobj *z, t_glist *glist, int vis)
 {
   t_n_canvas *x = (t_n_canvas *)z;
-  t_canvas *cv = glist_getcanvas(glist);
   
   if (vis)
     {

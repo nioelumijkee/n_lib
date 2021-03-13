@@ -73,6 +73,7 @@ void n_env_setenv(t_n_env *x, t_symbol *s0, t_symbol *s1)
     {
       post("n_env: setenv: cannot set '%s'\n", s0->s_name);
     }
+  if (x) {} // disabled
 }
 
 //----------------------------------------------------------------------------//
