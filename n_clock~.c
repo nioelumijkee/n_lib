@@ -21,17 +21,20 @@ typedef struct _n_clock
   int ss;
   int se;
   int ls;
+  int ll;
   int le;
   t_float ph;
   t_float inc;
   int count;
   int change;
+  int z12th;
 } t_n_clock;
 
 // out position
 //----------------------------------------------------------------------------//
 void n_clock_outpos(t_n_clock *x)
 {
+  int i;
   // clip
   if (x->count > MAXPOS)
     {
@@ -61,10 +64,20 @@ void n_clock_outpos(t_n_clock *x)
       outlet_float(x->outlet_1th, x->count / 96);
     }
   // 12th
-  if ((x->count % 12) == 0)
+  i = x->count % 24;
+  if (i < 12)
     {
-      outlet_float(x->outlet_12th, x->count / 12);
+      i = 1;
     }
+  else
+    {
+      i = 0;
+    }
+  if (i != x->z12th)
+    {
+      outlet_float(x->outlet_12th, i);
+    }
+  x->z12th = i;
   // 96th
   outlet_float(x->outlet_96th, x->count);
 }
@@ -83,6 +96,7 @@ void n_clock_calc_constant(t_n_clock *x)
 //----------------------------------------------------------------------------//
 void n_clock_start(t_n_clock *x)
 {
+  x->z12th = -1;
   if (x->loop)
     {
       x->count = x->ls;
@@ -103,9 +117,9 @@ void n_clock_start(t_n_clock *x)
 }
 
 //----------------------------------------------------------------------------//
-void n_clock_run(t_n_clock *x)
+void n_clock_run(t_n_clock *x, t_floatarg f)
 {
-  x->run = !x->run;
+  x->run = f;
   // run ?
   if (x->run)
     {
@@ -117,8 +131,10 @@ void n_clock_run(t_n_clock *x)
 //----------------------------------------------------------------------------//
 void n_clock_back(t_n_clock *x)
 {
+  x->z12th = -1;
   int i;
-  i = (x->count - 10) / 96;
+  i = x->count / 96;
+  i--;
   x->count = i * 96;
   if (x->count < MINPOS)
     x->count = MINPOS;
@@ -137,6 +153,7 @@ void n_clock_back(t_n_clock *x)
 //----------------------------------------------------------------------------//
 void n_clock_next(t_n_clock *x)
 {
+  x->z12th = -1;
   int i;
   i = x->count / 96;
   x->count = (i + 1) * 96;
@@ -154,9 +171,10 @@ void n_clock_next(t_n_clock *x)
 }
 
 //----------------------------------------------------------------------------//
-void n_clock_loop(t_n_clock *x)
+void n_clock_loop(t_n_clock *x, t_floatarg f)
 {
-  x->loop = !x->loop;
+  x->z12th = -1;
+  x->loop = f;
   outlet_float(x->outlet_loop, x->loop);
   if (x->loop)
     {
@@ -176,6 +194,7 @@ void n_clock_loop(t_n_clock *x)
 //----------------------------------------------------------------------------//
 void n_clock_pos(t_n_clock *x, t_floatarg f)
 {
+  x->z12th = -1;
   x->count = f;
   if (x->count < MINPOS)
     x->count = MINPOS;
@@ -207,11 +226,31 @@ void n_clock_se(t_n_clock *x, t_floatarg f)
 }
 
 //----------------------------------------------------------------------------//
+void n_clock_calc_le(t_n_clock *x)
+{
+  x->le = x->ls + x->ll;
+}
+
+//----------------------------------------------------------------------------//
 void n_clock_ls(t_n_clock *x, t_floatarg f)
 {
   x->ls = f;
   if (x->ls < MINPOS)
     x->ls = MINPOS;
+  n_clock_calc_le(x);
+  if (x->loop)
+    {
+      x->count = x->ls;
+    }
+  // run ?
+  if (x->run)
+    {
+      x->change = 1;
+    }
+  else
+    {
+      n_clock_outpos(x);
+    }
 }
 
 //----------------------------------------------------------------------------//
@@ -219,7 +258,8 @@ void n_clock_ll(t_n_clock *x, t_floatarg f)
 {
   if (f < 1)
     f = 1;
-  x->le = x->ls + f;
+  x->ll = f;
+  n_clock_calc_le(x);
 }
 
 //----------------------------------------------------------------------------//
@@ -280,8 +320,11 @@ void n_clock_dsp(t_n_clock *x, t_signal **sp)
 	  x,
 	  sp[0]->s_vec,
 	  sp[0]->s_n);
-  x->sr = sp[0]->s_sr;
-  n_clock_calc_constant(x);
+  if (x->sr != sp[0]->s_sr)
+    {
+      x->sr = sp[0]->s_sr;
+      n_clock_calc_constant(x);
+    }
 }
 
 
@@ -302,6 +345,7 @@ void *n_clock_new(void)
   x->ph = 1.;
   x->inc = 0.;
   x->count = 0;
+  x->z12th = -1;
   outlet_new(&x->x_obj, &s_signal);
   x->outlet_96th  = outlet_new(&x->x_obj, &s_float);
   x->outlet_12th  = outlet_new(&x->x_obj, &s_float);
@@ -316,16 +360,16 @@ void *n_clock_new(void)
 void n_clock_tilde_setup(void)
 {
   n_clock_class = class_new(gensym("n_clock~"), (t_newmethod)n_clock_new, 0, sizeof(t_n_clock), 0, 0, 0);
-  class_addmethod(n_clock_class, (t_method)n_clock_dsp,   gensym("dsp"), 0);
-  class_addmethod(n_clock_class, (t_method)n_clock_start, gensym("start"), 0);
-  class_addmethod(n_clock_class, (t_method)n_clock_run,   gensym("run"), 0);
-  class_addmethod(n_clock_class, (t_method)n_clock_back,  gensym("back"), 0);
-  class_addmethod(n_clock_class, (t_method)n_clock_next,  gensym("next"), 0);
-  class_addmethod(n_clock_class, (t_method)n_clock_loop,  gensym("loop"), 0);
-  class_addmethod(n_clock_class, (t_method)n_clock_pos,   gensym("pos"), A_DEFFLOAT, 0);
-  class_addmethod(n_clock_class, (t_method)n_clock_ss,    gensym("ss"), A_DEFFLOAT, 0);
-  class_addmethod(n_clock_class, (t_method)n_clock_se,    gensym("se"), A_DEFFLOAT, 0);
-  class_addmethod(n_clock_class, (t_method)n_clock_ls,    gensym("ls"), A_DEFFLOAT, 0);
-  class_addmethod(n_clock_class, (t_method)n_clock_ll,    gensym("ll"), A_DEFFLOAT, 0);
+  class_addmethod(n_clock_class, (t_method)n_clock_dsp,   gensym("dsp"),              0);
+  class_addmethod(n_clock_class, (t_method)n_clock_start, gensym("start"),            0);
+  class_addmethod(n_clock_class, (t_method)n_clock_run,   gensym("run"),  A_DEFFLOAT, 0);
+  class_addmethod(n_clock_class, (t_method)n_clock_back,  gensym("back"),             0);
+  class_addmethod(n_clock_class, (t_method)n_clock_next,  gensym("next"),             0);
+  class_addmethod(n_clock_class, (t_method)n_clock_loop,  gensym("loop"), A_DEFFLOAT, 0);
+  class_addmethod(n_clock_class, (t_method)n_clock_pos,   gensym("pos"),  A_DEFFLOAT, 0);
+  class_addmethod(n_clock_class, (t_method)n_clock_ss,    gensym("ss"),   A_DEFFLOAT, 0);
+  class_addmethod(n_clock_class, (t_method)n_clock_se,    gensym("se"),   A_DEFFLOAT, 0);
+  class_addmethod(n_clock_class, (t_method)n_clock_ls,    gensym("ls"),   A_DEFFLOAT, 0);
+  class_addmethod(n_clock_class, (t_method)n_clock_ll,    gensym("ll"),   A_DEFFLOAT, 0);
   class_addmethod(n_clock_class, (t_method)n_clock_time,  gensym("time"), A_DEFFLOAT, 0);
 }
