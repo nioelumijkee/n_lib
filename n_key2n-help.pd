@@ -20,7 +20,7 @@
 -1 -1 0 256;
 #X obj 40 193 s \$0-to;
 #X obj 40 157 nbx 5 14 1 32 0 0 empty empty voice 0 -8 0 10 -262144
--1 -1 4 256;
+-1 -1 1 256;
 #X msg 40 175 voice \$1;
 #X obj 130 193 s \$0-to;
 #X obj 130 157 nbx 5 14 0 127 0 0 empty empty velocity 0 -8 0 10 -262144
@@ -881,6 +881,7 @@ version;
 #X obj 500 337 s \$0-to;
 #X obj 565 337 s \$0-to;
 #X obj 630 337 s \$0-to;
+#X text 61 287 outlet: voice pitch gate;
 #X connect 0 0 34 0;
 #X connect 1 0 0 0;
 #X connect 2 0 3 0;
