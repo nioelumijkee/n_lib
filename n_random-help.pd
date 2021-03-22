@@ -1,0 +1,25 @@
+#N canvas 533 280 504 290 10;
+#X obj 75 62 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 166 53 get random number;
+#X obj 75 82 t b b b;
+#X obj 260 135 print 1:;
+#X obj 75 135 print 3:;
+#X obj 164 135 print 2:;
+#X obj 364 136 print series:;
+#X msg 364 81 10;
+#X obj 364 99 until;
+#X obj 164 111 n_random 100;
+#X obj 75 111 n_random 100;
+#X obj 260 111 n_random 100;
+#X obj 364 118 n_random 100;
+#X connect 0 0 2 0;
+#X connect 2 0 10 0;
+#X connect 2 1 9 0;
+#X connect 2 2 11 0;
+#X connect 7 0 8 0;
+#X connect 8 0 12 0;
+#X connect 9 0 5 0;
+#X connect 10 0 4 0;
+#X connect 11 0 3 0;
+#X connect 12 0 6 0;

@@ -17,4 +17,5 @@
 **n_clock~** - clock source  
 **n_peak~** - peak amplitude  
 **n_r** - receive with select source  
+**n_random** - get random number  
 

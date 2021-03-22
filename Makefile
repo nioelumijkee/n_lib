@@ -28,7 +28,8 @@ $(SOURCESDIR)/n_key2n.c \
 $(SOURCESDIR)/n_print.c \
 $(SOURCESDIR)/n_clock~.c \
 $(SOURCESDIR)/n_peak~.c \
-$(SOURCESDIR)/n_r.c
+$(SOURCESDIR)/n_r.c \
+$(SOURCESDIR)/n_random.c
 LIBS =
 
 #------------------------------------------------------------------------------#
