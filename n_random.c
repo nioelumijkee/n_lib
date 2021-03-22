@@ -8,6 +8,7 @@ typedef struct _n_random
   t_object x_obj;
   t_int seed;
   t_int range;
+  t_int z;
 } t_n_random;
 
 //----------------------------------------------------------------------------//
@@ -20,7 +21,11 @@ void n_random_bang(t_n_random *x)
   if (x->seed < 0) i = 0 - x->seed;
   else             i = x->seed;
   i = i % x->range;
+  /* not repeat */
+  i += x->z;
+  i = i % x->range;
   outlet_float(x->x_obj.ob_outlet,(t_float)i);
+  x->z = i;
 }
 
 //----------------------------------------------------------------------------//
