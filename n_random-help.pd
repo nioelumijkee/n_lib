@@ -13,6 +13,7 @@
 #X obj 75 111 n_random 100;
 #X obj 260 111 n_random 100;
 #X obj 364 118 n_random 100;
+#X text 169 192 argument: range;
 #X connect 0 0 2 0;
 #X connect 2 0 10 0;
 #X connect 2 1 9 0;

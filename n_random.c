@@ -6,29 +6,25 @@ static t_class *n_random_class;
 typedef struct _n_random
 {
   t_object x_obj;
-  unsigned int seed;
   unsigned int range;
   unsigned int z;
 } t_n_random;
+
+unsigned int seed;
 
 //----------------------------------------------------------------------------//
 void n_random_bang(t_n_random *x)
 {
   unsigned int i;
-  AF_RANDOM(x->seed);
-  i = x->seed % x->range;
+  AF_RANDOM(seed);
+  i = seed % x->range;
   /* not repeat */
   if (i == x->z)
     {
-      i += x->z;
+      i += 1;
       i = i % x->range;
     }
   x->z = i;
-  if (x->z == 0)
-    {
-      AF_RANDOM(x->seed);
-      x->z = x->seed % x->range;
-    }
   outlet_float(x->x_obj.ob_outlet,(t_float)i);
 }
 
@@ -46,9 +42,13 @@ void n_random_float(t_n_random *x, t_floatarg f)
 void *n_random_new(t_floatarg f)
 {
   t_n_random *x = (t_n_random *)pd_new(n_random_class);
+  
+  /* random seed for varioius object in path */
   time_t lt = time(NULL);
-  x->seed = (long)x; /* random seed for varioius object in path */
-  x->seed += lt;
+  unsigned int i = (long)x;
+  i += lt;
+  seed += i;
+
   n_random_float(x, f);
   outlet_new(&x->x_obj, 0);
   return (void *)x;
