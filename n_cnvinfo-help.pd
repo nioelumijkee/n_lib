@@ -9,7 +9,7 @@
 #X obj 95 87 hradio 15 1 0 8 empty empty empty 0 -8 0 10 -262144 -1
 -1 1;
 #X msg 95 107 canvas \$1;
-#N canvas 148 45 450 300 this 1;
+#N canvas 148 45 450 300 this 0;
 #X obj 11 146 print;
 #X msg 17 26 canvas;
 #X obj 11 124 n_cnvinfo;
