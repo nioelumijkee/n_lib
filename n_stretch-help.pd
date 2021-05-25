@@ -1,0 +1,136 @@
+#N canvas 535 45 831 677 10;
+#N canvas 0 50 450 250 (subpatch) 0;
+#X array src 44100 float 2;
+#X coords 0 1 44100 -1 800 100 1 0 0;
+#X restore 15 20 graph;
+#N canvas 0 50 450 250 (subpatch) 0;
+#X array grain 44100 float 2;
+#X coords 0 1 44100 0 800 16 1 0 0;
+#X restore 15 136 graph;
+#N canvas 0 50 450 250 (subpatch) 0;
+#X array dst 144396 float 2;
+#X coords 0 1 144396 -1 800 100 1 0 0;
+#X restore 15 168 graph;
+#X obj 60 604 n_stretch;
+#X obj 60 586 r \$0-to;
+#X obj 60 622 print -n;
+#X obj 61 557 s \$0-to;
+#X msg 61 539 set_array src dst grain;
+#X obj 702 428 s \$0-to;
+#X msg 702 410 disp \$1;
+#X obj 702 392 tgl 15 1 empty empty display -12 -7 0 10 -262144 -1
+-1 1 1;
+#X obj 264 347 hsl 128 15 0.025 2 0 1 empty empty speed 46 -8 0 10
+-262144 -1 -1 1870 1;
+#X msg 261 299 1;
+#N canvas 153 238 450 300 scale 0;
+#X obj 37 37 inlet;
+#X obj 37 82 moses 1, f 13;
+#X obj 112 103 - 1;
+#X obj 112 147 + 1;
+#X obj 37 196 outlet;
+#X obj 112 126 * 15;
+#X obj 37 103 max 0.025;
+#X connect 0 0 1 0;
+#X connect 1 0 6 0;
+#X connect 1 1 2 0;
+#X connect 2 0 5 0;
+#X connect 3 0 4 0;
+#X connect 5 0 3 0;
+#X connect 6 0 4 0;
+#X restore 261 364 pd scale;
+#X obj 261 382 nbx 5 14 -1e+37 1e+37 0 0 empty empty empty 0 -8 0 10
+-262144 -1 -1 0.304921 256;
+#X obj 42 362 bng 15 250 50 0 empty empty doit -28 7 0 10 -262144 -1
+-1;
+#X msg 42 424 doit \$1 \$2 \$3;
+#X obj 42 406 pack f f f, f 37;
+#X obj 42 442 s \$0-to;
+#X obj 69 362 nbx 7 14 -1e+37 1e+37 0 1 empty empty start 8 -8 0 10
+-262144 -1 -1 0 256;
+#X obj 151 362 nbx 7 14 -1e+37 1e+37 0 1 empty empty length 8 -8 0
+10 -262144 -1 -1 0 256;
+#X obj 42 386 f, f 5;
+#X obj 568 394 nbx 5 14 1 1e+37 0 1 empty empty minimal_grain_size(samples)
+-50 -8 0 10 -262144 -1 -1 1 256;
+#X msg 568 410 min_grain \$1;
+#X obj 568 428 s \$0-to;
+#X obj 440 345 vradio 15 1 1 2 empty empty sharing_method -30 -8 0
+10 -262144 -1 -1 1;
+#X obj 440 428 s \$0-to;
+#X msg 440 410 sharing_method \$1;
+#X obj 568 304 nbx 5 14 -1e+37 1e+37 0 0 empty empty random_seed -6
+-8 0 10 -262144 -1 -1 0 256;
+#X obj 568 338 s \$0-to;
+#X msg 568 320 seed \$1;
+#X msg 697 302 dumpinfo;
+#X obj 697 323 s \$0-to;
+#X obj 61 520 loadbang;
+#X text 456 345 _no_sharing;
+#X text 456 361 _random;
+#X msg 230 299 0.5;
+#X obj 537 534 tabplay~ src;
+#X obj 537 564 *~ 0;
+#X obj 537 592 +~;
+#X obj 537 613 dac~;
+#X obj 751 548 * 0.01;
+#X obj 537 511 bng 15 250 50 0 empty empty play_original 17 7 0 10
+-262144 -1 -1;
+#X obj 638 564 *~ 0;
+#X obj 638 511 bng 15 250 50 0 empty empty play_stretched 17 7 0 10
+-262144 -1 -1;
+#X obj 638 534 tabplay~ dst;
+#X msg 290 299 2;
+#X obj 751 526 nbx 3 14 0 1000 0 1 empty empty level 8 -8 0 10 -262144
+-1 -1 42 256;
+#X obj 291 438 bng 15 250 50 0 empty empty open_file 17 7 0 10 -262144
+-1 -1;
+#X obj 291 458 openpanel;
+#X obj 291 495 soundfiler;
+#X msg 291 476 read -resize \$1 src;
+#X floatatom 291 515 10 0 0 1 samples - -;
+#X obj 280 599 soundfiler;
+#X obj 280 561 loadbang;
+#X msg 280 580 read -resize ./samples/sin440.wav src;
+#X connect 3 0 5 0;
+#X connect 4 0 3 0;
+#X connect 7 0 6 0;
+#X connect 9 0 8 0;
+#X connect 10 0 9 0;
+#X connect 11 0 13 0;
+#X connect 12 0 11 0;
+#X connect 13 0 14 0;
+#X connect 14 0 17 2;
+#X connect 15 0 21 0;
+#X connect 16 0 18 0;
+#X connect 17 0 16 0;
+#X connect 19 0 21 1;
+#X connect 20 0 17 1;
+#X connect 21 0 17 0;
+#X connect 22 0 23 0;
+#X connect 23 0 24 0;
+#X connect 25 0 27 0;
+#X connect 27 0 26 0;
+#X connect 28 0 30 0;
+#X connect 30 0 29 0;
+#X connect 31 0 32 0;
+#X connect 33 0 7 0;
+#X connect 36 0 11 0;
+#X connect 37 0 38 0;
+#X connect 38 0 39 0;
+#X connect 39 0 40 0;
+#X connect 39 0 40 1;
+#X connect 41 0 38 1;
+#X connect 41 0 43 1;
+#X connect 42 0 37 0;
+#X connect 43 0 39 1;
+#X connect 44 0 45 0;
+#X connect 45 0 43 0;
+#X connect 46 0 11 0;
+#X connect 47 0 41 0;
+#X connect 48 0 49 0;
+#X connect 49 0 51 0;
+#X connect 50 0 52 0;
+#X connect 51 0 50 0;
+#X connect 54 0 55 0;
+#X connect 55 0 53 0;

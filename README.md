@@ -18,4 +18,7 @@
 **n_peak~** - peak amplitude  
 **n_r** - receive with select source  
 **n_random** - get random number  
+**n_array** - operations with arrays(>100)  
+**n_stretch** - another one time stretch algorithm  
+**n_peakdetect** - peak detector  
 

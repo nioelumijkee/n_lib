@@ -29,7 +29,10 @@ $(SOURCESDIR)/n_print.c \
 $(SOURCESDIR)/n_clock~.c \
 $(SOURCESDIR)/n_peak~.c \
 $(SOURCESDIR)/n_r.c \
-$(SOURCESDIR)/n_random.c
+$(SOURCESDIR)/n_random.c \
+$(SOURCESDIR)/n_array.c \
+$(SOURCESDIR)/n_peakdetect.c \
+$(SOURCESDIR)/n_stretch.c
 LIBS =
 
 #------------------------------------------------------------------------------#
