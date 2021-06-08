@@ -42,13 +42,10 @@ void n_random_float(t_n_random *x, t_floatarg f)
 void *n_random_new(t_floatarg f)
 {
   t_n_random *x = (t_n_random *)pd_new(n_random_class);
-  
-  /* random seed for varioius object in path */
+  /* unique random seed depended by time for various object in path */
   time_t lt = time(NULL);
   unsigned int i = (long)x;
-  i += lt;
-  seed += i;
-
+  seed = i + lt;
   n_random_float(x, f);
   outlet_new(&x->x_obj, 0);
   return (void *)x;
