@@ -22,7 +22,7 @@ static t_symbol *n_print_args2symbol(int argc, t_atom *argv)
   s = gensym(buf);
   freebytes(buf, bufsize + 1);
   binbuf_free(bb);
-  return s;
+  return (s);
 }
 
 //----------------------------------------------------------------------------//
@@ -85,7 +85,6 @@ void *n_print_new(t_symbol *s, int argc, t_atom *argv)
     }
   
   floatinlet_new(&x->x_obj, &x->level);
-  
   return (void *)x;
   if (s) {}
 }
