@@ -36,18 +36,16 @@ t_int *n_peak_perform(t_int *w)
   int n           = (int)(w[3]);
   
   t_float a;
+  t_float max = x->max;
   
   // dsp
   while (n--)
     {
       a = *(in++);
-
-      // abs
-      if (a < 0) a = 0 - a;
-
-      // max
-      if (a > x->max) x->max = a;
+      if (a < 0)   a = 0 - a; // abs
+      if (a > max) max = a;   // max
     }
+  x->max = max;
   return (w+4);
 }
 
