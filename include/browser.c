@@ -9,8 +9,8 @@
 #define MAXD 64
 
 #define AF_SWAP(BUF, FIRST, SECOND) \
-  (BUF) = (FIRST);			\
-  (FIRST) = (SECOND);			\
+  (BUF) = (FIRST);                  \
+  (FIRST) = (SECOND);               \
   (SECOND) = (BUF);
 
 typedef struct _browser

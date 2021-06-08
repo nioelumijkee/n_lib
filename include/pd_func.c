@@ -1,4 +1,3 @@
-/* pd function */
 #include "string.h"
 #include "m_pd.h"
 

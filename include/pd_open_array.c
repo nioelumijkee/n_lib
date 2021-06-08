@@ -1,7 +1,7 @@
 //----------------------------------------------------------------------------//
-int pd_open_array(t_symbol *s_arr, // name
-		  t_word **w_arr,  // word
-		  t_garray **g_arr) // garray
+int pd_open_array(t_symbol *s_arr,  // name
+                  t_word **w_arr,   // word
+                  t_garray **g_arr) // garray
 {
   int len;
   t_word *i_w_arr;
