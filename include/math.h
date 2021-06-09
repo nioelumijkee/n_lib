@@ -1,57 +1,35 @@
 //----------------------------------------------------------------------------//
-// int fract
 #define AF_INTFRACT(IN, INT0_I, INT1_I, FRACT_F)	\
-  (INT0_I) = (IN);					\
-  (INT1_I) = (INT0_I) + 1;				\
+  (INT0_I) = (IN);                                  \
+  (INT1_I) = (INT0_I) + 1;                          \
   (FRACT_F) = (IN) - (INT0_I);
 
 //----------------------------------------------------------------------------//
-// clip min max
-#define AF_CLIP_MINMAX(MIN, MAX, IN) \
-  if ((IN) < (MIN))		     \
-    (IN) = (MIN);		     \
-  else if ((IN) > (MAX))	     \
-    (IN) = (MAX);
-
-//----------------------------------------------------------------------------//
-// clip min
-#define AF_CLIP_MIN(MIN, IN) \
-  if ((IN) < (MIN))	     \
-    (IN) = (MIN);
-
-//----------------------------------------------------------------------------//
-// clip max
-#define AF_CLIP_MAX(MAX, IN) \
-  if ((IN) > (MAX))	     \
-    (IN) = (MAX);
-
-//----------------------------------------------------------------------------//
-// abs
 #define AF_ABS(IN, OUT)   \
-  if ((IN) < 0)		  \
+  if ((IN) < 0)           \
     (OUT) = 0 - (IN);	  \
-  else			  \
+  else                    \
     (OUT) = (IN);
 
 //----------------------------------------------------------------------------//
 // floor (round down)
-#define AF_FLOOR(IN, OUT_I)			\
+#define AF_FLOOR(IN, OUT_I)                     \
   (OUT_I) = (IN);
 
 //----------------------------------------------------------------------------//
 // ceil (round up)
 #define AF_CEIL(IN, OUT_I)			\
-  if ((IN) < 0)					\
+  if ((IN) < 0)                     \
     (OUT_I) = (IN) - 0.5;			\
-  else						\
+  else                              \
     (OUT_I) = (IN) + 0.5;
 
 //----------------------------------------------------------------------------//
 // wrap (-0.5 ... 0.5)
-#define AF_WRAP(IN, BUF_I, OUT)			\
-  if ((IN) < 0)					\
+#define AF_WRAP(IN, BUF_I, OUT)     \
+  if ((IN) < 0)                     \
     (BUF_I) = (IN) - 0.5;			\
-  else						\
-    (BUF_I) = (IN) + 0.5;			\
+  else                              \
+    (BUF_I) = (IN) + 0.5;           \
   (OUT) = (IN) - (BUF_I);
 
