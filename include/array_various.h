@@ -161,3 +161,16 @@ inline int arr_unique(ARR_TYPE *arr, int start, int end)
   return(k - start - 1);
 }
 
+//----------------------------------------------------------------------------//
+inline void arr_count(ARR_TYPE *arr,
+                      int start, int end, 
+                      float base,
+                      float inc)
+{
+  int i;
+  for (i = start; i < end; i++)
+    {
+      arr[i]_E = base;
+      base += inc;
+    }
+}
