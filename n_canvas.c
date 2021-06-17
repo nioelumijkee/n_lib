@@ -5,6 +5,7 @@
 #include <pd/g_canvas.h>
 #include <pd/g_all_guis.h>
 #include "include/math.h"
+#include "include/clip.h"
 #include "include/pd_canvas_func.c"
 #include "include/pd_color.c"
 #include "include/pd_func.c"

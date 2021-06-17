@@ -1,5 +1,5 @@
 #include "m_pd.h"
-#include "include/math.h"
+#include "include/clip.h"
 #include "include/pd_open_array.c"
 
 #define O_ERROR -1
@@ -8,10 +8,10 @@
 #define W0(N) w[0][(N)].w_float
 #define W1(N) w[1][(N)].w_float
 
-#define OUTLETF(S, F)					    \
-  {							    \
-    t_atom a[1];					    \
-    SETFLOAT(a, (t_float)(F));				    \
+#define OUTLETF(S, F)                                   \
+  {                                                     \
+    t_atom a[1];                                        \
+    SETFLOAT(a, (t_float)(F));                          \
     outlet_anything(x->out, gensym((S)), 1, a);		    \
   }
 
@@ -69,7 +69,7 @@ void n_peakdetect_doit(t_n_peakdetect *x, t_floatarg f0, t_floatarg f1)
     {
       start = l[0] - 1;
     }
- 
+
  // end 0 ... la
   if (len <= 0)
     {
@@ -140,92 +140,92 @@ void n_peakdetect_doit(t_n_peakdetect *x, t_floatarg f0, t_floatarg f1)
   for (i = start; i < end; i++)
     {
       f = W0(i) * x->level;
-      
+
       // abs
       if (f < 0)
-	{
-	  f = 0. - f;
-	}
-
+        {
+          f = 0. - f;
+        }
+      
       // envf
       f = f - f_z;
       if (f > 0)
-	{
-	  f = f * x->attack;
-	}
+        {
+          f = f * x->attack;
+        }
       else
-	{
-	  f = f * x->decay;
-	}
+        {
+          f = f * x->decay;
+        }
       f = f + f_z;
       f_z = f;
-
+      
       // delay write
       delay_a[delay_count] = f;
       delay_count++;
       if (delay_count == DELAY_MAX)
-	{
-	  delay_count = 0;
-	}
-
+        {
+          delay_count = 0;
+        }
+      
       // delay read
       j = delay_count - x->window;
       if (j < 0)
-	{
-	  j = j + DELAY_MAX;
-	}
+        {
+          j = j + DELAY_MAX;
+        }
       e = delay_a[j];
       
       //
       a = f / e;
       b = f - e;
       if (b < 0)
-	{
-	  b = 0. - b;
-	}
+        {
+          b = 0. - b;
+        }
       
-      // 
+      //
       if (a > x->skq)
-	{
-	  k = 1;
-	}
+        {
+          k = 1;
+        }
       else
-	{
-	  k = 0;
-	}
-
-      // 
+        {
+          k = 0;
+        }
+      
+      //
       if (b > x->skt)
-	{
-	  m = 1;
-	}
+        {
+          m = 1;
+        }
       else
-	{
-	  m = 0;
-	}
-
+        {
+          m = 0;
+        }
+      
       //
       a = k & m;
-
+      
       //
       if (a == 1  &&  a_z == 0  &&  skw_ready)
-	{
-	  W1(i) = 1;
-	  skw_count = 0;
-	  skw_ready = 0;
-	}
+        {
+          W1(i) = 1;
+          skw_count = 0;
+          skw_ready = 0;
+        }
       else
-	{
-	  W1(i) = 0;
-	}
+        {
+          W1(i) = 0;
+        }
       a_z = a;
-
+      
       // skip window counter
       skw_count++;
       if (skw_count == x->skw)
-	{
-	  skw_ready = 1;
-	}
+        {
+          skw_ready = 1;
+        }
     }
   garray_redraw(g[1]);
 }

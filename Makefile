@@ -32,11 +32,13 @@ $(SOURCESDIR)/n_r.c \
 $(SOURCESDIR)/n_random.c \
 $(SOURCESDIR)/n_array.c \
 $(SOURCESDIR)/n_peakdetect.c \
-$(SOURCESDIR)/n_stretch.c
+$(SOURCESDIR)/n_stretch.c \
+$(SOURCESDIR)/n_p2f.c
 LIBS =
 
 #------------------------------------------------------------------------------#
-CFLAGS = -DPD -I"$(PD_INCLUDE)" -Wall -W
+CFLAGS = -DPD -Wall -W
+CFLAGS += -I"$(PD_INCLUDE)"
 CFLAGS += -DVERSION='"$(LIBRARY_VERSION)"'
 LDFLAGS =
 

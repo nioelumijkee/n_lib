@@ -1,5 +1,5 @@
 #include "m_pd.h"
-#include "include/math.h"
+#include "include/clip.h"
 
 
 #define A_MAX_CH 32

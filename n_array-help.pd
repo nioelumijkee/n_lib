@@ -677,7 +677,7 @@ a2, f 21;
 #X obj 52 343 n_array;
 #X obj 52 390 n_array;
 #X obj 45 24 hradio 15 1 0 13 empty empty empty 0 -8 0 10 -262144 -1
--1 12;
+-1 7;
 #N canvas 0 50 450 300 scale 0;
 #X obj 37 37 inlet;
 #X msg 37 79 2 \$1;
@@ -717,147 +717,147 @@ a7 \$1, f 14;
 #X connect 19 0 9 0;
 #X connect 20 0 16 0;
 #X restore 32 549 pd fft;
-#N canvas 0 45 1364 721 curves 1;
+#N canvas 0 45 1364 721 curves 0;
 #N canvas 0 50 450 250 (subpatch) 0;
 #X array a_curves 200 float 2;
 #X coords 0 1 200 0 200 140 1 0 0;
-#X restore 474 72 graph;
-#X obj 94 141 n_array;
-#X text 467 12 from mapping library for pd.;
-#X text 417 28 AUTHOR Cyrille Henry and Hans-Christoph Steiner;
-#X msg 94 123 c_breakpoint a_curves 0 0 \$1 \$2;
-#X obj 97 70 hsl 50 15 0 1 0 0 empty empty x -2 -8 0 10 -228856 -1
+#X restore 435 72 graph;
+#X obj 55 141 n_array;
+#X text 428 12 from mapping library for pd.;
+#X text 378 28 AUTHOR Cyrille Henry and Hans-Christoph Steiner;
+#X msg 55 123 c_breakpoint a_curves 0 0 \$1 \$2;
+#X obj 58 70 hsl 50 15 0 1 0 0 empty empty x -2 -8 0 10 -228856 -1
 -1 0 1;
-#X obj 157 70 hsl 50 15 0 1 0 0 empty empty y -2 -8 0 10 -228856 -1
+#X obj 118 70 hsl 50 15 0 1 0 0 empty empty y -2 -8 0 10 -228856 -1
 -1 0 1;
-#X obj 154 87 t b f;
-#X obj 94 105 pack f f, f 15;
-#X text 67 36 c_breakpoint <array> <start> <len> <x> <y>;
-#X text 219 70 x \, y - range 0 ... 1;
-#X obj 94 291 n_array;
-#X obj 97 220 hsl 50 15 0 1 0 0 empty empty x -2 -8 0 10 -228856 -1
+#X obj 115 87 t b f;
+#X obj 55 105 pack f f, f 15;
+#X text 28 36 c_breakpoint <array> <start> <len> <x> <y>;
+#X text 180 70 x \, y - range 0 ... 1;
+#X obj 55 291 n_array;
+#X obj 58 220 hsl 50 15 0 1 0 0 empty empty x -2 -8 0 10 -228856 -1
 -1 0 1;
-#X obj 157 220 hsl 50 15 0 1 0 0 empty empty y -2 -8 0 10 -228856 -1
+#X obj 118 220 hsl 50 15 0 1 0 0 empty empty y -2 -8 0 10 -228856 -1
 -1 0 1;
-#X obj 154 237 t b f;
-#X obj 94 255 pack f f, f 15;
-#X text 219 220 x \, y - range 0 ... 1;
-#X text 67 186 c_breakpoint_smooth <array> <start> <len> <x> <y>;
-#X msg 94 273 c_breakpoint_smooth a_curves 0 0 \$1 \$2;
-#X obj 94 400 n_array;
-#X obj 97 360 hsl 50 15 0 1 0 0 empty empty x -2 -8 0 10 -228856 -1
+#X obj 115 237 t b f;
+#X obj 55 255 pack f f, f 15;
+#X text 180 220 x \, y - range 0 ... 1;
+#X text 28 186 c_breakpoint_smooth <array> <start> <len> <x> <y>;
+#X msg 55 273 c_breakpoint_smooth a_curves 0 0 \$1 \$2;
+#X obj 55 400 n_array;
+#X obj 58 360 hsl 50 15 0 1 0 0 empty empty x -2 -8 0 10 -228856 -1
 -1 0 1;
-#X msg 94 382 c_circular a_curves 0 0 \$1;
-#X text 193 358 x - range 0 ... 1;
-#X obj 94 500 n_array;
-#X obj 97 460 hsl 50 15 0 1 0 0 empty empty x -2 -8 0 10 -228856 -1
+#X msg 55 382 c_circular a_curves 0 0 \$1;
+#X text 154 358 x - range 0 ... 1;
+#X obj 55 500 n_array;
+#X obj 58 460 hsl 50 15 0 1 0 0 empty empty x -2 -8 0 10 -228856 -1
 -1 0 1;
-#X text 193 458 x - range 0 ... 1;
-#X text 67 326 c_cirular <array> <start> <len> <x>;
-#X text 67 426 c_cirular_sigmoid <array> <start> <len> <x>;
-#X msg 94 482 c_circular_sigmoid a_curves 0 0 \$1;
-#X obj 464 331 n_array;
-#X obj 467 260 hsl 50 15 0 1 0 0 empty empty x -2 -8 0 10 -228856 -1
+#X text 154 458 x - range 0 ... 1;
+#X text 28 326 c_cirular <array> <start> <len> <x>;
+#X text 28 426 c_cirular_sigmoid <array> <start> <len> <x>;
+#X msg 55 482 c_circular_sigmoid a_curves 0 0 \$1;
+#X obj 425 331 n_array;
+#X obj 428 260 hsl 50 15 0 1 0 0 empty empty x -2 -8 0 10 -228856 -1
 -1 0 1;
-#X obj 527 260 hsl 50 15 0 1 0 0 empty empty y -2 -8 0 10 -228856 -1
+#X obj 488 260 hsl 50 15 0 1 0 0 empty empty y -2 -8 0 10 -228856 -1
 -1 0 1;
-#X obj 524 277 t b f;
-#X obj 464 295 pack f f, f 15;
-#X text 589 260 x \, y - range 0 ... 1;
-#X text 441 226 c_cubic <array> <start> <len> <x> <y>;
-#X msg 464 313 c_cubic a_curves 0 0 \$1 \$2;
-#X obj 464 405 n_array;
-#X msg 464 387 c_exp a_curves 0 0;
-#X text 441 364 c_exp <array> <start> <len>;
-#X obj 464 485 n_array;
-#X text 441 444 c_log <array> <start> <len>;
-#X msg 464 467 c_log a_curves 0 0;
-#X obj 774 141 n_array;
-#X obj 777 70 hsl 50 15 0 1 0 0 empty empty x -2 -8 0 10 -228856 -1
+#X obj 485 277 t b f;
+#X obj 425 295 pack f f, f 15;
+#X text 550 260 x \, y - range 0 ... 1;
+#X text 402 226 c_cubic <array> <start> <len> <x> <y>;
+#X msg 425 313 c_cubic a_curves 0 0 \$1 \$2;
+#X obj 425 405 n_array;
+#X msg 425 387 c_exp a_curves 0 0;
+#X text 402 364 c_exp <array> <start> <len>;
+#X obj 425 485 n_array;
+#X text 402 444 c_log <array> <start> <len>;
+#X msg 425 467 c_log a_curves 0 0;
+#X obj 735 141 n_array;
+#X obj 738 70 hsl 50 15 0 1 0 0 empty empty x -2 -8 0 10 -228856 -1
 -1 0 1;
-#X obj 837 70 hsl 50 15 0 1 0 0 empty empty y -2 -8 0 10 -228856 -1
+#X obj 798 70 hsl 50 15 0 1 0 0 empty empty y -2 -8 0 10 -228856 -1
 -1 0 1;
-#X obj 834 87 t b f;
-#X obj 774 105 pack f f, f 15;
-#X text 899 70 x \, y - range 0 ... 1;
-#X text 747 36 c_elleptic <array> <start> <len> <x> <y>;
-#X msg 774 123 c_elleptic a_curves 0 0 \$1 \$2;
-#X obj 774 281 n_array;
-#X obj 777 210 hsl 50 15 0 1 0 0 empty empty x -2 -8 0 10 -228856 -1
+#X obj 795 87 t b f;
+#X obj 735 105 pack f f, f 15;
+#X text 860 70 x \, y - range 0 ... 1;
+#X text 708 36 c_elleptic <array> <start> <len> <x> <y>;
+#X msg 735 123 c_elleptic a_curves 0 0 \$1 \$2;
+#X obj 735 281 n_array;
+#X obj 738 210 hsl 50 15 0 1 0 0 empty empty x -2 -8 0 10 -228856 -1
 -1 0 1;
-#X obj 837 210 hsl 50 15 0 1 0 0 empty empty y -2 -8 0 10 -228856 -1
+#X obj 798 210 hsl 50 15 0 1 0 0 empty empty y -2 -8 0 10 -228856 -1
 -1 0 1;
-#X obj 834 227 t b f;
-#X obj 774 245 pack f f, f 15;
-#X text 899 210 x \, y - range 0 ... 1;
-#X text 747 176 c_elleptic_seat <array> <start> <len> <x> <y>;
-#X msg 774 263 c_elleptic_seat a_curves 0 0 \$1 \$2;
-#X obj 774 421 n_array;
-#X obj 777 350 hsl 50 15 0 1 0 0 empty empty x -2 -8 0 10 -228856 -1
+#X obj 795 227 t b f;
+#X obj 735 245 pack f f, f 15;
+#X text 860 210 x \, y - range 0 ... 1;
+#X text 708 176 c_elleptic_seat <array> <start> <len> <x> <y>;
+#X msg 735 263 c_elleptic_seat a_curves 0 0 \$1 \$2;
+#X obj 735 421 n_array;
+#X obj 738 350 hsl 50 15 0 1 0 0 empty empty x -2 -8 0 10 -228856 -1
 -1 0 1;
-#X obj 837 350 hsl 50 15 0 1 0 0 empty empty y -2 -8 0 10 -228856 -1
+#X obj 798 350 hsl 50 15 0 1 0 0 empty empty y -2 -8 0 10 -228856 -1
 -1 0 1;
-#X obj 834 367 t b f;
-#X obj 774 385 pack f f, f 15;
-#X text 899 350 x \, y - range 0 ... 1;
-#X text 747 316 c_elleptic_sigmoid <array> <start> <len> <x> <y>;
-#X msg 774 403 c_elleptic_sigmoid a_curves 0 0 \$1 \$2;
-#X obj 1094 110 n_array;
-#X obj 1097 70 hsl 50 15 0 1 0 0 empty empty x -2 -8 0 10 -228856 -1
+#X obj 795 367 t b f;
+#X obj 735 385 pack f f, f 15;
+#X text 860 350 x \, y - range 0 ... 1;
+#X text 708 316 c_elleptic_sigmoid <array> <start> <len> <x> <y>;
+#X msg 735 403 c_elleptic_sigmoid a_curves 0 0 \$1 \$2;
+#X obj 1055 110 n_array;
+#X obj 1058 70 hsl 50 15 0 1 0 0 empty empty x -2 -8 0 10 -228856 -1
 -1 0 1;
-#X text 1042 38 c_exponential <array> <start> <len> <x>;
-#X msg 1094 92 c_exponential a_curves 0 0 \$1;
-#X obj 1094 210 n_array;
-#X obj 1097 170 hsl 50 15 0 1 0 0 empty empty x -2 -8 0 10 -228856
+#X text 1003 38 c_exponential <array> <start> <len> <x>;
+#X msg 1055 92 c_exponential a_curves 0 0 \$1;
+#X obj 1055 210 n_array;
+#X obj 1058 170 hsl 50 15 0 1 0 0 empty empty x -2 -8 0 10 -228856
 -1 -1 0 1;
-#X text 1042 138 c_exponential_seat <array> <start> <len> <x>;
-#X msg 1094 192 c_exponential_seat a_curves 0 0 \$1;
-#X obj 1094 310 n_array;
-#X obj 1097 270 hsl 50 15 0 1 0 0 empty empty x -2 -8 0 10 -228856
+#X text 1003 138 c_exponential_seat <array> <start> <len> <x>;
+#X msg 1055 192 c_exponential_seat a_curves 0 0 \$1;
+#X obj 1055 310 n_array;
+#X obj 1058 270 hsl 50 15 0 1 0 0 empty empty x -2 -8 0 10 -228856
 -1 -1 0 1;
-#X text 1042 238 c_exponential_sigmoid <array> <start> <len> <x>;
-#X msg 1094 292 c_exponential_sigmoid a_curves 0 0 \$1;
-#X obj 1094 410 n_array;
-#X obj 1097 370 hsl 50 15 0 1 0 0 empty empty x -2 -8 0 10 -228856
+#X text 1003 238 c_exponential_sigmoid <array> <start> <len> <x>;
+#X msg 1055 292 c_exponential_sigmoid a_curves 0 0 \$1;
+#X obj 1055 410 n_array;
+#X obj 1058 370 hsl 50 15 0 1 0 0 empty empty x -2 -8 0 10 -228856
 -1 -1 0 1;
-#X text 1042 338 c_logistic_sigmoid <array> <start> <len> <x>;
-#X msg 1094 392 c_logistic_sigmoid a_curves 0 0 \$1;
-#X obj 426 654 n_array;
-#X obj 429 583 hsl 50 15 0 1 0 0 empty empty x -2 -8 0 10 -228856 -1
+#X text 1003 338 c_logistic_sigmoid <array> <start> <len> <x>;
+#X msg 1055 392 c_logistic_sigmoid a_curves 0 0 \$1;
+#X obj 387 654 n_array;
+#X obj 390 583 hsl 50 15 0 1 0 0 empty empty x -2 -8 0 10 -228856 -1
 -1 0 1;
-#X obj 489 583 hsl 50 15 0 1 0 0 empty empty y -2 -8 0 10 -228856 -1
+#X obj 450 583 hsl 50 15 0 1 0 0 empty empty y -2 -8 0 10 -228856 -1
 -1 0 1;
-#X obj 486 600 t b f;
-#X obj 426 618 pack f f, f 15;
-#X text 549 581 x \, y - range 0 ... 1;
-#X text 407 551 c_quadratic <array> <start> <len> <x> <y>;
-#X msg 426 636 c_quadratic a_curves 0 0 \$1 \$2;
-#X obj 94 651 n_array;
-#X obj 97 580 hsl 50 15 0 1 0 0 empty empty x -2 -8 0 10 -228856 -1
+#X obj 447 600 t b f;
+#X obj 387 618 pack f f, f 15;
+#X text 510 581 x \, y - range 0 ... 1;
+#X text 368 551 c_quadratic <array> <start> <len> <x> <y>;
+#X msg 387 636 c_quadratic a_curves 0 0 \$1 \$2;
+#X obj 55 651 n_array;
+#X obj 58 580 hsl 50 15 0 1 0 0 empty empty x -2 -8 0 10 -228856 -1
 -1 0 1;
-#X obj 157 580 hsl 50 15 0 1 0 0 empty empty y -2 -8 0 10 -228856 -1
+#X obj 118 580 hsl 50 15 0 1 0 0 empty empty y -2 -8 0 10 -228856 -1
 -1 0 1;
-#X obj 154 597 t b f;
-#X obj 94 615 pack f f, f 15;
-#X text 219 580 x \, y - range 0 ... 1;
-#X text 75 548 c_quartic <array> <start> <len> <x> <y>;
-#X msg 94 633 c_quartic a_curves 0 0 \$1 \$2;
-#X obj 733 654 n_array;
-#X obj 736 583 hsl 50 15 0 1 0 0 empty empty x -2 -8 0 10 -228856 -1
+#X obj 115 597 t b f;
+#X obj 55 615 pack f f, f 15;
+#X text 180 580 x \, y - range 0 ... 1;
+#X text 36 548 c_quartic <array> <start> <len> <x> <y>;
+#X msg 55 633 c_quartic a_curves 0 0 \$1 \$2;
+#X obj 694 654 n_array;
+#X obj 697 583 hsl 50 15 0 1 0 0 empty empty x -2 -8 0 10 -228856 -1
 -1 0 1;
-#X obj 796 583 hsl 50 15 0 1 0 0 empty empty y -2 -8 0 10 -228856 -1
+#X obj 757 583 hsl 50 15 0 1 0 0 empty empty y -2 -8 0 10 -228856 -1
 -1 0 1;
-#X obj 793 600 t b f;
-#X obj 733 618 pack f f, f 15;
-#X text 852 583 x \, y - range 0 ... 1;
-#X text 714 551 c_simplified_cubic_seat <array> <start> <len> <x> <y>
+#X obj 754 600 t b f;
+#X obj 694 618 pack f f, f 15;
+#X text 813 583 x \, y - range 0 ... 1;
+#X text 675 551 c_simplified_cubic_seat <array> <start> <len> <x> <y>
 ;
-#X msg 733 636 c_simplified_cubic_seat a_curves 0 0 \$1 \$2;
-#X obj 1094 650 n_array;
-#X obj 1097 610 hsl 50 15 0 1 0 0 empty empty x -2 -8 0 10 -228856
+#X msg 694 636 c_simplified_cubic_seat a_curves 0 0 \$1 \$2;
+#X obj 1055 650 n_array;
+#X obj 1058 610 hsl 50 15 0 1 0 0 empty empty x -2 -8 0 10 -228856
 -1 -1 0 1;
-#X text 1044 578 c_simplified_quadratic <array> <start> <len> <x>;
-#X msg 1094 632 c_simplified_quadratic a_curves 0 0 \$1;
+#X text 1005 578 c_simplified_quadratic <array> <start> <len> <x>;
+#X msg 1055 632 c_simplified_quadratic a_curves 0 0 \$1;
 #X connect 4 0 1 0;
 #X connect 5 0 8 0;
 #X connect 6 0 7 0;
@@ -994,20 +994,20 @@ a7 \$1, f 14;
 #X connect 38 0 10 0;
 #X restore 32 410 pd copy/insert/replace;
 #N canvas 0 50 450 250 (subpatch) 0;
-#X array a0 16384 float 2;
-#X coords 0 1 16384 -1 100 50 1 0 0;
+#X array a0 10 float 2;
+#X coords 0 1 10 -1 100 50 1 0 0;
 #X restore 238 48 graph;
 #N canvas 0 50 450 250 (subpatch) 0;
-#X array a1 16384 float 2;
-#X coords 0 1 16384 -1 100 50 1 0 0;
+#X array a1 512 float 2;
+#X coords 0 1 512 -1 100 50 1 0 0;
 #X restore 238 118 graph;
 #N canvas 0 50 450 250 (subpatch) 0;
-#X array a2 16384 float 2;
-#X coords 0 1 16384 -1 100 50 1 0 0;
+#X array a2 512 float 2;
+#X coords 0 1 512 -1 100 50 1 0 0;
 #X restore 238 188 graph;
 #N canvas 0 50 450 250 (subpatch) 0;
-#X array a3 16384 float 2;
-#X coords 0 1 16384 -1 100 50 1 0 0;
+#X array a3 512 float 2;
+#X coords 0 1 512 -1 100 50 1 0 0;
 #X restore 238 258 graph;
 #N canvas 863 45 501 721 size/resize 0;
 #X obj 64 98 n_array;
@@ -1033,20 +1033,20 @@ a7 \$1, f 14;
 #X obj 240 682 soundfiler;
 #X msg 240 664 read -resize \$1 a0;
 #N canvas 0 50 450 250 (subpatch) 0;
-#X array a4 16384 float 2;
-#X coords 0 1 16384 -1 100 50 1 0 0;
+#X array a4 512 float 2;
+#X coords 0 1 512 -1 100 50 1 0 0;
 #X restore 238 328 graph;
 #N canvas 0 50 450 250 (subpatch) 0;
-#X array a5 16384 float 2;
-#X coords 0 1 16384 -1 100 50 1 0 0;
+#X array a5 512 float 2;
+#X coords 0 1 512 -1 100 50 1 0 0;
 #X restore 238 398 graph;
 #N canvas 0 50 450 250 (subpatch) 0;
-#X array a6 16384 float 2;
-#X coords 0 1 16384 -1 100 50 1 0 0;
+#X array a6 512 float 2;
+#X coords 0 1 512 -1 100 50 1 0 0;
 #X restore 238 468 graph;
 #N canvas 0 50 450 250 (subpatch) 0;
-#X array a7 16384 float 2;
-#X coords 0 1 16384 -1 100 50 1 0 0;
+#X array a7 512 float 2;
+#X coords 0 1 512 -1 100 50 1 0 0;
 #X restore 238 538 graph;
 #N canvas 863 45 501 729 shift/shift_rotate/reverse 0;
 #X obj 32 542 n_array;

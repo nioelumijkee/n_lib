@@ -1,4 +1,3 @@
-#include "array_def.h"
 #include <math.h>
 #include "constant.h"
 

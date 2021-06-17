@@ -1,5 +1,5 @@
 #include "m_pd.h"
-#include "include/math.h"
+#include "include/clip.h"
 
 #define W_MIN 3
 #define W_MAX 64

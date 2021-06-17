@@ -1,5 +1,3 @@
-#include "array_def.h"
-
 //----------------------------------------------------------------------------//
 inline float sum(ARR_TYPE *arr, int start, int end)
 {

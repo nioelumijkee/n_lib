@@ -1,4 +1,4 @@
-#N canvas 453 63 842 575 10;
+#N canvas 421 35 842 575 10;
 #X msg 31 143 grey;
 #X msg 40 160 white;
 #X msg 50 177 pink;
@@ -27,7 +27,7 @@
 #X obj 84 415 list append 600;
 #X msg 21 257 \$2.c configure -background \$1;
 #X obj 21 528 n_sysgui;
-#N canvas 266 202 589 500 (subpatch) 0;
+#N canvas 763 218 589 500 (subpatch) 0;
 #X msg 112 280 \$1 configure -menu "";
 #X msg 132 258 set the_mbar [\$1 cget -menu];
 #X msg 338 263 \$1 configure -menu $the_mbar;
@@ -116,6 +116,7 @@
 #X obj 678 107 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
 -1 -1;
 #X msg 678 127 \; pd help-intro;
+#X obj 238 536 print;
 #X connect 0 0 18 0;
 #X connect 1 0 18 0;
 #X connect 2 0 18 0;
@@ -137,6 +138,7 @@
 #X connect 22 0 17 0;
 #X connect 23 0 24 0;
 #X connect 25 0 24 0;
+#X connect 25 0 70 0;
 #X connect 26 0 27 0;
 #X connect 27 0 32 0;
 #X connect 29 0 18 1;

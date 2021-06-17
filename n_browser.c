@@ -3,7 +3,7 @@
 #include <m_pd.h>
 #include <pd/g_all_guis.h>
 #include "include/browser.c"
-#include "include/math.h"
+#include "include/clip.h"
 
 #define MAXD 64
 #define C_B_HEADER 0

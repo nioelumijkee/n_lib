@@ -31,7 +31,6 @@ static void *n_cnvrcv_new()
   t_canvas *canvas;
   glist = (t_glist *)canvas_getcurrent();
   canvas = glist_getcanvas(glist);
-  // bind
   char buf[MAXPDSTRING];
   if (canvas)
     {
@@ -39,7 +38,6 @@ static void *n_cnvrcv_new()
       x->pd_rcv = gensym(buf);
     }
   pd_bind(&x->x_obj.ob_pd, x->pd_rcv);
-  //
   outlet_new(&x->x_obj, 0);
   return (x);
 }

@@ -8,6 +8,7 @@
 #include "include/clip.h"
 #include "include/swap.h"
 #include "include/pd_open_array.c"
+#include "include/array_pd.h"
 #include "include/array_validate.h"
 #include "include/array_analisys.h"
 #include "include/array_various.h"
@@ -20,12 +21,6 @@
 #include "include/array_clip.h"
 #include "include/array_vec.h"
 #include "include/array_curve.h"
-
-
-/*----------------------------------------------------------------------------//
-syntax operation:
-<operation> <arr0> <start0> <len0> ... <arrN> <startN> <lenN> <c0> ... <cM>   
-//----------------------------------------------------------------------------*/
 
 #define O_DONE 1
 #define O_ERROR 0
@@ -90,8 +85,6 @@ syntax operation:
       return;                                                       \
     }
 
-
-
 //----------------------------------------------------------------------------//
 // for fft
 void mayer_init(void);
@@ -106,7 +99,6 @@ typedef struct _n_array
   t_outlet *out;
   int seed;
 } t_n_array;
-  
 
 //----------------------------------------------------------------------------//
 void n_array_size(t_n_array *x, t_symbol *sym, int ac, t_atom *av)

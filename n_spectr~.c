@@ -3,8 +3,9 @@
 #include "m_pd.h"
 #include "include/constant.h"
 #include "include/conversion.h"
-#include "include/math.h"
-#include "include/windowing.h"
+#include "include/clip.h"
+#include "include/array_float.h"
+#include "include/array_windowing.h"
 
 #define MAX_INLETS 16
 #define MIN_WIDTH 8
@@ -52,8 +53,9 @@ typedef struct _n_spectr
   int vic_x;                   /* vic coords */
   int vic_y;
   int bs;                      /* size fft */
-  int window;                  /* windowing */
+  t_symbol *window;            /* windowing */
   t_float wincoef;
+  t_float *win;
   t_float hor_lin_min;         /* minmax */
   t_float hor_lin_max;
   t_float hor_log_min;
@@ -92,7 +94,6 @@ typedef struct _n_spectr
   t_float grid_ver_v[MAX_VGRID];
   int     grid_ver_all;
   t_float env_i;
-  t_float *win;
   t_float rng_mul;
   t_float rng_add;
   int p_all;
@@ -888,48 +889,7 @@ static void n_spectr_calc_frame(t_n_spectr *x)
 //----------------------------------------------------------------------------//
 static void n_spectr_calc_win(t_n_spectr *x)
 {
-  int i;
-  t_float a,b,c;
-  if (x->window == 0)
-    {
-      AF_WINDOWING_NONE(0, x->bs, x->win, ,i);
-    }
-  else if (x->window == 1)
-    {
-      AF_WINDOWING_BARTLETT(0, x->bs, x->win, ,i, a, b, x->wincoef);
-    }
-  else if (x->window == 2)
-    {
-      AF_WINDOWING_BLACKMAN(0, x->bs, x->win, ,i, a, b, c, x->wincoef);
-    }
-  else if (x->window == 3)
-    {
-      AF_WINDOWING_CONNES(0, x->bs, x->win, ,i, a, b, x->wincoef);
-    }
-  else if (x->window == 4)
-    {
-      AF_WINDOWING_GAUSSIAN(0, x->bs, x->win, ,i, a, b, x->wincoef);
-    }
-  else if (x->window == 5)
-    {
-      AF_WINDOWING_HANNING(0, x->bs, x->win, ,i, a, b, x->wincoef);
-    }
-  else if (x->window == 6)
-    {
-      AF_WINDOWING_HAMMING(0, x->bs, x->win, ,i, a, b, x->wincoef);
-    }
-  else if (x->window == 7)
-    {
-      AF_WINDOWING_LANCZOS(0, x->bs, x->win, ,i, a, b, x->wincoef);
-    }
-  else if (x->window == 8)
-    {
-      AF_WINDOWING_SIN(0, x->bs, x->win, ,i, a, x->wincoef);
-    }
-  else if (x->window == 9)
-    {
-      AF_WINDOWING_WELCH(0, x->bs, x->win, ,i, a, b, x->wincoef);
-    }
+  arr_windowing(x->win, 0, x->bs, x->bs, (char *)x->window->s_name, x->wincoef);
 }
 
 //----------------------------------------------------------------------------//
@@ -1269,10 +1229,10 @@ static void n_spectr_bs(t_n_spectr *x, t_floatarg f)
 }
 
 //----------------------------------------------------------------------------//
-static void n_spectr_window(t_n_spectr *x, t_floatarg f1, t_floatarg f2)
+static void n_spectr_window(t_n_spectr *x, t_symbol *s, t_floatarg f)
 {
-  x->window = f1;
-  x->wincoef = f2;
+  x->window = s;
+  x->wincoef = f;
   n_spectr_calc_win(x);
 }
 
@@ -1664,8 +1624,8 @@ static void *n_spectr_new(t_floatarg f)
   x->vic = 0;                     /* on, off */
   x->vic_x = 0;                   /* vic coords */
   x->vic_y = 0;
-  x->bs = 512;                      /* size fft */
-  x->window = 0;                  /* windowing */
+  x->bs = 512;                    /* size fft */
+  x->window = gensym("none");    /* windowing */
   x->wincoef = 1;
   x->hor_lin_min = 0;         /* minmax */
   x->hor_lin_max = 1;
@@ -1738,7 +1698,7 @@ void n_spectr_tilde_setup(void)
   class_addmethod(n_spectr_class, (t_method)n_spectr_vic, gensym("vic"), A_DEFFLOAT, 0);
   class_addmethod(n_spectr_class, (t_method)n_spectr_vic_coords, gensym("vic_coords"), A_DEFFLOAT, A_DEFFLOAT, 0);
   class_addmethod(n_spectr_class, (t_method)n_spectr_bs, gensym("bs"), A_DEFFLOAT, 0);
-  class_addmethod(n_spectr_class, (t_method)n_spectr_window, gensym("window"), A_DEFFLOAT, A_DEFFLOAT, 0);
+  class_addmethod(n_spectr_class, (t_method)n_spectr_window, gensym("window"), A_DEFSYMBOL, A_DEFFLOAT, 0);
   class_addmethod(n_spectr_class, (t_method)n_spectr_hor_minmax_lin, gensym("minmax_lin"), A_DEFFLOAT, A_DEFFLOAT, 0);
   class_addmethod(n_spectr_class, (t_method)n_spectr_hor_minmax_log, gensym("minmax_log"), A_DEFFLOAT, A_DEFFLOAT, 0);
   class_addmethod(n_spectr_class, (t_method)n_spectr_env, gensym("env"), A_DEFFLOAT, 0);
