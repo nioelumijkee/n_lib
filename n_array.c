@@ -843,7 +843,7 @@ void n_array_replace(t_n_array *x, t_symbol *sym, int ac, t_atom *av)
 }
 
 //----------------------------------------------------------------------------//
-void n_array_clipmin(t_n_array *x, t_symbol *sym, int ac, t_atom *av)
+void n_array_clip_min(t_n_array *x, t_symbol *sym, int ac, t_atom *av)
 {
   N_ARRAYS(2);
   N_USE_ARRAY(0, 0, 1, 2);
@@ -861,7 +861,7 @@ void n_array_clipmin(t_n_array *x, t_symbol *sym, int ac, t_atom *av)
 }
 
 //----------------------------------------------------------------------------//
-void n_array_clipmin_s(t_n_array *x, t_symbol *sym, int ac, t_atom *av)
+void n_array_clip_min_s(t_n_array *x, t_symbol *sym, int ac, t_atom *av)
 {
   N_ARRAYS(1);
   N_USE_ARRAY(0, 0, 1, 2);
@@ -873,7 +873,7 @@ void n_array_clipmin_s(t_n_array *x, t_symbol *sym, int ac, t_atom *av)
 }
 
 //----------------------------------------------------------------------------//
-void n_array_clipmax(t_n_array *x, t_symbol *sym, int ac, t_atom *av)
+void n_array_clip_max(t_n_array *x, t_symbol *sym, int ac, t_atom *av)
 {
   N_ARRAYS(2);
   N_USE_ARRAY(0, 0, 1, 2);
@@ -891,7 +891,7 @@ void n_array_clipmax(t_n_array *x, t_symbol *sym, int ac, t_atom *av)
 }
 
 //----------------------------------------------------------------------------//
-void n_array_clipmax_s(t_n_array *x, t_symbol *sym, int ac, t_atom *av)
+void n_array_clip_max_s(t_n_array *x, t_symbol *sym, int ac, t_atom *av)
 {
   N_ARRAYS(1);
   N_USE_ARRAY(0, 0, 1, 2);
@@ -903,7 +903,7 @@ void n_array_clipmax_s(t_n_array *x, t_symbol *sym, int ac, t_atom *av)
 }
 
 //----------------------------------------------------------------------------//
-void n_array_clipminmax(t_n_array *x, t_symbol *sym, int ac, t_atom *av)
+void n_array_clip_minmax(t_n_array *x, t_symbol *sym, int ac, t_atom *av)
 {
   N_ARRAYS(3);
   N_USE_ARRAY(0, 0, 1, 2);
@@ -923,7 +923,7 @@ void n_array_clipminmax(t_n_array *x, t_symbol *sym, int ac, t_atom *av)
 }
 
 //----------------------------------------------------------------------------//
-void n_array_clipminmax_s(t_n_array *x, t_symbol *sym, int ac, t_atom *av)
+void n_array_clip_minmax_s(t_n_array *x, t_symbol *sym, int ac, t_atom *av)
 {
   N_ARRAYS(1);
   N_USE_ARRAY(0, 0, 1, 2);
@@ -1939,12 +1939,12 @@ void n_array_setup(void)
    METHOD(n_array_insert,                      "insert");            
    METHOD(n_array_replace,                     "replace");           
    /* clip */
-   METHOD(n_array_clipmin,                     "clipmin");           
-   METHOD(n_array_clipmax,                     "clipmax");           
-   METHOD(n_array_clipminmax,                  "clipminmax");        
-   METHOD(n_array_clipmin_s,                   "clipmin_s");         
-   METHOD(n_array_clipmax_s,                   "clipmax_s");         
-   METHOD(n_array_clipminmax_s,                "clipminmax_s");      
+   METHOD(n_array_clip_min,                    "clip_min");           
+   METHOD(n_array_clip_max,                    "clip_max");           
+   METHOD(n_array_clip_minmax,                 "clip_minmax");        
+   METHOD(n_array_clip_min_s,                  "clip_min_s");         
+   METHOD(n_array_clip_max_s,                  "clip_max_s");         
+   METHOD(n_array_clip_minmax_s,               "clip_minmax_s");      
    /* math */
    METHOD(n_array_math,                        "abs");               
    METHOD(n_array_math,                        "floor");             
