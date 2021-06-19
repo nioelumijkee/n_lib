@@ -1,6 +1,6 @@
 #include <string.h>
-#include <m_pd.h>
-#include <pd/g_canvas.h>
+#include "m_pd.h"
+#include "g_canvas.h"
 
 #define OUTLETF(S, F)					    \
   {							    \

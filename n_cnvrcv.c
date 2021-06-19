@@ -1,5 +1,5 @@
-#include <m_pd.h>
-#include <pd/g_canvas.h>
+#include "m_pd.h"
+#include "g_canvas.h"
 
 static t_class *n_cnvrcv_class;
 

@@ -1,7 +1,7 @@
 /* file browser */
 #include <string.h>
 #include <m_pd.h>
-#include <pd/g_all_guis.h>
+#include <g_all_guis.h>
 #include "include/browser.c"
 #include "include/clip.h"
 

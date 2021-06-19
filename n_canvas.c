@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <m_pd.h>
-#include <pd/m_imp.h>
-#include <pd/g_canvas.h>
-#include <pd/g_all_guis.h>
+#include <m_imp.h>
+#include <g_canvas.h>
+#include <g_all_guis.h>
 #include "include/math.h"
 #include "include/clip.h"
 #include "include/pd_canvas_func.c"
