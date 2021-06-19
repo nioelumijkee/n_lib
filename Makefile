@@ -1,5 +1,5 @@
 #------------------------------------------------------------------------------#
-.PHONY = all meta clean showsetup
+.PHONY = 
 
 #------------------------------------------------------------------------------#
 LIBRARY_NAME = n_lib
@@ -8,112 +8,92 @@ LIBRARY_DESCRIPTION = "Various Pure Data object"
 LIBRARY_LICENSE = "GPL v3"
 LIBRARY_VERSION = "0.3"
 META_FILE = $(LIBRARY_NAME)-meta.pd
-
-#
-SOURCESDIR = .
 SOURCES = \
-$(SOURCESDIR)/n_canvas.c \
-$(SOURCESDIR)/n_scope~.c \
-$(SOURCESDIR)/n_spectr~.c \
-$(SOURCESDIR)/n_life.c \
-$(SOURCESDIR)/n_browser.c \
-$(SOURCESDIR)/n_date.c \
-$(SOURCESDIR)/n_sysgui.c \
-$(SOURCESDIR)/n_cnvinfo.c \
-$(SOURCESDIR)/n_cnvrcv.c \
-$(SOURCESDIR)/n_env.c \
-$(SOURCESDIR)/n_mux~.c \
-$(SOURCESDIR)/n_demux~.c \
-$(SOURCESDIR)/n_key2n.c \
-$(SOURCESDIR)/n_print.c \
-$(SOURCESDIR)/n_clock~.c \
-$(SOURCESDIR)/n_peak~.c \
-$(SOURCESDIR)/n_r.c \
-$(SOURCESDIR)/n_random.c \
-$(SOURCESDIR)/n_array.c \
-$(SOURCESDIR)/n_peakdetect.c \
-$(SOURCESDIR)/n_stretch.c \
-$(SOURCESDIR)/n_p2f.c
+n_canvas.c \
+n_scope~.c \
+n_spectr~.c \
+n_life.c \
+n_browser.c \
+n_date.c \
+n_sysgui.c \
+n_cnvinfo.c \
+n_cnvrcv.c \
+n_env.c \
+n_mux~.c \
+n_demux~.c \
+n_key2n.c \
+n_print.c \
+n_clock~.c \
+n_peak~.c \
+n_r.c \
+n_random.c \
+n_array.c \
+n_peakdetect.c \
+n_stretch.c \
+n_p2f.c
 LIBS =
 
 #------------------------------------------------------------------------------#
-CFLAGS = -DPD -Wall -W
-CFLAGS += -I"$(PD_INCLUDE)"
-CFLAGS += -DVERSION='"$(LIBRARY_VERSION)"'
-LDFLAGS =
-
-#------------------------------------------------------------------------------#
 UNAME := $(shell uname -s)
-# Linux -----------------------------------------------------------------------#
+#------------------------------------------------------------------------------#
 ifeq ($(UNAME),Linux)
-	OS = linux
-	EXTENSION = pd_linux
-	CPU := $(shell uname -m)
-	PD_PATH ?= /usr
-	PD_INCLUDE = $(PD_PATH)/include
-	OPT_CFLAGS = -O5 -funroll-loops -fomit-frame-pointer
-	CFLAGS += -fPIC
-	LDFLAGS += -Wl,--export-dynamic  -shared -fPIC
-	LIBS += -lc
-	STRIP = strip --strip-unneeded -R .note -R .comment
+  CPU := $(shell uname -m)
+  EXTENSION = pd_linux
+  SHARED_EXTENSION = so
+  OS = linux
+  PD_PATH ?= /usr
+  PD_INCLUDE = $(PD_PATH)/include/pd
+  CFLAGS = -I"$(PD_INCLUDE)" -Wall -W
+  CFLAGS += -DPD -DVERSION='"$(LIBRARY_VERSION)"'
+  CFLAGS += -fPIC
+  CFLAGS += -O6 -funroll-loops -fomit-frame-pointer
+  LDFLAGS = -rdynamic -shared -fPIC -Wl,-rpath,"\$$ORIGIN",--enable-new-dtags
+  LIBS_linux =
+  LIBS += -lc $(LIBS_linux)
 endif
 
 #------------------------------------------------------------------------------#
-ALL_CFLAGS := $(ALL_CFLAGS) $(CFLAGS) $(OPT_CFLAGS)
-ALL_LDFLAGS := $(LDFLAGS) $(ALL_LDFLAGS)
-ALL_LIBS := $(LIBS) $(ALL_LIBS)
-
-#------------------------------------------------------------------------------#
 all: $(SOURCES:.c=.$(EXTENSION))
-	@echo "done"
+	@echo "done."
 
-#
-$(SOURCES:.c=.$(EXTENSION)): %.$(EXTENSION): %.o
-	$(CC) $(ALL_LDFLAGS) -o $@  $<  $(ALL_LIBS)
-	chmod a-x $@
-
-# obj
 %.o: %.c
-	$(CC) $(ALL_CFLAGS) -o "$*.o" -c "$*.c"
+	$(CC) $(CFLAGS) -o "$*.o" -c "$*.c"
 
-#------------------------------------------------------------------------------#
-meta:
-	echo "#N canvas 100 100 360 360 10;" > $(META_FILE)
-	echo "#X text 10 10 META this is prototype of a libdir meta file;" >> $(META_FILE)
-	echo "#X text 10 30 NAME" $(LIBRARY_NAME) ";" >> $(META_FILE)
-	echo "#X text 10 50 AUTHOR" $(LIBRARY_AUTHOR) ";" >> $(META_FILE)
-	echo "#X text 10 70 DESCRIPTION" $(LIBRARY_DESCRIPTION) ";" >> $(META_FILE)
-	echo "#X text 10 90 LICENSE" $(LIBRARY_LICENSE) ";" >> $(META_FILE)
-	echo "#X text 10 110 VERSION" $(LIBRARY_VERSION) ";" >> $(META_FILE)
-	@echo "meta done"
+%.$(EXTENSION): %.o
+	$(CC) $(LDFLAGS) -o "$*.$(EXTENSION)" "$*.o"  $(LIBS)
+	chmod a-x "$*.$(EXTENSION)"
 
 #------------------------------------------------------------------------------#
 clean:
 	-rm -f -- $(SOURCES:.c=.o)
 	-rm -f -- $(SOURCES:.c=.$(EXTENSION))
-	@echo "clean done"
+
+#------------------------------------------------------------------------------#
+meta:
+	@echo "#N canvas 100 100 360 360 10;" > $(META_FILE)
+	@echo "#X text 10 10 META this is prototype of a libdir meta file;" >> $(META_FILE)
+	@echo "#X text 10 30 NAME" $(LIBRARY_NAME) ";" >> $(META_FILE)
+	@echo "#X text 10 50 AUTHOR" $(LIBRARY_AUTHOR) ";" >> $(META_FILE)
+	@echo "#X text 10 70 DESCRIPTION" $(LIBRARY_DESCRIPTION) ";" >> $(META_FILE)
+	@echo "#X text 10 90 LICENSE" $(LIBRARY_LICENSE) ";" >> $(META_FILE)
+	@echo "#X text 10 110 VERSION" $(LIBRARY_VERSION) ";" >> $(META_FILE)
+	@echo "meta done"
 
 #------------------------------------------------------------------------------#
 showsetup:
 	@echo "UNAME               : $(UNAME)"
-	@echo "OS                  : $(OS)"
 	@echo "CPU                 : $(CPU)"
+	@echo "OS                  : $(OS)"
 	@echo "EXTENSION           : $(EXTENSION)"
+	@echo "SHARED_EXTENSION    : $(SHARED_EXTENSION)"
 	@echo "PD_PATH             : $(PD_PATH)"
 	@echo "PD_INCLUDE          : $(PD_INCLUDE)"
 	@echo "CFLAGS              : $(CFLAGS)"
-	@echo "OPT_CFLAGS          : $(OPT_CFLAGS)"
-	@echo "ALL_CFLAGS          : $(ALL_CFLAGS)"
 	@echo "LDFLAGS             : $(LDFLAGS)"
-	@echo "ALL_LDFLAGS         : $(ALL_LDFLAGS)"
 	@echo "LIBS                : $(LIBS)"
-	@echo "ALL_LIBS            : $(ALL_LIBS)"
-	@echo "STRIP               : $(STRIP)"
 	@echo "LIBRARY_NAME        : $(LIBRARY_NAME)"
 	@echo "LIBRARY_AUTHOR      : $(LIBRARY_AUTHOR)"
 	@echo "LIBRARY_DESCRIPTION : $(LIBRARY_DESCRIPTION)"
 	@echo "LIBRARY_LICENSE     : $(LIBRARY_LICENSE)"
 	@echo "LIBRARY_VERSION     : $(LIBRARY_VERSION)"
-	@echo "META_FILE           : $(META_FILE)"
-	@echo "SOURCESDIR          : $(SOURCESDIR)"
 	@echo "SOURCES             : $(SOURCES)"
