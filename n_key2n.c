@@ -22,7 +22,7 @@ typedef struct _n_key2n
   int oct;
   int keyadd;
   int voice;
-  int vel;
+  t_float vel;
   int mode;
   int tkr;
   int hold;
@@ -36,7 +36,7 @@ typedef struct _n_key2n
 } t_n_key2n;
 
 //----------------------------------------------------------------------------//
-void n_key2n_noteout(t_n_key2n *x, int voice, int pitch, int gate)
+void n_key2n_noteout(t_n_key2n *x, int voice, t_float pitch, t_float gate)
 {
   t_atom a[3];
   SETFLOAT(a, (t_float)voice);
@@ -98,7 +98,7 @@ void n_key2n_voice(t_n_key2n *x, t_floatarg f)
 //----------------------------------------------------------------------------//
 void n_key2n_vel(t_n_key2n *x, t_floatarg f)
 {
-  AF_CLIP_MINMAX(0, 127, f);
+  AF_CLIP_MINMAX(0.0, 127.0, f);
   x->vel = f;
 }
 
