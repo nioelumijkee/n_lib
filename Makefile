@@ -6,14 +6,13 @@ LIBRARY_NAME = n_lib
 LIBRARY_AUTHOR = "Nioelumijke"
 LIBRARY_DESCRIPTION = "Various Pure Data object"
 LIBRARY_LICENSE = "GPL v3"
-LIBRARY_VERSION = "0.3"
+LIBRARY_VERSION = "0.4"
 META_FILE = $(LIBRARY_NAME)-meta.pd
 SOURCES = \
 n_canvas.c \
 n_scope~.c \
 n_spectr~.c \
 n_life.c \
-n_browser.c \
 n_date.c \
 n_sysgui.c \
 n_cnvinfo.c \
