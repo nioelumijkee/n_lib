@@ -22,7 +22,8 @@ n_random.c \
 n_array.c \
 n_peakdetect.c \
 n_stretch.c \
-n_p2f.c	
+n_p2f.c	\
+n_knob.c
 sources = \
 ./include/*
 datafiles = \

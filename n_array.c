@@ -518,10 +518,10 @@ void n_array_interpolation(t_n_array *x, t_symbol *sym, int ac, t_atom *av)
   if      (strcmp("2p",type_s->s_name) == 0) type = 1;
   else if (strcmp("4p",type_s->s_name) == 0) type = 2;
   else                                       type = 0;
-  if (type == 2 && l[1] < 3)
+  if (l[1] < 3)
     {
-      garray_resize(g[1], 3);
-      l[1] = pd_open_array(s[1], &w[1], &g[1]);
+      post("n_array: interpolation: size < 3");
+      return;
     }
   arr_interpolation(w[0], w[1], l[0], l[1], type);
   garray_redraw(g[1]);
