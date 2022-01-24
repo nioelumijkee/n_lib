@@ -1889,6 +1889,7 @@ void *n_array_new(void)
 //----------------------------------------------------------------------------//
 #define METHOD(F,S) \
 class_addmethod(n_array_class,(t_method)(F),gensym((S)),A_GIMME, 0);
+
 void n_array_setup(void)
 {
    n_array_class = class_new(gensym("n_array"), 

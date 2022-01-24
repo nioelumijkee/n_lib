@@ -1,3 +1,5 @@
+#include "m_pd.h"
+
 //----------------------------------------------------------------------------//
 int pd_open_array(t_symbol *s_arr,  // name
                   t_word **w_arr,   // word

@@ -23,7 +23,8 @@ n_array.c \
 n_peakdetect.c \
 n_stretch.c \
 n_p2f.c	\
-n_knob.c
+n_knob.c \
+n_browser.c
 sources = \
 ./include/*
 datafiles = \
