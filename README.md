@@ -3,14 +3,6 @@ n_lib
 
 Various object for Pure Data.
 
-**n_array~** - operations with arrays
-
-**n_scope~** - simply oscilloscope
-
-**n_spectr~** - simple spectroscope
-
-**n_canvas** - graphical object for drawning geometrical figures
-
 **n_life** - conway's game of life
 
 **n_date** - return date
@@ -38,12 +30,6 @@ Various object for Pure Data.
 **n_r** - receive with select source
 
 **n_random** - get random number
-
-**n_array** - operations with arrays(>100)
-
-**n_stretch** - another one time stretch algorithm
-
-**n_peakdetect** - peak detector
 
 **n_p2f** - convert pitch to frequency(analogy mtof)
 

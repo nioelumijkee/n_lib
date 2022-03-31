@@ -2,7 +2,6 @@
 lib.name = n_lib
 cflags = 
 class.sources = \
-n_canvas.c \
 n_scope~.c \
 n_spectr~.c \
 n_life.c \
@@ -19,12 +18,8 @@ n_clock~.c \
 n_peak~.c \
 n_r.c \
 n_random.c \
-n_array.c \
-n_peakdetect.c \
-n_stretch.c \
 n_p2f.c	\
-n_knob.c \
-n_browser.c
+n_matrix~.c
 sources = \
 ./include/*
 datafiles = \
