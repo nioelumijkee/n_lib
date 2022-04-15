@@ -1,14 +1,14 @@
-#N canvas 421 35 842 575 10;
+#N canvas 321 42 819 558 10;
 #X msg 31 143 grey;
 #X msg 40 160 white;
 #X msg 50 177 pink;
 #X msg 56 195 black;
 #X msg 124 81 wm attributes \$2 -zoomed \$1;
 #X msg 41 347 wm title \$2 \$1;
-#X obj 299 477 bng 15 250 50 0 empty empty hide_menubar 17 7 0 10 -262144
--1 -1;
-#X obj 364 493 bng 15 250 50 0 empty empty show_menubar 17 7 0 10 -262144
--1 -1;
+#X obj 166 493 bng 15 250 50 0 empty empty hide_menubar 17 7 0 10 #fcfcfc
+#000000 #000000;
+#X obj 319 493 bng 15 250 50 0 empty empty show_menubar 17 7 0 10 #fcfcfc
+#000000 #000000;
 #X obj 23 15 loadbang;
 #X msg 41 286 symbol This;
 #X msg 49 306 symbol Title;
@@ -16,8 +16,8 @@
 #X msg 125 59 wm resizable \$2 \$1 \$1;
 #X msg 66 212 orange;
 #X obj 84 396 symbol;
-#X obj 84 378 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
--1;
+#X obj 84 378 bng 15 250 50 0 empty empty empty 17 7 0 10 #fcfcfc #000000
+#000000;
 #X msg 84 453 wm maxsize \$1 \$2 \$3 \, wm minsize \$1 \$2 \$3;
 #X obj 84 434 list append 600;
 #X obj 21 238 pack s s;
@@ -27,7 +27,7 @@
 #X obj 84 415 list append 600;
 #X msg 21 257 \$2.c configure -background \$1;
 #X obj 21 528 n_sysgui;
-#N canvas 763 218 589 500 (subpatch) 0;
+#N canvas 254 154 549 413 (subpatch) 0;
 #X msg 112 280 \$1 configure -menu "";
 #X msg 132 258 set the_mbar [\$1 cget -menu];
 #X msg 338 263 \$1 configure -menu $the_mbar;
@@ -41,17 +41,17 @@
 #X msg 215 152 1;
 #X obj 93 118 t b s s;
 #X obj 311 189 t b s;
-#X obj 10 42 inlet canvas;
 #X obj 93 59 symbol;
 #X obj 311 59 symbol;
 #X obj 244 367 outlet;
-#X connect 0 0 16 0;
-#X connect 1 0 16 0;
-#X connect 2 0 16 0;
+#X obj 189 17 r \$0-to;
+#X connect 0 0 15 0;
+#X connect 1 0 15 0;
+#X connect 2 0 15 0;
 #X connect 3 0 11 0;
 #X connect 4 0 3 1;
-#X connect 5 0 14 0;
-#X connect 6 0 15 0;
+#X connect 5 0 13 0;
+#X connect 6 0 14 0;
 #X connect 7 0 3 1;
 #X connect 8 0 12 0;
 #X connect 9 0 8 1;
@@ -63,12 +63,12 @@
 #X connect 12 0 9 0;
 #X connect 12 0 4 0;
 #X connect 12 1 2 0;
-#X connect 13 0 14 1;
-#X connect 13 0 15 1;
-#X connect 14 0 3 0;
-#X connect 15 0 8 0;
-#X restore 235 511 pd;
-#X f 22;
+#X connect 13 0 3 0;
+#X connect 14 0 8 0;
+#X connect 16 0 13 1;
+#X connect 16 0 14 1;
+#X restore 166 510 pd;
+#X f 26;
 #X obj 23 33 n_cnvinfo;
 #X obj 23 51 route id;
 #X obj 23 88 s \$0-to;
@@ -76,12 +76,11 @@
 #X obj 133 310 r \$0-to;
 #X obj 117 376 r \$0-to;
 #X obj 23 70 symbol;
-#X obj 235 491 r \$0-to;
-#X obj 510 81 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
--1;
+#X obj 510 81 bng 15 250 50 0 empty empty empty 17 7 0 10 #fcfcfc #000000
+#000000;
 #X msg 506 105 \; pd midi-properties;
-#X obj 512 161 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
--1 -1;
+#X obj 512 161 bng 15 250 50 0 empty empty empty 17 7 0 10 #fcfcfc
+#000000 #000000;
 #X msg 512 181 \; pd audio-properties;
 #X msg 371 24 menu_helpbrowser;
 #X obj 371 43 n_sysgui;
@@ -113,17 +112,16 @@
 #X msg 501 382 menu_path_dialog;
 #X obj 501 441 n_sysgui;
 #X msg 501 422 menu_startup_dialog;
-#X obj 678 107 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
--1 -1;
+#X obj 678 107 bng 15 250 50 0 empty empty empty 17 7 0 10 #fcfcfc
+#000000 #000000;
 #X msg 678 127 \; pd help-intro;
-#X obj 238 536 print;
 #X connect 0 0 18 0;
 #X connect 1 0 18 0;
 #X connect 2 0 18 0;
 #X connect 3 0 18 0;
 #X connect 5 0 24 0;
-#X connect 6 0 25 1;
-#X connect 7 0 25 2;
+#X connect 6 0 25 0;
+#X connect 7 0 25 1;
 #X connect 8 0 26 0;
 #X connect 9 0 19 0;
 #X connect 10 0 19 0;
@@ -138,30 +136,28 @@
 #X connect 22 0 17 0;
 #X connect 23 0 24 0;
 #X connect 25 0 24 0;
-#X connect 25 0 70 0;
 #X connect 26 0 27 0;
 #X connect 27 0 32 0;
 #X connect 29 0 18 1;
 #X connect 30 0 19 1;
 #X connect 31 0 14 1;
 #X connect 32 0 28 0;
-#X connect 33 0 25 0;
-#X connect 34 0 35 0;
-#X connect 36 0 37 0;
-#X connect 38 0 39 0;
-#X connect 40 0 41 0;
-#X connect 43 0 42 0;
-#X connect 45 0 44 0;
-#X connect 47 0 46 0;
-#X connect 49 0 48 0;
+#X connect 33 0 34 0;
+#X connect 35 0 36 0;
+#X connect 37 0 38 0;
+#X connect 39 0 40 0;
+#X connect 42 0 41 0;
+#X connect 44 0 43 0;
+#X connect 46 0 45 0;
+#X connect 48 0 47 0;
+#X connect 51 0 49 0;
 #X connect 52 0 50 0;
-#X connect 53 0 51 0;
-#X connect 55 0 54 0;
-#X connect 57 0 56 0;
-#X connect 59 0 58 0;
-#X connect 61 0 60 0;
-#X connect 63 0 62 0;
-#X connect 65 0 64 0;
-#X connect 67 0 66 0;
-#X connect 68 0 69 0;
+#X connect 54 0 53 0;
+#X connect 56 0 55 0;
+#X connect 58 0 57 0;
+#X connect 60 0 59 0;
+#X connect 62 0 61 0;
+#X connect 64 0 63 0;
+#X connect 66 0 65 0;
+#X connect 67 0 68 0;
 #X coords 0 0 1 1 100 100 0;

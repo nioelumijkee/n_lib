@@ -1,19 +1,19 @@
-#N canvas 707 209 450 300 10;
-#X obj 112 34 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
--1;
-#X floatatom 112 120 5 0 0 0 year - -;
-#X floatatom 130 137 5 0 0 0 mount - -;
-#X floatatom 147 154 5 0 0 0 day - -;
-#X floatatom 164 171 5 0 0 0 hour - -;
-#X floatatom 182 188 5 0 0 0 minute - -;
-#X floatatom 200 205 5 0 0 0 second - -;
-#X symbolatom 217 222 10 0 0 0 weekday - -;
-#X symbolatom 235 239 10 0 0 0 mount_short - -;
-#X obj 112 55 n_date;
-#X obj 298 89 print -n;
-#X obj 112 84 unpack f f f f f f s s s;
-#X symbolatom 253 256 10 0 0 0 mount - -;
-#X msg 298 71 \$1.\$2.\$3 \$4:\$5:\$6 \$7;
+#N canvas 707 209 452 379 10;
+#X obj 88 41 bng 15 250 50 0 empty empty empty 17 7 0 10 #fcfcfc #000000
+#000000;
+#X floatatom 88 277 5 0 0 1 year - - 0;
+#X floatatom 105 260 5 0 0 1 mount - - 0;
+#X floatatom 123 243 5 0 0 1 day - - 0;
+#X floatatom 140 226 5 0 0 1 hour - - 0;
+#X floatatom 158 209 5 0 0 1 minute - - 0;
+#X floatatom 176 192 5 0 0 1 second - - 0;
+#X symbolatom 193 175 10 0 0 1 weekday - - 0;
+#X symbolatom 211 158 10 0 0 1 mount_short - - 0;
+#X obj 88 62 n_date;
+#X obj 274 98 print -n;
+#X obj 88 91 unpack f f f f f f s s s;
+#X symbolatom 229 141 10 0 0 1 mount - - 0;
+#X msg 274 80 \$1.\$2.\$3 \$4:\$5:\$6 \$7;
 #X connect 0 0 9 0;
 #X connect 9 0 13 0;
 #X connect 9 0 11 0;

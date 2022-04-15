@@ -1,13 +1,11 @@
-#N canvas 607 97 562 408 10;
-#X floatatom 240 185 5 0 0 0 - - -;
+#N canvas 302 285 562 408 10;
+#X floatatom 240 185 5 0 0 0 - - - 0;
 #X obj 240 206 s aaa;
 #X msg 278 165 symbol Abc;
-#X msg 278 185 symbol Feik;
 #X msg 278 144 list 1 2 3;
-#X msg 356 186 anything mush potato;
-#X obj 117 219 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
--1 -1;
-#X floatatom 128 236 5 0 0 0 - - -;
+#X obj 117 219 bng 15 250 50 0 empty empty empty 17 7 0 10 #fcfcfc
+#000000 #000000;
+#X floatatom 128 236 5 0 0 0 - - - 0;
 #X msg 135 254 symbol this;
 #X msg 146 273 list a b c;
 #X msg 157 294 pointer 1 10 100;
@@ -16,11 +14,10 @@
 #X text 168 235 float;
 #X text 214 253 symbol;
 #X text 223 274 list;
-#X text 266 292 pointer;
 #X text 294 311 anything;
 #X msg 356 166 pointer 1 2 3;
-#X obj 240 167 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
--1 -1;
+#X obj 240 167 bng 15 250 50 0 empty empty empty 17 7 0 10 #fcfcfc
+#000000 #000000;
 #X obj 278 206 s bbb;
 #X obj 23 330 n_r;
 #X obj 23 371 print -n;
@@ -29,28 +26,31 @@
 #X msg 33 40 receive bbb;
 #X text 117 20 set receive "aaa";
 #X text 127 40 set receive "bbb";
-#X obj 69 61 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
--1;
+#X obj 69 61 bng 15 250 50 0 empty empty empty 17 7 0 10 #fcfcfc #000000
+#000000;
 #X obj 69 81 i \$0;
 #X msg 69 102 receive \$1-ccc;
 #X text 169 100 set receive "\$0-ccc";
 #X text 91 345 receive with select.;
+#X msg 278 185 symbol XYZ;
+#X msg 356 186 anything Potato;
+#X text 266 292 pointer(not work);
 #X connect 0 0 1 0;
-#X connect 2 0 20 0;
-#X connect 3 0 20 0;
-#X connect 4 0 20 0;
-#X connect 5 0 23 0;
-#X connect 6 0 21 0;
-#X connect 7 0 21 0;
-#X connect 8 0 21 0;
-#X connect 9 0 21 0;
-#X connect 10 0 21 0;
-#X connect 11 0 21 0;
-#X connect 18 0 23 0;
-#X connect 19 0 1 0;
-#X connect 21 0 22 0;
-#X connect 24 0 21 0;
-#X connect 25 0 21 0;
-#X connect 28 0 29 0;
-#X connect 29 0 30 0;
-#X connect 30 0 21 0;
+#X connect 2 0 17 0;
+#X connect 3 0 17 0;
+#X connect 4 0 18 0;
+#X connect 5 0 18 0;
+#X connect 6 0 18 0;
+#X connect 7 0 18 0;
+#X connect 8 0 18 0;
+#X connect 9 0 18 0;
+#X connect 15 0 20 0;
+#X connect 16 0 1 0;
+#X connect 18 0 19 0;
+#X connect 21 0 18 0;
+#X connect 22 0 18 0;
+#X connect 25 0 26 0;
+#X connect 26 0 27 0;
+#X connect 27 0 18 0;
+#X connect 30 0 17 0;
+#X connect 31 0 20 0;
