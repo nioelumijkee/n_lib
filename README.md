@@ -6,7 +6,6 @@ Various object for Pure Data.
 **n_date** - return date.
 **n_demux~** - demultiplex 1 signal to 1-of-n outlets(analogy 'zexy/demux~').
 **n_env** - get and set environments(analogy 'hcs/setenv').
-**n_life** - conway's game of life.
 **n_matrix~** - audio matrix with many inputs and many outputs.
 **n_mux~** - multiplex 1-of-n signals to 1 outlet(analogy 'zexy/mux~').
 **n_p2f** - convert pitch to frequency(analogy 'mtof').

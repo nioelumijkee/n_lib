@@ -6,7 +6,6 @@ n_cnvinfo.c \
 n_date.c \
 n_demux~.c \
 n_env.c \
-n_life.c \
 n_matrix~.c \
 n_mux~.c \
 n_p2f.c	\
