@@ -13,8 +13,7 @@ n_peak~.c \
 n_print.c \
 n_r.c \
 n_random.c \
-n_sysgui.c \
-n_d~.c
+n_sysgui.c
 sources = \
 ./include/*
 datafiles = \
