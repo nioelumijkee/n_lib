@@ -1,0 +1,116 @@
+#N canvas 580 162 729 550 10;
+#X obj 8 316 i_sa 1;
+#X obj 571 133 a_cpu;
+#X obj 442 270 i_output 2;
+#X obj 513 248 a_pdss;
+#A saved 91 2 2 0 3 1 0 80 64 1 0 200 512 512 1 0 1 1 1 11 11 11 33
+33 33 50 50 50 0 400 5 3 3 1 1 1 1 130 31 19 26 117 18 19 70 220 168
+168 4 1 80 1 50 0 1 -60 0 2 6 5 1 0 0 0 0 0 1 1 1 1 1 1 0 0 0 0 0 0
+0 1 0 1 1 1 1 1 0 0 0 0 0;
+#X obj 8 295 r~ \$0-audio;
+#X obj 434 136 nbx 5 14 0 999999 0 0 empty empty size 8 -8 0 10 #fcfcfc
+#000000 #000000 0 256;
+#X obj 434 172 s \$0-to;
+#X obj 353 146 r \$0-to;
+#X obj 343 123 r~ \$0-audio;
+#N canvas 0 50 450 250 (subpatch) 0;
+#X array \$0-imp 3857 float 2;
+#X coords 0 1 3857 -1 100 60 1 0 0;
+#X restore 192 49 graph;
+#X obj 17 83 openpanel;
+#X obj 17 66 bng 15 250 50 0 empty empty load 17 7 0 10 #fcfcfc #000000
+#000000;
+#X obj 36 166 soundfiler;
+#X obj 9 103 pack s \$0;
+#X obj 9 24 loadbang;
+#X obj 342 166 n_conv~;
+#X obj 9 232 s \$0-to;
+#X obj 9 175 bng 15 250 50 0 empty empty empty 17 7 0 10 #fcfcfc #000000
+#000000;
+#X obj 9 192 i \$0;
+#X obj 342 186 s~ \$0-o;
+#X obj 443 248 r~ \$0-o;
+#X obj 243 294 r~ \$0-o;
+#N canvas 142 147 653 429 sample 0;
+#N canvas 0 50 450 250 (subpatch) 0;
+#X array \$0-a0 305280 float 2;
+#X coords 0 1 305280 -1 100 60 1 0 0;
+#X restore 100 140 graph;
+#X obj 302 133 openpanel;
+#X obj 104 102 bng 12 250 50 0 empty empty load 17 7 0 10 #fcfcfc #000000
+#000000;
+#X obj 294 193 soundfiler;
+#X obj 294 153 pack s \$0;
+#X obj 153 102 bng 12 250 50 0 empty empty play 17 7 0 10 #c6ffc7 #000000
+#000000;
+#X obj 294 74 loadbang;
+#X msg 294 94 symbol ./samples/loop.wav;
+#X obj 154 251 a_playarray \$0-a0 1;
+#X obj 157 271 outlet~;
+#N canvas 0 50 450 250 (subpatch) 0;
+#X array \$0-a1 269338 float 2;
+#X coords 0 250 269338 249 100 60 0;
+#X restore 101 24 graph;
+#X obj 153 122 bng 12 250 50 0 empty empty stop 17 7 0 10 #faff00 #000000
+#000000;
+#X msg 111 212 stop;
+#X msg 294 173 read -resize \$1 \$2-a0;
+#X connect 1 0 4 0;
+#X connect 2 0 1 0;
+#X connect 4 0 13 0;
+#X connect 5 0 8 0;
+#X connect 6 0 7 0;
+#X connect 7 0 4 0;
+#X connect 8 0 9 0;
+#X connect 11 0 12 0;
+#X connect 12 0 8 0;
+#X connect 13 0 3 0;
+#X coords 0 -1 1 1 100 100 2 100 100;
+#X restore 167 160 pd sample;
+#X obj 167 266 s~ \$0-audio;
+#X obj 9 146 t b a;
+#X msg 9 211 open \$1-imp;
+#X msg 9 123 read -resize \$1 \$2-imp;
+#X floatatom 50 189 8 0 0 1 size - - 0;
+#X msg 434 152 size \$1;
+#X text 284 234 arguments: array size;
+#X obj 434 36 hradio 15 1 1 8 empty empty empty 0 -8 0 10 #bbbbbb #000000
+#000000 3;
+#X msg 434 79 2 \$1;
+#X obj 434 102 pow;
+#X msg 600 70 6.25 %;
+#X text 568 71 512;
+#X text 560 97 1024;
+#X msg 596 97 11.375 %;
+#X msg 513 176 info;
+#X obj 513 197 s \$0-to;
+#X obj 434 56 + 6;
+#X msg 9 44 symbol ./samples/short.wav;
+#X msg 659 66 7.875 %;
+#X msg 668 98 11.5 %;
+#X connect 4 0 0 0;
+#X connect 5 0 28 0;
+#X connect 7 0 15 0;
+#X connect 8 0 15 0;
+#X connect 10 0 13 0;
+#X connect 11 0 10 0;
+#X connect 12 0 27 0;
+#X connect 13 0 26 0;
+#X connect 14 0 40 0;
+#X connect 15 0 19 0;
+#X connect 17 0 18 0;
+#X connect 18 0 25 0;
+#X connect 20 0 2 0;
+#X connect 21 0 0 1;
+#X connect 22 0 23 0;
+#X connect 24 0 17 0;
+#X connect 24 1 12 0;
+#X connect 25 0 16 0;
+#X connect 26 0 24 0;
+#X connect 28 0 6 0;
+#X connect 30 0 39 0;
+#X connect 31 0 32 0;
+#X connect 32 0 5 0;
+#X connect 37 0 38 0;
+#X connect 39 0 31 0;
+#X connect 40 0 13 0;
