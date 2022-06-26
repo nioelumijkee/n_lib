@@ -7,8 +7,11 @@
 #include "include/parsearg.h"
 #include "include/pd_open_array.c"
 
-#define MAXSIZE   8192
-#define MAXSIZE_M 1024
+#define MAX_SIZE_IMP    8192
+#define MAX_SIZE_IMP_1  8191
+#define MAX_SIZE_M      1024 // IMP/8
+#define MAX_SIZE_MD     2048 // (IMP/8)*2
+
 
 static t_class *n_conv_class;
 
@@ -18,9 +21,8 @@ typedef struct _n_conv
   int on;
   int bs;
 
-  __m256 z[MAXSIZE_M];
-  __m256 a[MAXSIZE_M];
-  __m256 s[MAXSIZE_M];
+  __m256 z[MAX_SIZE_MD];
+  __m256 a[MAX_SIZE_M];
 
   int size_i;
   int size;
@@ -31,13 +33,14 @@ typedef struct _n_conv
   t_garray *g_a;
   int       l_a;
 
-  int count_z;
+  int count;
 } t_n_conv;
 
 //----------------------------------------------------------------------------//
 void n_conv_postinfo(t_n_conv *x)
 {
-  post("----------------------------");
+  post("--------------------------------");
+  post("size block : %d", x->bs);
   post("array      : %s", x->s_a->s_name);
   post("array size : %d", x->l_a);
   post("size       : %d", x->size);
@@ -47,38 +50,16 @@ void n_conv_postinfo(t_n_conv *x)
 //----------------------------------------------------------------------------//
 void calc_size(t_n_conv *x)
 {
-  // size
-  int i = x->size_i;
-
-  i = (i > MAXSIZE)  ? MAXSIZE  : i;
-  i = (i > x->l_a-1) ? x->l_a-1 : i;
-  i = (i < 8)        ? 8        : i;
-
-  i = i / x->bs;
-  i = i * x->bs;
-
-  x->size   = i;
-  x->size_m = x->size / 8;
-
-  // copy
-  t_float *f_a = (t_float *)x->a;
-  for (i=0; i<x->size; i++) 
+  // len array
+  if (x->l_a < x->bs)
     {
-      f_a[i] = x->w_a[i].w_float;
+      x->on = 0;
+      post("error: n_conv~: bad array or array size: %d", x->l_a);
+      return;
     }
-
-  for (i=0; i<x->size_m; i++)
+  else
     {
-      int j = i*8;
-      post("%f %f %f %f %f %f %f %f",
-	   f_a[j+0],
-	   f_a[j+1],
-	   f_a[j+2],
-	   f_a[j+3],
-	   f_a[j+4],
-	   f_a[j+5],
-	   f_a[j+6],
-	   f_a[j+7]);
+      x->on = 1;
     }
 
   // bs
@@ -87,29 +68,50 @@ void calc_size(t_n_conv *x)
       x->on = 0;
       post("error: n_conv~: bad block size: %d", x->bs);
       post("error: n_conv~: block size must be greatly 8 and div 8 without rest");
+      return;
     }
   else
     {
       x->on = 1;
     }
 
-  // counts
-  x->count_z = x->size - 1;
+
+  // size
+  int i = x->size_i;
+
+  i = (i > MAX_SIZE_IMP)  ? MAX_SIZE_IMP  : i;
+  i = (i > x->l_a-1)      ? x->l_a-1      : i;
+  i = (i < x->bs)         ? x->bs         : i;
+
+  i = i / x->bs;
+  i = i * x->bs;
+
+  x->size   = i;
+  x->size_m = x->size / 8;
+
+  // copy
+  t_float *a = (t_float *)x->a;
+  for (i=0; i<x->size; i++)
+    {
+      a[i] = x->w_a[i].w_float;
+    }
+
+  // clear
+  a = (t_float *)x->z;
+  for (i=0; i<MAX_SIZE_IMP; i++)
+    {
+      a[i] = 0.0;
+    }
+
+  // count
+  x->count = MAX_SIZE_IMP_1;
 }
 
 //----------------------------------------------------------------------------//
 void n_conv_open(t_n_conv *x, t_symbol *s)
 {
-  // array
   x->s_a = s;
   x->l_a = pd_open_array(x->s_a, &x->w_a, &x->g_a);
-  if (x->l_a < 8)
-    {
-      post("error: n_conv~: bad array or array size: %d", x->l_a);
-      post("error: n_conv~: array size must be greatly 8");
-    }
-
-  // size
   calc_size(x);
 }
 
@@ -123,73 +125,64 @@ void n_conv_size(t_n_conv *x, t_floatarg f)
 //----------------------------------------------------------------------------//
 t_int *n_conv_perform(t_int *w)
 {
-  t_n_conv *x = (t_n_conv *)(w[1]);
-  t_float *in = (t_float *)(w[2]);
+  t_n_conv *x  = (t_n_conv *)(w[1]);
+  t_float *in  = (t_float *)(w[2]);
   t_float *out = (t_float *)(w[3]);
 
-  int i,j,k,h,m;
-  float f, sum;  
 
-/* __m256 _mm256_mul_ps (__m256 a, __m256 b) */
-/* __m256 _mm256_add_ps (__m256 a, __m256 b) */
-/* __m256 _mm256_load_ps (float const * mem_addr) */
-/* void _mm256_store_ps (float * mem_addr, __m256 a) */
-
-  if (x->on && x->l_a >= 8)
+  if (x->on)
     {
-      __m256 z;
-      __m256 msum, msum2;
-      float e[8];
+	  int i,j,k;
+	  int count  = x->count;
+	  int size_m = x->size_m;
+	  __m256 sa_m[MAX_SIZE_M];
+	  __m256 z_m;
+	  __m256 s1_m;
+	  __m256 s2_m;
+	  float *a;
 
-      // z mult a 
-      t_float *f_z = (t_float *)x->z;
-      for (i=0; i<x->bs; i++)
-	{
-
-	  // write sample to z
-	  f_z[x->count_z] = (t_float)*(in++);
-
-	  // mult
-	  for (k=0; k<x->size_m; k++)
-	    {
-
-	      h = (k*8);
-
-	      for (j=0; j<8; j++)
+	  
+      // write to z
+      a = (float *)x->z;
+      for (i = 0; i < x->bs; i++)
 		{
-		  m = h + j + x->count_z;
-		  if (m >= x->size)
-		    m -= x->size;
-		  e[j] = f_z[m];
+		  a[count] = a[count+MAX_SIZE_IMP] = (t_float)*(in++);
+		  count--;
 		}
 
-	      z = _mm256_set_ps(e[0], e[1], e[2], e[3],  e[4], e[5], e[6], e[7]);
-
-
-
-
-	      x->s[k] = _mm256_mul_ps(x->a[k], z);
-	    }
-
-	  // sum
-	  /* _m256_setzero_ps */
-	  msum = _mm256_set_ps(0.0, 0.0, 0.0, 0.0,  0.0, 0.0, 0.0, 0.0);
-	  for (k=0; k<x->size_m; k++)
-	    {
-	      msum2 = _mm256_add_ps(msum, x->s[k]);
-	      msum = msum2;
-	    }
-
-	  // to float
-	  _mm256_store_ps(e, msum);
-	  sum = e[0] + e[1] + e[2] + e[3] + e[4] + e[5] + e[6] + e[7];
-	  *(out++) = sum;
-
 	  // count
-	  x->count_z--;
-	  if (x->count_z < 0) 
-	    x->count_z += x->size;
-	}
+      if (count < 0)
+		count = MAX_SIZE_IMP_1;
+      x->count = count;
+      count += x->bs;
+
+      // conv
+      for (i=0; i<x->bs; i++)
+		{
+
+		  // mult
+		  for (j=0; j<size_m; j++)
+			{
+			  z_m = _mm256_load_ps(a + ((count + (j<<3))));
+			  sa_m[j] = _mm256_mul_ps(x->a[j], z_m);
+			}
+
+		  // sum
+		  s1_m = _mm256_setzero_ps();
+		  for (k=0; k<size_m; k++) // why k ?
+			{
+			  s2_m = _mm256_add_ps(s1_m, sa_m[k]);
+			  s1_m = s2_m;
+			}
+
+		  // to float and out
+		  float e[8];
+		  _mm256_store_ps(e, s1_m);
+		  *(out++) = e[0] + e[1] + e[2] + e[3] + e[4] + e[5] + e[6] + e[7];
+
+		  // dec
+		  count--;
+		}
 
     }
 
