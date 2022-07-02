@@ -1,24 +1,35 @@
+/*
+
+  no reapet random number (stupid method)
+
+*/
+
 #include "m_pd.h"
-#include <time.h>
-#include "include/random.h"
+#include "include/parsearg.h"
 
 static t_class *n_random_class;
 typedef struct _n_random
 {
   t_object x_obj;
   unsigned int range;
+  int seed;
   unsigned int z;
 } t_n_random;
 
-unsigned int seed;
+//----------------------------------------------------------------------------//
+inline void rnd(int *seed)
+{
+  *seed *= 1103515245;
+  *seed += 12345;
+}
 
 //----------------------------------------------------------------------------//
 void n_random_bang(t_n_random *x)
 {
   unsigned int i;
-  AF_RANDOM(seed);
-  i = seed % x->range;
-  /* not repeat */
+  rnd(&x->seed);
+  i = x->seed % x->range;
+  // not repeat
   if (i == x->z)
     {
       i += 1;
@@ -31,30 +42,32 @@ void n_random_bang(t_n_random *x)
 //----------------------------------------------------------------------------//
 void n_random_float(t_n_random *x, t_floatarg f)
 {
-  x->range = f;
-  if (x->range == 0) 
-    {    
-      x->range = 1;
-    }
+  x->range = (f <= 1) ? 1 : f;
 }
 
 //----------------------------------------------------------------------------//
-void *n_random_new(t_floatarg f)
+void n_random_seed(t_n_random *x, t_floatarg f)
+{
+  x->seed = f;
+}
+
+//----------------------------------------------------------------------------//
+void *n_random_new(t_symbol *s, int ac, t_atom *av)
 {
   t_n_random *x = (t_n_random *)pd_new(n_random_class);
-  /* unique random seed depended by time for various object in path */
-  time_t lt = time(NULL);
-  unsigned int i = (long)x;
-  seed = i + lt;
-  n_random_float(x, f);
+  IFARG(1, n_random_seed, 0);
+  IFARG(2, n_random_float, 1);
   outlet_new(&x->x_obj, 0);
   return (void *)x;
+  if (s) {};
 }
 
 //----------------------------------------------------------------------------//
 void n_random_setup(void)
 {
-  n_random_class = class_new(gensym("n_random"), (t_newmethod)n_random_new, 0, sizeof(t_n_random), CLASS_DEFAULT, A_DEFFLOAT, 0);
-  class_addbang(n_random_class, (t_method)n_random_bang);
-  class_addfloat(n_random_class, (t_method)n_random_float);
+  n_random_class=class_new(gensym("n_random"),(t_newmethod)n_random_new,0,
+			   sizeof(t_n_random),CLASS_DEFAULT,A_GIMME,0);
+  class_addbang(n_random_class,(t_method)n_random_bang);
+  class_addfloat(n_random_class,(t_method)n_random_float);
+  class_addmethod(n_random_class,(t_method)n_random_seed,gensym("seed"),A_FLOAT,0);
 }
