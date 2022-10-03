@@ -4,9 +4,11 @@ import pd
 class EuklidClass:
     def __init__( self, *creation ):
         pd.verbose(0)
-        self.step = 0
+        self.step = 1
         self.hit = 0
         self.acc = 0
+        self.hit_rotate = 0
+        self.acc_rotate = 0
         self.rhythm = [0 for x in range(32)]
         self.w = 16.0
         self.h = 16.0
@@ -24,7 +26,7 @@ class EuklidClass:
         return
 
     def float(self, f):
-        if   f < 0:  f = 0
+        if   f < 0:          f = 0
         elif f >= self.step: f = self.step-1
         self.play_pos = int(f)
         posx = self.play_pos * self.wr
@@ -69,7 +71,20 @@ class EuklidClass:
         if   x < 0:  x = 0
         elif x > 32: x = 32
         self.acc = x
-        self.make()
+        return
+
+    def set_hit_rotate(self, x):
+        x=int(x)
+        if   x < 0:  x = 0
+        elif x > 32: x = 32
+        self.hit_rotate = x
+        return
+
+    def set_acc_rotate(self, x):
+        x=int(x)
+        if   x < 0:  x = 0
+        elif x > 32: x = 32
+        self.acc_rotate = x
         return
 
     def make(self):
@@ -82,22 +97,22 @@ class EuklidClass:
         # calc euklid
         n = 0
         for i in range(self.step):
-            # hit
-            j = i * c_hit
-            j = j % self.step
-            if j < c_hit:
-                # acc
-                k = n * c_acc
-                k = k % c_hit
-                if k < c_acc:
-                    self.rhythm[i] = 2
+            hi = i * c_hit
+            hi = hi % self.step
+            ph = (i + self.hit_rotate) % self.step
+            if hi < c_hit:
+                ac = n - self.acc_rotate
+                ac = ac * c_acc
+                ac = ac % c_hit
+                if ac < c_acc:
+                    self.rhythm[ph] = 2
                 else:
-                    self.rhythm[i] = 1
+                    self.rhythm[ph] = 1
                 n += 1
             else:
-                self.rhythm[i] = 0
+                self.rhythm[ph] = 0
         
-        #
+        # out
         self.wr = self.w / self.step
         self.px0 = self.wr * 0.25
         self.px1 = self.wr * 0.75

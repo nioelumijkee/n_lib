@@ -1,8 +1,8 @@
-#N canvas 316 141 1024 537 12;
+#N canvas 237 142 1092 537 12;
 #X obj 71 37 nbx 2 14 1 32 0 1 empty empty steps 0 -8 0 10 #fcfcfc
-#000000 #000000 32 256;
+#000000 #000000 16 256;
 #X obj 206 35 nbx 2 14 0 32 0 1 empty empty hits 0 -8 0 10 #fcfcfc
-#000000 #000000 27 256;
+#000000 #000000 9 256;
 #X obj 365 353 n_canvas 8 8 empty empty empty 10 10 11 16579836 65793
 65793 33;
 #X obj 330 33 nbx 2 14 0 32 0 1 empty empty acc 0 -8 0 10 #fcfcfc #000000
@@ -16,7 +16,7 @@
 #X obj 357 92 nbx 3 14 4 512 0 1 empty empty w 0 -8 0 10 #fcfcfc #000000
 #000000 200 256;
 #X obj 396 92 nbx 3 14 4 512 0 1 empty empty h 0 -8 0 10 #fcfcfc #000000
-#000000 10 256;
+#000000 8 256;
 #X obj 396 111 t b f;
 #X msg 355 157 set_size \$1 \$2;
 #X obj 357 135 pack;
@@ -26,17 +26,17 @@
 #000000 0 256;
 #X obj 534 116 t b f;
 #X obj 575 97 nbx 2 14 0 30 0 1 empty empty hit 0 -8 0 10 #fcfcfc #000000
-#000000 11 256;
+#000000 1 256;
 #X obj 575 116 t b f;
 #X obj 616 97 nbx 2 14 0 30 0 1 empty empty acc 0 -8 0 10 #fcfcfc #000000
-#000000 13 256;
+#000000 14 256;
 #X obj 616 116 t b f;
 #X msg 206 53 set_hit \$1 \, make;
 #X msg 330 51 set_acc \$1 \, make;
-#X obj 634 268 i_transport 2;
-#X obj 20 327 i_clk 5;
-#X obj 20 375 i_output 1;
-#X obj 346 481 a_pdss;
+#X obj 723 263 i_transport 2;
+#X obj 802 345 i_clk 5;
+#X obj 802 393 i_output 1;
+#X obj 902 216 a_pdss;
 #A saved 25 3 1 0 3 5 0 5 2 0 6 90 1 0 46 56 10 53 0 0 141 1 0 21 1
 ;
 #X obj 634 489 s \$0-time96;
@@ -53,12 +53,18 @@
 #X obj 495 142 pack f f f f f;
 #X msg 495 166 set_color \$1 \$2 \$3 \$4 \$5;
 #X obj 658 97 nbx 2 14 0 30 0 1 empty empty play 0 -8 0 10 #fcfcfc
-#000000 #000000 17 256;
+#000000 #000000 13 256;
 #X obj 658 116 t b f;
 #X msg 75 190 make;
 #X obj 448 495 s \$0-pos;
 #X obj 14 91 r \$0-pos;
 #X obj 448 466 a_position 6 16 0 0 0 32 10;
+#X obj 71 260 nbx 2 14 0 32 0 1 empty empty hit_rot 0 -8 0 10 #fcfcfc
+#000000 #000000 0 256;
+#X msg 71 278 set_hit_rotate \$1 \, make;
+#X obj 79 360 nbx 2 14 0 32 0 1 empty empty acc_rot 0 -8 0 10 #fcfcfc
+#000000 #000000 2 256;
+#X msg 79 378 set_acc_rotate \$1 \, make;
 #X connect 0 0 7 0;
 #X connect 0 0 42 2;
 #X connect 1 0 21 0;
@@ -102,3 +108,7 @@
 #X connect 41 0 5 0;
 #X connect 42 0 40 0;
 #X connect 42 2 27 0;
+#X connect 43 0 44 0;
+#X connect 44 0 4 0;
+#X connect 45 0 46 0;
+#X connect 46 0 4 0;
