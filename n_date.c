@@ -51,10 +51,10 @@ void n_date_bang(t_n_date *x)
   // day 0 - 365
   SETFLOAT(a+9, (t_float)s_tm->tm_yday);
 
-  // summer time mode (Daylight Saving Time)
+  // isdst
   SETFLOAT(a+10, (t_float)s_tm->tm_isdst);
 
-  // amount system ticks per second
+  // clocks per second
   SETFLOAT(a+11, (t_float)CLOCKS_PER_SEC);
 
   // time(sec)

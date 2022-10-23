@@ -13,8 +13,8 @@ typedef struct _n_p2f
 void n_p2f_float(t_n_p2f *x, t_floatarg f)
 {
   int i;
-  AF_CLIP_MINMAX(-100, 155, f);
-  AF_P2F(f, i, f);
+  CLIP_MINMAX(-100, 155, f);
+  P2F(f, i, f);
   outlet_float(x->x_obj.ob_outlet, f);
 }
 

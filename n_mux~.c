@@ -41,7 +41,7 @@ static void n_mux_dsp(t_n_mux *x, t_signal **sp)
 //----------------------------------------------------------------------------//
 static void n_mux_float(t_n_mux *x, t_float f)
 {
-  AF_CLIP_MINMAX(0, x->n_in - 1, f);
+  CLIP_MINMAX(0, x->n_in - 1, f);
   x->input = f;
 }
 
@@ -50,7 +50,7 @@ static void *n_mux_new(t_floatarg f)
 {
   int i;
   t_n_mux *x = (t_n_mux *)pd_new(n_mux_class);
-  AF_CLIP_MINMAX(1, A_MAX_CH, f);
+  CLIP_MINMAX(1, A_MAX_CH, f);
   x->n_in = f;
   for (i = 1; i < x->n_in; i++)
     {

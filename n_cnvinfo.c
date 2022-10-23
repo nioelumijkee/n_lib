@@ -41,6 +41,12 @@ static void n_cnvinfo_canvas(t_n_cnvinfo *x, t_floatarg f)
   
   OUTLETS("id", buf);
 
+
+
+  // 
+
+
+
   if (canvas)
     {
       OUTLETF("screenx1", canvas->gl_screenx1);

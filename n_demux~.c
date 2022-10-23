@@ -65,7 +65,7 @@ void n_demux_dsp(t_n_demux *x, t_signal **sp)
 //----------------------------------------------------------------------------//
 void n_demux_float(t_n_demux *x, t_float f)
 {
-  AF_CLIP_MINMAX(0, x->in_all - 1, f);
+  CLIP_MINMAX(0, x->in_all - 1, f);
   x->sel = f;
 }
 
@@ -74,7 +74,7 @@ void *n_demux_new(t_floatarg f)
 {
   int i;
   t_n_demux *x = (t_n_demux *)pd_new(n_demux_class);
-  AF_CLIP_MINMAX(1, A_MAX_CH, f);
+  CLIP_MINMAX(1, A_MAX_CH, f);
   x->in_all = f;
   for (i = 0; i < x->in_all; i++)
     outlet_new(&x->x_obj, &s_signal);

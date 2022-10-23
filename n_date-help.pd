@@ -13,8 +13,8 @@
 #X obj 117 90 print -n;
 #X symbolatom 151 286 10 0 0 1 mount - - 0;
 #X floatatom 167 269 12 0 0 1 day(0-365) - - 0;
-#X floatatom 182 252 5 0 0 1 summer_time - - 0;
-#X floatatom 198 235 12 0 0 1 amount_system_ticks_per_second - - 0
+#X floatatom 182 252 5 0 0 1 isdst - - 0;
+#X floatatom 198 235 12 0 0 1 clocks_per_second - - 0
 ;
 #X floatatom 213 218 12 0 0 1 time - - 0;
 #X obj 28 127 unpack f f f f f f s s s f f f f s;

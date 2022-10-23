@@ -150,8 +150,8 @@ static void *n_matrix_new(t_symbol *s, int ac, t_atom *av)
   t_n_matrix *x = (t_n_matrix *)pd_new(n_matrix_class);
   x->all_in  = atom_getfloatarg(0,ac,av);
   x->all_out = atom_getfloatarg(1,ac,av);
-  AF_CLIP_MINMAX(1, MAX_IN, x->all_in);
-  AF_CLIP_MINMAX(1, MAX_OUT, x->all_out);
+  CLIP_MINMAX(1, MAX_IN, x->all_in);
+  CLIP_MINMAX(1, MAX_OUT, x->all_out);
   x->all = x->all_in + x->all_out;
 
   for (i = 1; i < x->all_in; i++)
