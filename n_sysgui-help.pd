@@ -1,4 +1,4 @@
-#N canvas 321 42 819 558 10;
+#N canvas 516 36 816 682 10;
 #X msg 31 143 grey;
 #X msg 40 160 white;
 #X msg 50 177 pink;
@@ -115,6 +115,8 @@
 #X obj 678 107 bng 15 250 50 0 empty empty empty 17 7 0 10 #fcfcfc
 #000000 #000000;
 #X msg 678 127 \; pd help-intro;
+#N canvas 0 16 450 300 op 0;
+#X restore 590 904 pd op;
 #X connect 0 0 18 0;
 #X connect 1 0 18 0;
 #X connect 2 0 18 0;
