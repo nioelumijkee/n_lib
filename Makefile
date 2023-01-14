@@ -6,7 +6,7 @@ LIBRARY_NAME = n_conv~
 LIBRARY_AUTHOR = "Nioelumijke"
 LIBRARY_DESCRIPTION = "convolution"
 LIBRARY_LICENSE = "-_-"
-LIBRARY_VERSION = "0.1"
+LIBRARY_VERSION = "0.2"
 META_FILE = $(LIBRARY_NAME)-meta.pd
 
 SOURCES = n_conv~.c
