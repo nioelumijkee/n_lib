@@ -1,4 +1,3 @@
-//----------------------------------------------------------------------------//
 #include <string.h>
 #include "m_pd.h"
 #include "m_imp.h"
@@ -6,9 +5,13 @@
 #include "g_all_guis.h"
 #include "include/pdfunc.h"
 #include "include/pdcf.h"
-#include "include/clip.h"
 
-//----------------------------------------------------------------------------//
+#define CLIP_MIN(MIN, X) if(X<MIN) X=MIN;
+#define CLIP_MAX(MAX, X) if(X>MAX) X=MAX;
+#define CLIP_MINMAX(MIN, MAX, X)		\
+  if     (X<MIN) X=MIN;				\
+  else if(X>MAX) X=MAX;
+
 #define MAXEL 65536 // 2^16
 #define M_BASE -2
 #define M_LABEL -1
@@ -27,11 +30,9 @@
 #define STEX 12
 #define TX 13
 
-//----------------------------------------------------------------------------//
 t_widgetbehavior n_canvas_widgetbehavior;
 static t_class *n_canvas_class;
 
-//----------------------------------------------------------------------------//
 typedef struct _n_canvas_element
 {
   int type;
@@ -45,7 +46,6 @@ typedef struct _n_canvas_element
   t_symbol *text;
 } t_n_canvas_element;
 
-//----------------------------------------------------------------------------//
 typedef struct _n_canvas
 {
   t_object x_obj;
@@ -561,7 +561,6 @@ void n_canvas_list(t_n_canvas *x, t_symbol *s, int ac, t_atom *av)
   if (s) {} // disabled
 }
 
-//----------------------------------------------------------------------------//
 void n_canvas_draw_new(t_n_canvas *x, t_glist *glist)
 {
   x->xpos = text_xpix(&x->x_obj, glist);
@@ -683,7 +682,6 @@ void n_canvas_draw_new(t_n_canvas *x, t_glist *glist)
     }
 }
 
-//----------------------------------------------------------------------------//
 void n_canvas_draw_move(t_n_canvas *x, t_glist *glist)
 {
   x->xpos = text_xpix(&x->x_obj, glist);
@@ -716,7 +714,6 @@ void n_canvas_draw_move(t_n_canvas *x, t_glist *glist)
     }
 }
 
-//----------------------------------------------------------------------------//
 void n_canvas_draw_erase(t_n_canvas *x, t_glist *glist)
 {
   x->x_canvas = glist_getcanvas(glist);
@@ -731,7 +728,6 @@ void n_canvas_draw_erase(t_n_canvas *x, t_glist *glist)
     }
 }
 
-//----------------------------------------------------------------------------//
 void n_canvas_draw_config(t_n_canvas *x)
 {
   if(glist_isvisible(x->x_glist))
@@ -783,7 +779,6 @@ void n_canvas_mouseout(t_n_canvas *x)
     }
 }
 
-//----------------------------------------------------------------------------//
 void n_canvas_motion(t_n_canvas *x, t_floatarg dx, t_floatarg dy)
 {
   x->m_xp += dx;
@@ -792,7 +787,6 @@ void n_canvas_motion(t_n_canvas *x, t_floatarg dx, t_floatarg dy)
   n_canvas_mouseout(x);
 }
 
-//----------------------------------------------------------------------------//
 void n_canvas_click(t_n_canvas *x, int xpix, int ypix)
 {
   glist_grab(x->x_glist,
@@ -808,7 +802,6 @@ void n_canvas_click(t_n_canvas *x, int xpix, int ypix)
   n_canvas_mouseout(x);
 }
 
-//----------------------------------------------------------------------------//
 int n_canvas_newclick(t_gobj *z, struct _glist *glist, 
 		      int xpix, int ypix, 
 		      int shift, int alt, int dbl, int doit)
@@ -828,7 +821,6 @@ int n_canvas_newclick(t_gobj *z, struct _glist *glist,
   return (1);
 }
 
-//----------------------------------------------------------------------------//
 void n_canvas_getrect(t_gobj *z, t_glist *glist, int *xp1, int *yp1, int *xp2, int *yp2)
 {
   t_n_canvas *x = (t_n_canvas *)z;
@@ -846,7 +838,6 @@ void n_canvas_free(t_n_canvas *x)
   freebytes(x->e, sizeof(struct _n_canvas_element) * x->maxel);
 }
 
-//----------------------------------------------------------------------------//
 void n_canvas_mem(t_n_canvas *x)
 {
   x->e = getbytes(sizeof(struct _n_canvas_element) * x->maxel);
@@ -864,7 +855,6 @@ void n_canvas_size(t_n_canvas *x, t_floatarg w, t_floatarg h)
   n_canvas_draw_config(x);
 }
 
-//----------------------------------------------------------------------------//
 void n_canvas_send(t_n_canvas *x, t_symbol *s)
 {
   if (!(strcmp(s->s_name, "empty")) || s->s_name[0] == '\0')
@@ -881,7 +871,6 @@ void n_canvas_send(t_n_canvas *x, t_symbol *s)
     }
 }
 
-//----------------------------------------------------------------------------//
 void n_canvas_receive(t_n_canvas *x, t_symbol *s)
 {
   // unbind
@@ -904,7 +893,6 @@ void n_canvas_receive(t_n_canvas *x, t_symbol *s)
     pd_bind(&x->x_obj.ob_pd, x->x_rcv_real);
 }
 
-//----------------------------------------------------------------------------//
 void n_canvas_label(t_n_canvas *x, t_symbol *s)
 {
   if (!(strcmp(s->s_name, "empty")) || s->s_name[0] == '\0')
@@ -918,7 +906,6 @@ void n_canvas_label(t_n_canvas *x, t_symbol *s)
   n_canvas_draw_config(x);
 }
 
-//----------------------------------------------------------------------------//
 void n_canvas_label_pos(t_n_canvas *x, t_floatarg ldx, t_floatarg ldy)
 {
   x->x_ldx = ldx;
@@ -926,7 +913,6 @@ void n_canvas_label_pos(t_n_canvas *x, t_floatarg ldx, t_floatarg ldy)
   n_canvas_draw_config(x);
 }
 
-//----------------------------------------------------------------------------//
 void n_canvas_label_font(t_n_canvas *x, t_floatarg fs)
 {
   CLIP_MINMAX(4, 256, fs);
@@ -934,7 +920,6 @@ void n_canvas_label_font(t_n_canvas *x, t_floatarg fs)
   n_canvas_draw_config(x);
 }
 
-//----------------------------------------------------------------------------//
 void n_canvas_color(t_n_canvas *x, t_floatarg bcol, t_floatarg fcol, t_floatarg lcol)
 {
   x->x_bcol = bcol;
@@ -946,7 +931,6 @@ void n_canvas_color(t_n_canvas *x, t_floatarg bcol, t_floatarg fcol, t_floatarg 
   n_canvas_draw_config(x);
 }
 
-//----------------------------------------------------------------------------//
 void n_canvas_maxel(t_n_canvas *x, t_floatarg f)
 {
   // erase
@@ -968,7 +952,6 @@ void n_canvas_maxel(t_n_canvas *x, t_floatarg f)
   n_canvas_mem(x);
 }
 
-//----------------------------------------------------------------------------//
 void n_canvas_getpos(t_n_canvas *x)
 {
   t_atom a[2];
@@ -1043,7 +1026,6 @@ void n_canvas_save(t_gobj *z, t_binbuf *b)
   binbuf_addv(b, ";");
 }
 
-//----------------------------------------------------------------------------//
 void n_canvas_properties(t_gobj *z, t_glist *owner)
 {
   char buf[512];
@@ -1075,7 +1057,6 @@ void n_canvas_properties(t_gobj *z, t_glist *owner)
   if (owner) {} // disabled
 }
 
-//----------------------------------------------------------------------------//
 void n_canvas_dialog(t_n_canvas *x, t_symbol *s, int ac, t_atom *av)
 {
   if (!x)
@@ -1129,7 +1110,6 @@ void n_canvas_displace(t_gobj *z, t_glist *glist, int dx, int dy)
   canvas_fixlinesfor(glist, (t_text *)z);
 }
 
-//----------------------------------------------------------------------------//
 void n_canvas_delete(t_gobj *z, t_glist *glist)
 {
   t_n_canvas *x = (t_n_canvas *)z;
@@ -1137,7 +1117,6 @@ void n_canvas_delete(t_gobj *z, t_glist *glist)
   canvas_deletelinesfor(glist, (t_text *)z);
 }
 
-//----------------------------------------------------------------------------//
 void n_canvas_vis(t_gobj *z, t_glist *glist, int vis)
 {
   t_n_canvas *x = (t_n_canvas *)z;
@@ -1248,7 +1227,6 @@ void *n_canvas_new(t_symbol *s, int ac, t_atom *av)
   if (s) {} // disabled
 }
 
-//----------------------------------------------------------------------------//
 void n_canvas_ff(t_n_canvas *x)
 {
   n_canvas_free(x);
@@ -1260,7 +1238,6 @@ void n_canvas_ff(t_n_canvas *x)
     }
 }
 
-//----------------------------------------------------------------------------//
 void n_canvas_setup(void)
 {
   n_canvas_class=class_new(gensym("n_canvas"),(t_newmethod)n_canvas_new,

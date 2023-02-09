@@ -3,6 +3,8 @@
 Various object for Pure Data.
 
 **n_canvas** - object for draw primitives(lines, rect, ovals and other).
+**n_img** - 
+**n_knob** - 
 **n_cnvinfo** - return canvas info.
 **n_date** - return date.
 **n_demux~** - demultiplex 1 signal to 1-of-n outlets(analogy 'zexy/demux~').

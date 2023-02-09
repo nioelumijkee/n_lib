@@ -1,18 +1,16 @@
-#N canvas 519 170 581 382 10;
-#X obj 22 22 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
--1;
+#N canvas 713 81 581 382 10;
+#X obj 22 22 bng 15 250 50 0 empty empty empty 17 7 0 10 #fcfcfc #000000 #000000;
 #X msg 27 39 bang;
-#X floatatom 33 58 5 0 0 0 - - -;
+#X floatatom 33 58 5 0 0 0 - - - 0;
 #X msg 40 76 24;
 #X msg 47 95 float 3.14;
 #X msg 54 114 2 3 4;
 #X msg 68 152 list abc dfg 34;
 #X msg 89 208 abc;
 #X msg 82 189 symbol a;
-#X symbolatom 75 171 10 0 0 0 - - -;
+#X symbolatom 75 171 10 0 0 0 - - - 0;
 #X msg 61 133 33 abc d efg 123;
-#X obj 134 281 vradio 12 1 1 5 empty empty level 0 -8 0 10 -262144
--1 -1 4;
+#X obj 134 281 vradio 12 1 1 5 empty empty level 0 -8 0 10 #fcfcfc #000000 #000000 3;
 #X text 145 279 _fatal;
 #X text 145 291 _error;
 #X text 145 303 _normal;
@@ -29,16 +27,15 @@
 #X msg 357 178 3 This is debug level;
 #X msg 367 197 4 This is all level;
 #X obj 262 89 t b b b b b;
-#X floatatom 441 275 5 0 0 0 - - -;
+#X floatatom 441 275 5 0 0 0 - - - 0;
 #X text 457 327 Arguments: level;
-#X obj 242 68 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
--1;
+#X obj 242 68 bng 15 250 50 0 empty empty empty 17 7 0 10 #fcfcfc #000000 #000000;
 #X msg 95 227 this is anything;
-#X obj 434 258 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
--1 -1;
+#X obj 434 258 bng 15 250 50 0 empty empty empty 17 7 0 10 #fcfcfc #000000 #000000;
 #X obj 95 344 n_print;
 #X obj 273 315 n_print, f 11;
 #X obj 434 294 n_print 0;
+#X floatatom 485 254 5 0 0 0 - - - 0;
 #X connect 0 0 33 0;
 #X connect 1 0 33 0;
 #X connect 2 0 33 0;
@@ -72,3 +69,4 @@
 #X connect 30 0 27 0;
 #X connect 31 0 33 0;
 #X connect 32 0 35 0;
+#X connect 36 0 35 1;

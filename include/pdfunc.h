@@ -4,7 +4,6 @@
 #include "g_canvas.h"
 #include "g_all_guis.h"
 
-//----------------------------------------------------------------------------//
 t_float mygetfloatarg(int n, int ac, t_atom *av)
 {
   t_symbol *buf;
@@ -19,7 +18,6 @@ t_float mygetfloatarg(int n, int ac, t_atom *av)
     }
 }
 
-//----------------------------------------------------------------------------//
 t_int mygetintarg(int n, int ac, t_atom *av)
 {
   t_symbol *buf;
@@ -34,7 +32,6 @@ t_int mygetintarg(int n, int ac, t_atom *av)
     }
 }
 
-//----------------------------------------------------------------------------//
 t_symbol *mygetsymbolarg(int n, int ac, t_atom *av)
 {
   char buf[20];
@@ -49,7 +46,6 @@ t_symbol *mygetsymbolarg(int n, int ac, t_atom *av)
     }
 }
 
-//----------------------------------------------------------------------------//
 void dollarinstring(char *str)
 {
   int i = 0;
@@ -74,7 +70,6 @@ void dollarinstring(char *str)
     }
 }
 
-//----------------------------------------------------------------------------//
 t_symbol *dollarzero2sym(t_symbol *s, int id)
 {
   char buf[256];
@@ -105,7 +100,6 @@ t_symbol *dollarzero2sym(t_symbol *s, int id)
   return (gensym(buf));
 }
 
-//----------------------------------------------------------------------------//
 int pdcolor30[] =
   {
     16579836, 10526880, 4210752, 16572640, 16572608,
@@ -116,7 +110,6 @@ int pdcolor30[] =
     7874580, 2641940, 17488, 5256, 5767248
   };
 
-//----------------------------------------------------------------------------//
 int pdcolor(int col)
 {
   if (col >= 0)
