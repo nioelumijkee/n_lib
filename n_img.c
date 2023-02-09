@@ -1,4 +1,4 @@
-/* only GIF */
+// only GIF
 #include <string.h>
 #include "m_pd.h"
 #include "m_imp.h"
@@ -37,6 +37,7 @@ typedef struct _n_img
 // Ix - image
 // Fx - frame
 // IMGSRC - image source
+// IMG - image
 int visible(t_n_img *x)
 {
   return(glist_isvisible(x->x_glist) && gobj_shouldvis((t_gobj *)x, x->x_glist));
