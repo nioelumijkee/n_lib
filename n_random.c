@@ -46,8 +46,8 @@ void n_random_seed(t_n_random *x, t_floatarg f)
 void *n_random_new(t_symbol *s, int ac, t_atom *av)
 {
   t_n_random *x = (t_n_random *)pd_new(n_random_class);
-  IFARG(1, n_random_seed, 0);
-  IFARG(2, n_random_float, 1);
+  IFARGF(1, n_random_seed, 0);
+  IFARGF(2, n_random_float, 1);
   outlet_new(&x->x_obj, 0);
   return (void *)x;
   NOUSE(s);

@@ -1,4 +1,4 @@
-#N canvas 463 114 434 504 10;
+#N canvas 805 112 434 504 10;
 #X obj 40 70 n_canvas 200 200 \\\$0-s-main \\\$0-r-main empty 10 10 11 12303291 65793 65793 3;
 #N canvas 442 179 476 374 size 0;
 #X obj 184 179 n_canvas 20 20 empty empty empty 20 20 20 14476540 3952892 3952892 100;
@@ -396,7 +396,7 @@
 #X connect 38 0 29 0;
 #X connect 39 0 29 0;
 #X restore 330 281 pd arcs;
-#N canvas 201 155 957 423 text 0;
+#N canvas 201 155 957 423 text 1;
 #X text 552 68 erase: 0 id;
 #X msg 560 86 0 0;
 #X msg 687 64 8 0 13 14 10 20 Text;
@@ -410,12 +410,12 @@
 #X msg 820 293 13 0 Canvas;
 #X msg 826 311 13 0 Something;
 #X text 627 254 fontsizeh: 11 id v;
-#X text 584 132 color: 10 id color;
+#X text 466 152 color: 10 id color;
 #X obj 49 61 n_canvas 200 200 empty \\\$0-text text 5 -10 11 16579836 65793 65793 1;
 #X obj 560 105 s \$0-text;
 #X obj 687 136 s \$0-text;
 #X obj 364 381 s \$0-text;
-#X obj 700 167 s \$0-text;
+#X obj 515 277 s \$0-text;
 #X obj 671 373 s \$0-text;
 #X obj 814 347 s \$0-text;
 #X msg 702 100 8 0 27 34 20 30 Abc;
@@ -424,10 +424,10 @@
 #X msg 378 327 9 0 50 50;
 #X msg 385 345 9 0 10 90;
 #X msg 392 363 9 0 80 10;
-#X msg 608 159 10 0 22;
-#X msg 622 195 10 0 18;
-#X msg 632 213 10 0 29;
-#X msg 616 177 10 0 25;
+#X msg 490 179 10 0 22;
+#X msg 504 215 10 0 18;
+#X msg 514 233 10 0 29;
+#X msg 498 197 10 0 25;
 #X msg 670 280 11 0 0;
 #X msg 678 298 11 0 6;
 #X msg 684 317 11 0 10;

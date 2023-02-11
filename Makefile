@@ -3,6 +3,7 @@ lib.name = n_lib
 cflags = 
 class.sources = \
 n_canvas.c \
+n_clock~.c \
 n_cnvinfo.c \
 n_date.c \
 n_demux~.c \
@@ -16,6 +17,7 @@ n_peak~.c \
 n_print.c \
 n_r.c \
 n_random.c \
+n_rec1p~.c \
 n_sysgui.c
 sources = \
 ./include/*

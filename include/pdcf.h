@@ -1,6 +1,5 @@
 #include "m_pd.h"
 
-//----------------------------------------------------------------------------//
 inline void pdcf_erase(long x, long c, int id)
 {
   sys_vgui(".x%lx.c delete t%lx%d\n",
@@ -8,7 +7,6 @@ inline void pdcf_erase(long x, long c, int id)
 	   x, id);
 }
 
-//----------------------------------------------------------------------------//
 inline void pdcf_coords_4(long x, long c, int id,
 			  int x0,
 			  int y0,
@@ -24,7 +22,6 @@ inline void pdcf_coords_4(long x, long c, int id,
 	   y1);
 }
 
-//----------------------------------------------------------------------------//
 inline void pdcf_coords_2(long x, long c, int id,
 			  int x0,
 			  int y0)
@@ -36,7 +33,6 @@ inline void pdcf_coords_2(long x, long c, int id,
 	   y0);
 }
 
-//----------------------------------------------------------------------------//
 inline void pdcf_color_line(long x, long c, int id,
 			    int col)
 {
@@ -46,7 +42,6 @@ inline void pdcf_color_line(long x, long c, int id,
 	   col);
 }
 
-//----------------------------------------------------------------------------//
 inline void pdcf_color_1(long x, long c, int id,
 			 int col)
 {
@@ -56,7 +51,6 @@ inline void pdcf_color_1(long x, long c, int id,
 	   col);
 }
 
-//----------------------------------------------------------------------------//
 inline void pdcf_color_2(long x, long c, int id,
 			 int fcol,
 			 int bcol)
@@ -68,7 +62,6 @@ inline void pdcf_color_2(long x, long c, int id,
 	   bcol);
 }
 
-//----------------------------------------------------------------------------//
 inline void pdcf_w(long x, long c, int id,
 		   int w)
 {
@@ -78,7 +71,6 @@ inline void pdcf_w(long x, long c, int id,
 	   w);
 }
 
-//----------------------------------------------------------------------------//
 inline void pdcf_fs(long x, long c, int id,
 		    int fs)
 {
@@ -90,7 +82,6 @@ inline void pdcf_fs(long x, long c, int id,
 	   sys_fontweight);
 }
 
-//----------------------------------------------------------------------------//
 inline void pdcf_stex(long x, long c, int id,
 		      int st,
 		      int ex)
@@ -102,7 +93,6 @@ inline void pdcf_stex(long x, long c, int id,
 	   ex);
 }
 
-//----------------------------------------------------------------------------//
 inline void pdcf_tx(long x, long c, int id,
 		    const char text[])
 {
@@ -112,7 +102,6 @@ inline void pdcf_tx(long x, long c, int id,
 	   text);
 }
 
-//----------------------------------------------------------------------------//
 inline void pdcf_line(long x, long c, int id,
 		      int col,
 		      int w,
@@ -132,7 +121,6 @@ inline void pdcf_line(long x, long c, int id,
 	   x, id);
 }
 
-//----------------------------------------------------------------------------//
 inline void pdcf_rect(long x, long c, int id,
 		      int col,
 		      int w,
@@ -152,7 +140,6 @@ inline void pdcf_rect(long x, long c, int id,
 	   x, id);
 }
 
-//----------------------------------------------------------------------------//
 inline void pdcf_rect_filled(long x, long c, int id,
 			     int fcol,
 			     int bcol,
@@ -174,7 +161,6 @@ inline void pdcf_rect_filled(long x, long c, int id,
 	   x, id);
 }
 
-//----------------------------------------------------------------------------//
 inline void pdcf_oval(long x, long c, int id,
 		      int col,
 		      int w,
@@ -194,7 +180,6 @@ inline void pdcf_oval(long x, long c, int id,
 	   x, id);
 }
 
-//----------------------------------------------------------------------------//
 inline void pdcf_oval_filled(long x, long c, int id,
 			     int fcol,
 			     int bcol,
@@ -216,7 +201,6 @@ inline void pdcf_oval_filled(long x, long c, int id,
 	   x, id);
 }
 
-//----------------------------------------------------------------------------//
 inline void pdcf_arc(long x, long c, int id,
 		     int col,
 		     int w,
@@ -240,7 +224,6 @@ inline void pdcf_arc(long x, long c, int id,
 	   x, id);
 }
 
-//----------------------------------------------------------------------------//
 inline void pdcf_arc_filled(long x, long c, int id,
 			    int fcol,
 			    int bcol,
@@ -266,7 +249,6 @@ inline void pdcf_arc_filled(long x, long c, int id,
 	   x, id);
 }
 
-//----------------------------------------------------------------------------//
 inline void pdcf_text(long x, long c, int id,
 		      int col,
 		      int fs,

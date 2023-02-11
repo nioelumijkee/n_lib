@@ -1,4 +1,4 @@
-#N canvas 811 171 549 464 10;
+#N canvas 744 144 549 464 10;
 #X obj 28 30 bng 15 250 50 0 empty empty empty 17 7 0 10 #fcfcfc #000000 #000000;
 #X floatatom 28 422 5 0 0 1 year - - 0;
 #X floatatom 43 405 5 0 0 1 mount - - 0;
@@ -16,9 +16,10 @@
 #X floatatom 208 218 12 0 0 1 time(float) - - 0;
 #X symbolatom 223 201 12 0 0 1 time(symbol) - - 0;
 #X obj 99 69 print;
-#X floatatom 238 184 12 0 0 1 second_first_16_bit - - 0;
-#X floatatom 253 167 12 0 0 1 second_last_16_bit - - 0;
+#X floatatom 238 184 12 0 0 1 seconds(first_16_bit) - - 0;
+#X floatatom 253 167 12 0 0 1 seconds(last_16_bit) - - 0;
 #X obj 28 127 unpack f f f f f f s s s f f f f s f f;
+#X text 257 69 date.;
 #X connect 0 0 9 0;
 #X connect 9 0 16 0;
 #X connect 9 0 19 0;

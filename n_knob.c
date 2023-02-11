@@ -18,6 +18,7 @@
 static t_class *n_knob_class;
 t_widgetbehavior n_knob_widgetbehavior;
 t_symbol *extdir;
+t_symbol *_s_empty;
 
 typedef struct _n_knob
 {
@@ -74,7 +75,6 @@ typedef struct _n_knob
   t_symbol *rcv_real;
   int rcv_able;
 } t_n_knob;
-
 
 // -------------------------------------------------------------------------- //
 // sys_vgui
@@ -553,15 +553,15 @@ static void n_knob_knobpar(t_n_knob* x,
 
 static void n_knob_snd(t_n_knob* x, t_symbol *s)
 {
-  if (!(strcmp(s->s_name, "empty")))
+  if ((!(strcmp(s->s_name, "empty"))) || (s->s_name[0]=='\0'))
     {
-      x->snd = s;
-      x->snd_real = s;
+      x->snd      = _s_empty;
+      x->snd_real = _s_empty;
       x->snd_able = 0;
     }
   else
     {
-      x->snd = s;
+      x->snd      = s;
       x->snd_real = dollarzero2sym(s, x->dollarzero);
       x->snd_able = 1;
     }
@@ -569,35 +569,29 @@ static void n_knob_snd(t_n_knob* x, t_symbol *s)
 
 static void n_knob_rcv(t_n_knob* x, t_symbol *s)
 {
-  // unbind
   if (x->rcv_able)
+    pd_unbind(&x->x_obj.ob_pd, x->rcv_real);
+  if ((!(strcmp(s->s_name, "empty"))) || (s->s_name[0]=='\0'))
     {
-      pd_unbind(&x->x_obj.ob_pd, x->rcv_real);
-    }
-  if (!(strcmp(s->s_name, "empty")))
-    {
-      x->rcv = s;
-      x->rcv_real = s;
+      x->rcv      = _s_empty;
+      x->rcv_real = _s_empty;
       x->rcv_able = 0;
     }
   else
     {
-      x->rcv = s;
+      x->rcv      = s;
       x->rcv_real = dollarzero2sym(s, x->dollarzero);
       x->rcv_able = 1;
     }
-  // bind
   if (x->rcv_able)
-    {
-      pd_bind(&x->x_obj.ob_pd, x->rcv_real);
-    }
+    pd_bind(&x->x_obj.ob_pd, x->rcv_real);
 }
 
 static void n_knob_lab_set(t_n_knob* x, t_symbol *s)
 {
-  if (!(strcmp(s->s_name, "empty")))
+  if ((!(strcmp(s->s_name, "empty"))) || (s->s_name[0]=='\0'))
     {
-      x->lab = s;
+      x->lab     = _s_empty;
       x->labdisp = 0;
     }
   else
@@ -889,9 +883,9 @@ static void n_knob_set_par(t_n_knob *x, t_int ac, t_atom *av)
       default_state = 0.5;
       resolution    = 256;
       init          = NOINIT;
-      snd           = gensym("empty");
-      rcv           = gensym("empty");
-      lab           = gensym("empty");
+      snd           = _s_empty;
+      rcv           = _s_empty;
+      lab           = _s_empty;
       lab_fs        = 11;
       lab_x         = 0;
       lab_y         = -8;
@@ -1087,11 +1081,11 @@ void n_knob_setup(void)
   class_addmethod(n_knob_class,(t_method)n_knob_knobpar,
 		  gensym("knobpar"),A_FLOAT,A_FLOAT,A_FLOAT,A_FLOAT,A_FLOAT,0);
   class_addmethod(n_knob_class,(t_method)n_knob_snd,
-		  gensym("send"),A_SYMBOL,0);
+		  gensym("send"),A_DEFSYMBOL,0);
   class_addmethod(n_knob_class,(t_method)n_knob_rcv,
-		  gensym("receive"),A_SYMBOL,0);
+		  gensym("receive"),A_DEFSYMBOL,0);
   class_addmethod(n_knob_class,(t_method)n_knob_lab,
-		  gensym("label"),A_SYMBOL,0);
+		  gensym("label"),A_DEFSYMBOL,0);
   class_addmethod(n_knob_class,(t_method)n_knob_labpar,
 		  gensym("labpar"),A_FLOAT,A_FLOAT,A_FLOAT,A_FLOAT,0);
   class_addmethod(n_knob_class,(t_method)n_knob_numpar,
@@ -1125,4 +1119,5 @@ void n_knob_setup(void)
   class_setpropertiesfn(n_knob_class, n_knob_properties);
   sys_vgui("eval [read [open {%s/n_knob.tcl}]]\n",n_knob_class->c_externdir->s_name);
   extdir = n_knob_class->c_externdir;
+  _s_empty = gensym("empty");
 }

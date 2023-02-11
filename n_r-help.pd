@@ -1,4 +1,4 @@
-#N canvas 747 225 562 408 10;
+#N canvas 712 200 562 408 10;
 #X floatatom 271 140 5 0 0 0 - - - 0;
 #X obj 271 161 s aaa;
 #X msg 309 120 symbol Abc;
@@ -24,13 +24,13 @@
 #X obj 39 71 bng 15 250 50 0 empty empty empty 17 7 0 10 #fcfcfc #000000 #000000;
 #X obj 39 88 i \$0;
 #X text 73 86 set receive "\$0-ccc";
-#X text 82 353 receive with select.;
 #X msg 309 140 symbol XYZ;
 #X msg 387 141 anything Potato;
 #X text 182 277 pointer(not work);
 #X msg 23 21 _r aaa;
 #X msg 23 42 _r bbb;
 #X msg 23 110 _r \$1-ccc;
+#X text 82 353 receive with select source.;
 #X connect 0 0 1 0;
 #X connect 2 0 16 0;
 #X connect 3 0 16 0;
@@ -43,9 +43,9 @@
 #X connect 15 0 1 0;
 #X connect 17 0 18 0;
 #X connect 22 0 23 0;
-#X connect 23 0 31 0;
-#X connect 26 0 16 0;
-#X connect 27 0 19 0;
+#X connect 23 0 30 0;
+#X connect 25 0 16 0;
+#X connect 26 0 19 0;
+#X connect 28 0 17 0;
 #X connect 29 0 17 0;
 #X connect 30 0 17 0;
-#X connect 31 0 17 0;
