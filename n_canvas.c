@@ -6,11 +6,11 @@
 #include "include/pdfunc.h"
 #include "include/pdcf.h"
 
-#define CLIP_MIN(MIN, X) if(X<MIN) X=MIN;
-#define CLIP_MAX(MAX, X) if(X>MAX) X=MAX;
-#define CLIP_MINMAX(MIN, MAX, X)		\
-  if     (X<MIN) X=MIN;				\
-  else if(X>MAX) X=MAX;
+#define CLIP_MIN(MIN, X)         (X)=((X)<(MIN))?(MIN):(X);
+#define CLIP_MAX(MAX, X)         (X)=((X)>(MAX))?(MAX):(X);
+#define CLIP_MINMAX(MIN, MAX, X) (X)=((X)<(MIN))?(MIN):((X)>(MAX))?(MAX):(X);
+
+#define NOUSE(X) if(X){};
 
 #define MAXEL 65536 // 2^16
 #define M_BASE -2
@@ -91,7 +91,7 @@ void n_canvas_list(t_n_canvas *x, t_symbol *s, int ac, t_atom *av)
   op = atom_getfloatarg(0, ac, av);
   id = atom_getfloatarg(1, ac, av);
 
-  if (id < 0 && id >= x->maxel)
+  if (id < 0 || id >= x->maxel)
     return;
   
   switch (op)
@@ -109,7 +109,6 @@ void n_canvas_list(t_n_canvas *x, t_symbol *s, int ac, t_atom *av)
 	  x->e[id].type = ERASE;
       }
       break;
-      
     case LINE:
       {
 	// write
@@ -121,14 +120,12 @@ void n_canvas_list(t_n_canvas *x, t_symbol *s, int ac, t_atom *av)
 	x->e[id].y[1] = atom_getfloatarg(7, ac, av);
 	x->e[id].fcol = pdcolor(x->e[id].fcol);
 	CLIP_MIN(1, x->e[id].s);
-	  
 	if (glist_isvisible(x->x_glist))
 	  {
 	    // erase
 	    if (x->e[id].type != ERASE)
 	      pdcf_erase((long)x, (long)x->x_canvas, id);
 	    x->e[id].type = LINE;
-	      
 	    // create
 	    pdcf_line((long)x, (long)x->x_canvas, id,
 		      x->e[id].fcol,
@@ -142,7 +139,6 @@ void n_canvas_list(t_n_canvas *x, t_symbol *s, int ac, t_atom *av)
 	  x->e[id].type = LINE;
       }
       break;
-      
     case RECT:
       {
 	// write
@@ -154,14 +150,12 @@ void n_canvas_list(t_n_canvas *x, t_symbol *s, int ac, t_atom *av)
 	x->e[id].y[1] = atom_getfloatarg(7, ac, av);
 	x->e[id].fcol = pdcolor(x->e[id].fcol);
 	CLIP_MIN(1, x->e[id].s);
-	  
 	if (glist_isvisible(x->x_glist))
 	  {
 	    // erase
 	    if (x->e[id].type != ERASE)
 	      pdcf_erase((long)x, (long)x->x_canvas, id);
 	    x->e[id].type = RECT;
-	      
 	    // create
 	    pdcf_rect((long)x, (long)x->x_canvas, id,
 		      x->e[id].fcol,
@@ -175,7 +169,6 @@ void n_canvas_list(t_n_canvas *x, t_symbol *s, int ac, t_atom *av)
 	  x->e[id].type = RECT;
       }
       break;
-      
     case RECT_F:
       {
 	// write
@@ -189,14 +182,12 @@ void n_canvas_list(t_n_canvas *x, t_symbol *s, int ac, t_atom *av)
 	x->e[id].fcol = pdcolor(x->e[id].fcol);
 	x->e[id].bcol = pdcolor(x->e[id].bcol);
 	CLIP_MIN(1, x->e[id].s);
-	  
 	if (glist_isvisible(x->x_glist))
 	  {
 	    // erase
 	    if (x->e[id].type != ERASE)
 	      pdcf_erase((long)x, (long)x->x_canvas, id);
 	    x->e[id].type = RECT_F;
-	      
 	    // create
 	    pdcf_rect_filled((long)x, (long)x->x_canvas, id,
 			     x->e[id].fcol,
@@ -211,7 +202,6 @@ void n_canvas_list(t_n_canvas *x, t_symbol *s, int ac, t_atom *av)
 	  x->e[id].type = RECT_F;
       }
       break;
-      
     case OVAL:
       {
 	// write
@@ -223,14 +213,12 @@ void n_canvas_list(t_n_canvas *x, t_symbol *s, int ac, t_atom *av)
 	x->e[id].y[1] = atom_getfloatarg(7, ac, av);
 	x->e[id].fcol = pdcolor(x->e[id].fcol);
 	CLIP_MIN(1, x->e[id].s);
-	  
 	if (glist_isvisible(x->x_glist))
 	  {
 	    // erase
 	    if (x->e[id].type != ERASE)
 	      pdcf_erase((long)x, (long)x->x_canvas, id);
 	    x->e[id].type = OVAL;
-	      
 	    // create
 	    pdcf_oval((long)x, (long)x->x_canvas, id,
 		      x->e[id].fcol,
@@ -244,7 +232,6 @@ void n_canvas_list(t_n_canvas *x, t_symbol *s, int ac, t_atom *av)
 	  x->e[id].type = OVAL;
       }
       break;
-      
     case OVAL_F:
       {
 	// write
@@ -258,14 +245,12 @@ void n_canvas_list(t_n_canvas *x, t_symbol *s, int ac, t_atom *av)
 	x->e[id].fcol = pdcolor(x->e[id].fcol);
 	x->e[id].bcol = pdcolor(x->e[id].bcol);
 	CLIP_MIN(1, x->e[id].s);
-	    
 	if (glist_isvisible(x->x_glist))
 	  {
 	    // erase
 	    if (x->e[id].type != ERASE)
 	      pdcf_erase((long)x, (long)x->x_canvas, id);
 	    x->e[id].type = OVAL_F;
-		
 	    // create
 	    pdcf_oval_filled((long)x, (long)x->x_canvas, id,
 			     x->e[id].fcol,
@@ -280,7 +265,6 @@ void n_canvas_list(t_n_canvas *x, t_symbol *s, int ac, t_atom *av)
 	  x->e[id].type = OVAL_F;
       }
       break;
-      
     case ARC:
       {
 	// write
@@ -293,31 +277,28 @@ void n_canvas_list(t_n_canvas *x, t_symbol *s, int ac, t_atom *av)
 	x->e[id].x[1] = atom_getfloatarg(8, ac, av);
 	x->e[id].y[1] = atom_getfloatarg(9, ac, av);
 	x->e[id].fcol = pdcolor(x->e[id].fcol);
-	CLIP_MIN(1, x->e[id].s)
-	    
-	  if (glist_isvisible(x->x_glist))
-	    {
-	      // erase
-	      if (x->e[id].type != ERASE)
-		pdcf_erase((long)x, (long)x->x_canvas, id);
-	      x->e[id].type = ARC;
-		
-	      // create
-	      pdcf_arc((long)x, (long)x->x_canvas, id,
-		       x->e[id].fcol,
-		       x->e[id].s,
-		       x->e[id].st,
-		       x->e[id].ex,
-		       x->xpos + x->e[id].x[0],
-		       x->ypos + x->e[id].y[0],
-		       x->xpos + x->e[id].x[1],
-		       x->ypos + x->e[id].y[1]);
-	    }
-	  else
+	CLIP_MIN(1, x->e[id].s);
+	if (glist_isvisible(x->x_glist))
+	  {
+	    // erase
+	    if (x->e[id].type != ERASE)
+	      pdcf_erase((long)x, (long)x->x_canvas, id);
 	    x->e[id].type = ARC;
+	    // create
+	    pdcf_arc((long)x, (long)x->x_canvas, id,
+		     x->e[id].fcol,
+		     x->e[id].s,
+		     x->e[id].st,
+		     x->e[id].ex,
+		     x->xpos + x->e[id].x[0],
+		     x->ypos + x->e[id].y[0],
+		     x->xpos + x->e[id].x[1],
+		     x->ypos + x->e[id].y[1]);
+	  }
+	else
+	  x->e[id].type = ARC;
       }
       break;
-      
     case ARC_F:
       {
 	// write
@@ -332,32 +313,29 @@ void n_canvas_list(t_n_canvas *x, t_symbol *s, int ac, t_atom *av)
 	x->e[id].y[1] = atom_getfloatarg(10, ac, av);
 	x->e[id].fcol = pdcolor(x->e[id].fcol);
 	x->e[id].bcol = pdcolor(x->e[id].bcol);
-	CLIP_MIN(1, x->e[id].s)
-	    
-	  if (glist_isvisible(x->x_glist))
-	    {
-	      // erase
-	      if (x->e[id].type != ERASE)
-		pdcf_erase((long)x, (long)x->x_canvas, id);
-	      x->e[id].type = ARC_F;
-		
-	      // create
-	      pdcf_arc_filled((long)x, (long)x->x_canvas, id,
-			      x->e[id].fcol,
-			      x->e[id].bcol,
-			      x->e[id].s,
-			      x->e[id].st,
-			      x->e[id].ex,
-			      x->xpos + x->e[id].x[0],
-			      x->ypos + x->e[id].y[0],
-			      x->xpos + x->e[id].x[1],
-			      x->ypos + x->e[id].y[1]);
-	    }
-	  else
+	CLIP_MIN(1, x->e[id].s);
+	if (glist_isvisible(x->x_glist))
+	  {
+	    // erase
+	    if (x->e[id].type != ERASE)
+	      pdcf_erase((long)x, (long)x->x_canvas, id);
 	    x->e[id].type = ARC_F;
+	    // create
+	    pdcf_arc_filled((long)x, (long)x->x_canvas, id,
+			    x->e[id].fcol,
+			    x->e[id].bcol,
+			    x->e[id].s,
+			    x->e[id].st,
+			    x->e[id].ex,
+			    x->xpos + x->e[id].x[0],
+			    x->ypos + x->e[id].y[0],
+			    x->xpos + x->e[id].x[1],
+			    x->ypos + x->e[id].y[1]);
+	  }
+	else
+	  x->e[id].type = ARC_F;
       }
       break;
-      
     case TEXT:
       {
 	// write
@@ -367,28 +345,25 @@ void n_canvas_list(t_n_canvas *x, t_symbol *s, int ac, t_atom *av)
 	x->e[id].y[0] = atom_getfloatarg(5, ac, av);
 	x->e[id].text = (t_symbol *)atom_getsymbolarg(6, ac, av);
 	x->e[id].fcol = pdcolor(x->e[id].fcol);
-	CLIP_MIN(4, x->e[id].s)
-	    
-	  if (glist_isvisible(x->x_glist))
-	    {
-	      // erase
-	      if (x->e[id].type != ERASE)
-		pdcf_erase((long)x, (long)x->x_canvas, id);
-	      x->e[id].type = TEXT;
-		
-	      // create
-	      pdcf_text((long)x, (long)x->x_canvas, id,
-			x->e[id].fcol,
-			x->e[id].s,
-			x->xpos + x->e[id].x[0],
-			x->ypos + x->e[id].y[0],
-			x->e[id].text->s_name);
-	    }
-	  else
+	CLIP_MIN(4, x->e[id].s);
+	if (glist_isvisible(x->x_glist))
+	  {
+	    // erase
+	    if (x->e[id].type != ERASE)
+	      pdcf_erase((long)x, (long)x->x_canvas, id);
 	    x->e[id].type = TEXT;
+	    // create
+	    pdcf_text((long)x, (long)x->x_canvas, id,
+		      x->e[id].fcol,
+		      x->e[id].s,
+		      x->xpos + x->e[id].x[0],
+		      x->ypos + x->e[id].y[0],
+		      x->e[id].text->s_name);
+	  }
+	else
+	  x->e[id].type = TEXT;
       }
       break;
-      
     case MOVE:
       {
 	// coords 2
@@ -397,7 +372,6 @@ void n_canvas_list(t_n_canvas *x, t_symbol *s, int ac, t_atom *av)
 	    // write
 	    x->e[id].x[0] = atom_getfloatarg(2, ac, av);
 	    x->e[id].y[0] = atom_getfloatarg(3, ac, av);
-	      
 	    if (glist_isvisible(x->x_glist))
 	      {
 		// move
@@ -406,7 +380,6 @@ void n_canvas_list(t_n_canvas *x, t_symbol *s, int ac, t_atom *av)
 			      x->ypos + x->e[id].y[0]);
 	      }
 	  }
-	  
 	// coords 4
 	else if (x->e[id].type > ERASE)
 	  {
@@ -415,7 +388,6 @@ void n_canvas_list(t_n_canvas *x, t_symbol *s, int ac, t_atom *av)
 	    x->e[id].y[0] = atom_getfloatarg(3, ac, av);
 	    x->e[id].x[1] = atom_getfloatarg(4, ac, av);
 	    x->e[id].y[1] = atom_getfloatarg(5, ac, av);
-	      
 	    if (glist_isvisible(x->x_glist))
 	      {
 		// move
@@ -428,7 +400,6 @@ void n_canvas_list(t_n_canvas *x, t_symbol *s, int ac, t_atom *av)
 	  }
       }
       break;
-      
     case COLOR:
       {
 	// color line
@@ -438,7 +409,6 @@ void n_canvas_list(t_n_canvas *x, t_symbol *s, int ac, t_atom *av)
 	    // write
 	    x->e[id].fcol = atom_getfloatarg(2, ac, av);
 	    x->e[id].fcol = pdcolor(x->e[id].fcol);
-	      
 	    if (glist_isvisible(x->x_glist))
 	      {
 		// color
@@ -446,7 +416,6 @@ void n_canvas_list(t_n_canvas *x, t_symbol *s, int ac, t_atom *av)
 				x->e[id].fcol);
 	      }
 	  }
-	  
 	// color 1
 	else if (x->e[id].type == RECT ||
 		 x->e[id].type == OVAL ||
@@ -455,7 +424,6 @@ void n_canvas_list(t_n_canvas *x, t_symbol *s, int ac, t_atom *av)
 	    // write
 	    x->e[id].fcol = atom_getfloatarg(2, ac, av);
 	    x->e[id].fcol = pdcolor(x->e[id].fcol);
-	      
 	    if (glist_isvisible(x->x_glist))
 	      {
 		// color
@@ -463,7 +431,6 @@ void n_canvas_list(t_n_canvas *x, t_symbol *s, int ac, t_atom *av)
 			     x->e[id].fcol);
 	      }
 	  }
-	  
 	// color 2
 	else if (x->e[id].type == RECT_F ||
 		 x->e[id].type == OVAL_F ||
@@ -474,7 +441,6 @@ void n_canvas_list(t_n_canvas *x, t_symbol *s, int ac, t_atom *av)
 	    x->e[id].bcol = atom_getfloatarg(3, ac, av);
 	    x->e[id].fcol = pdcolor(x->e[id].fcol);
 	    x->e[id].bcol = pdcolor(x->e[id].bcol);
-	      
 	    if (glist_isvisible(x->x_glist))
 	      {
 		// color
@@ -485,7 +451,6 @@ void n_canvas_list(t_n_canvas *x, t_symbol *s, int ac, t_atom *av)
 	  }
       }
       break;
-      
     case SIZE:
       {
 	// width
@@ -493,33 +458,29 @@ void n_canvas_list(t_n_canvas *x, t_symbol *s, int ac, t_atom *av)
 	  {
 	    // write
 	    x->e[id].s = atom_getfloatarg(2, ac, av);
-	    CLIP_MIN(1, x->e[id].s)
-		
-	      if (glist_isvisible(x->x_glist))
-		{
-		  // w
-		  pdcf_w((long)x, (long)x->x_canvas, id,
-			 x->e[id].s);
-		}
+	    CLIP_MIN(1, x->e[id].s);
+	    if (glist_isvisible(x->x_glist))
+	      {
+		// w
+		pdcf_w((long)x, (long)x->x_canvas, id,
+		       x->e[id].s);
+	      }
 	  }
-	  
 	// fs
 	else if (x->e[id].type == TEXT)
 	  {
 	    // write
 	    x->e[id].s = atom_getfloatarg(2, ac, av);
-	    CLIP_MIN(4, x->e[id].s)
-		
-	      if (glist_isvisible(x->x_glist))
-		{
-		  // fs
-		  pdcf_fs((long)x, (long)x->x_canvas, id,
-			  x->e[id].s);
-		}
+	    CLIP_MIN(4, x->e[id].s);
+	    if (glist_isvisible(x->x_glist))
+	      {
+		// fs
+		pdcf_fs((long)x, (long)x->x_canvas, id,
+			x->e[id].s);
+	      }
 	  }
       }
       break;
-      
     case STEX:
       {
 	// stex
@@ -528,7 +489,6 @@ void n_canvas_list(t_n_canvas *x, t_symbol *s, int ac, t_atom *av)
 	    // write
 	    x->e[id].st = atom_getfloatarg(2, ac, av);
 	    x->e[id].ex = atom_getfloatarg(3, ac, av);
-	      
 	    if (glist_isvisible(x->x_glist))
 	      {
 		// stex
@@ -539,7 +499,6 @@ void n_canvas_list(t_n_canvas *x, t_symbol *s, int ac, t_atom *av)
 	  }
       }
       break;
-      
     case TX:
       {
 	// text
@@ -547,7 +506,6 @@ void n_canvas_list(t_n_canvas *x, t_symbol *s, int ac, t_atom *av)
 	  {
 	    // write
 	    x->e[id].text = (t_symbol *)atom_getsymbolarg(2, ac, av);
-	      
 	    if (glist_isvisible(x->x_glist))
 	      {
 		// text
@@ -558,7 +516,7 @@ void n_canvas_list(t_n_canvas *x, t_symbol *s, int ac, t_atom *av)
       }
       break;
     }
-  if (s) {} // disabled
+  NOUSE(s);
 }
 
 void n_canvas_draw_new(t_n_canvas *x, t_glist *glist)
@@ -566,7 +524,7 @@ void n_canvas_draw_new(t_n_canvas *x, t_glist *glist)
   x->xpos = text_xpix(&x->x_obj, glist);
   x->ypos = text_ypix(&x->x_obj, glist);
   x->x_canvas = glist_getcanvas(glist);
-  
+  // rect
   pdcf_rect_filled((long)x, (long)x->x_canvas, M_BASE,
 		   x->x_fcol,
 		   x->x_bcol,
@@ -575,13 +533,12 @@ void n_canvas_draw_new(t_n_canvas *x, t_glist *glist)
 		   x->ypos,
 		   x->xpos + x->x_w,
 		   x->ypos + x->x_h);
-
   // bind main rect
   sys_vgui(".x%lx.c bind t%lx%d <ButtonRelease> \
            {pdsend [concat %s _br \\;]}\n", 
            x->x_canvas, x, M_BASE, 
            x->x_bindname->s_name);
- 
+  // label
   pdcf_text((long)x, (long)x->x_canvas, M_LABEL,
 	    x->x_lcol,
 	    x->x_fontsize,
@@ -602,7 +559,6 @@ void n_canvas_draw_new(t_n_canvas *x, t_glist *glist)
 		    x->xpos + x->e[id].x[1],
 		    x->ypos + x->e[id].y[1]);
 	  break;
-	  
 	case RECT:
 	  pdcf_rect((long)x, (long)x->x_canvas, id,
 		    x->e[id].fcol,
@@ -612,7 +568,6 @@ void n_canvas_draw_new(t_n_canvas *x, t_glist *glist)
 		    x->xpos + x->e[id].x[1],
 		    x->ypos + x->e[id].y[1]);
 	  break;
-	  
 	case RECT_F:
 	  pdcf_rect_filled((long)x, (long)x->x_canvas, id,
 			   x->e[id].fcol,
@@ -623,7 +578,6 @@ void n_canvas_draw_new(t_n_canvas *x, t_glist *glist)
 			   x->xpos + x->e[id].x[1],
 			   x->ypos + x->e[id].y[1]);
 	  break;
-	  
 	case OVAL:
 	  pdcf_oval((long)x, (long)x->x_canvas, id,
 		    x->e[id].fcol,
@@ -633,7 +587,6 @@ void n_canvas_draw_new(t_n_canvas *x, t_glist *glist)
 		    x->xpos + x->e[id].x[1],
 		    x->ypos + x->e[id].y[1]);
 	  break;
-	  
 	case OVAL_F:
 	  pdcf_oval_filled((long)x, (long)x->x_canvas, id,
 			   x->e[id].fcol,
@@ -644,7 +597,6 @@ void n_canvas_draw_new(t_n_canvas *x, t_glist *glist)
 			   x->xpos + x->e[id].x[1],
 			   x->ypos + x->e[id].y[1]);
 	  break;
-	  
 	case ARC:
 	  pdcf_arc((long)x, (long)x->x_canvas, id,
 		   x->e[id].fcol,
@@ -656,7 +608,6 @@ void n_canvas_draw_new(t_n_canvas *x, t_glist *glist)
 		   x->xpos + x->e[id].x[1],
 		   x->ypos + x->e[id].y[1]);
 	  break;
-	  
 	case ARC_F:
 	  pdcf_arc_filled((long)x, (long)x->x_canvas, id,
 			  x->e[id].fcol,
@@ -669,7 +620,6 @@ void n_canvas_draw_new(t_n_canvas *x, t_glist *glist)
 			  x->xpos + x->e[id].x[1],
 			  x->ypos + x->e[id].y[1]);
 	  break;
-	  
 	case TEXT:
 	  pdcf_text((long)x, (long)x->x_canvas, id,
 		    x->e[id].fcol,
@@ -933,7 +883,7 @@ void n_canvas_color(t_n_canvas *x, t_floatarg bcol, t_floatarg fcol, t_floatarg 
 
 void n_canvas_maxel(t_n_canvas *x, t_floatarg f)
 {
-  // erase
+  // erase/free
   if (glist_isvisible(x->x_glist))
     {
       for (int id = 0; id < x->maxel; id++)
@@ -944,11 +894,10 @@ void n_canvas_maxel(t_n_canvas *x, t_floatarg f)
 	    }
 	}
     }
-  
-  // memory
-  x->maxel = f;
-  CLIP_MINMAX(1, MAXEL, x->maxel);
   n_canvas_free(x);
+  // new
+  CLIP_MINMAX(1, MAXEL, f);
+  x->maxel = f;
   n_canvas_mem(x);
 }
 
@@ -984,7 +933,6 @@ void n_canvas_save(t_gobj *z, t_binbuf *b)
   t_symbol *col[3];
   t_symbol *srl[3];
   char buf[128];
-  
   // color
   sprintf(buf, "%d", x->x_bcol);
   col[0] = gensym(buf);
@@ -992,7 +940,6 @@ void n_canvas_save(t_gobj *z, t_binbuf *b)
   col[1] = gensym(buf);
   sprintf(buf, "%d", x->x_lcol);
   col[2] = gensym(buf);
-  
   // snd rcv lab
   sprintf(buf, "%s", x->x_snd->s_name);
   dollarinstring(buf);
@@ -1003,7 +950,6 @@ void n_canvas_save(t_gobj *z, t_binbuf *b)
   sprintf(buf, "%s", x->x_lab->s_name);
   dollarinstring(buf);
   srl[2] = gensym(buf);
-  
   binbuf_addv(b,
 	      "ssiisiisssiiisssi",
 	      gensym("#X"),
@@ -1030,7 +976,6 @@ void n_canvas_properties(t_gobj *z, t_glist *owner)
 {
   char buf[512];
   t_n_canvas *x = (t_n_canvas *)z;
-  
   // snd rcv lab
   char srl[3][128];
   sprintf(srl[0], "%s", x->x_snd->s_name);
@@ -1039,7 +984,6 @@ void n_canvas_properties(t_gobj *z, t_glist *owner)
   dollarinstring(srl[1]);
   sprintf(srl[2], "%s", x->x_lab->s_name);
   dollarinstring(srl[2]);
-  
   sprintf(buf, "pdtk_n_canvas_dialog %%s %d %d %s %s %s %d %d %d #%06x #%06x #%06x %d\n",
 	  x->x_w,
 	  x->x_h,
@@ -1054,7 +998,7 @@ void n_canvas_properties(t_gobj *z, t_glist *owner)
 	  0xffffff & x->x_lcol,
 	  x->maxel);
   gfxstub_new(&x->x_obj.ob_pd, x, buf);
-  if (owner) {} // disabled
+  NOUSE(owner);
 }
 
 void n_canvas_dialog(t_n_canvas *x, t_symbol *s, int ac, t_atom *av)
@@ -1093,7 +1037,7 @@ void n_canvas_dialog(t_n_canvas *x, t_symbol *s, int ac, t_atom *av)
     {
       n_canvas_maxel(x, maxel);
     }
-  if (s) {} // disabled
+  NOUSE(s);
 }
 
 
@@ -1224,14 +1168,13 @@ void *n_canvas_new(t_symbol *s, int ac, t_atom *av)
   outlet_new(&x->x_obj, 0);
 
   return (x);
-  if (s) {} // disabled
+  NOUSE(s);
 }
 
 void n_canvas_ff(t_n_canvas *x)
 {
   n_canvas_free(x);
   pd_unbind(&x->x_obj.ob_pd, x->x_bindname);
-  // unbind
   if (x->x_rcv_able)
     {
       pd_unbind(&x->x_obj.ob_pd, x->x_rcv_real);
@@ -1240,8 +1183,11 @@ void n_canvas_ff(t_n_canvas *x)
 
 void n_canvas_setup(void)
 {
-  n_canvas_class=class_new(gensym("n_canvas"),(t_newmethod)n_canvas_new,
-			   (t_method)n_canvas_ff,sizeof(t_n_canvas),0,A_GIMME,0);
+  n_canvas_class=class_new(gensym("n_canvas"),
+			   (t_newmethod)n_canvas_new,
+			   (t_method)n_canvas_ff,
+			   sizeof(t_n_canvas),
+			   0,A_GIMME,0);
   class_addlist(n_canvas_class,(t_method)n_canvas_list);
   class_addmethod(n_canvas_class,(t_method)n_canvas_size,
 		  gensym("size"),A_FLOAT,A_FLOAT,0);
