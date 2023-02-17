@@ -1,4 +1,4 @@
-#N canvas 713 81 581 382 10;
+#N canvas 389 175 581 382 10;
 #X obj 22 22 bng 15 250 50 0 empty empty empty 17 7 0 10 #fcfcfc #000000 #000000;
 #X msg 27 39 bang;
 #X floatatom 33 58 5 0 0 0 - - - 0;
@@ -36,6 +36,7 @@
 #X obj 273 315 n_print, f 11;
 #X obj 434 294 n_print 0;
 #X floatatom 485 254 5 0 0 0 - - - 0;
+#X text 150 356 (analogy print);
 #X connect 0 0 33 0;
 #X connect 1 0 33 0;
 #X connect 2 0 33 0;

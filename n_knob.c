@@ -8,12 +8,14 @@
 #include "g_all_guis.h"
 #include "include/pdfunc.h"
 
-#define HOR      0
-#define VER      1
-#define NOINIT   0
-#define INIT     1
-#define NEVERST  -99999999
-#define NOUSE(X) if(X){};
+#define HOR       0
+#define VER       1
+#define NOINIT    0
+#define INIT      1
+#define NEVERST   -99999999
+#define NOUSE(X)  if(X){};
+#define MODE_RECT 0
+#define MODE_PICT 1
 
 static t_class *n_knob_class;
 t_widgetbehavior n_knob_widgetbehavior;
@@ -29,6 +31,9 @@ typedef struct _n_knob
   t_symbol *curdir;
   int sel;
   /* par */
+  int r_w;
+  int r_h;
+  int mode;
   t_symbol *filename;
   int orientation;
   int frames;
@@ -51,6 +56,8 @@ typedef struct _n_knob
   int num_y;
   int lab_col;
   int num_col;
+  int b_col;
+  int f_col;
   t_float state;
   /* image */
   int img_w;
@@ -79,6 +86,7 @@ typedef struct _n_knob
 // -------------------------------------------------------------------------- //
 // sys_vgui
 // -------------------------------------------------------------------------- //
+// Rx - rect
 // Ix - image
 // Fx - frame
 // Lx - label
@@ -90,6 +98,7 @@ int visible(t_n_knob *x)
   return(glist_isvisible(x->x_glist) && gobj_shouldvis((t_gobj *)x, x->x_glist));
 }
 
+// -------------------------------------------------------------------------- //
 void n_knob_bind_image(t_n_knob *x)
 {
   if (x->img_w == -1) return;
@@ -100,7 +109,7 @@ void n_knob_bind_image(t_n_knob *x)
            x->x_bindname->s_name);
 }
 
-static void n_knob_draw_image(t_n_knob *x)
+void n_knob_draw_image(t_n_knob *x)
 {
   if (x->img_w == -1) return;
   int ofs_x0, ofs_y0, ofs_x1, ofs_y1;
@@ -124,7 +133,7 @@ static void n_knob_draw_image(t_n_knob *x)
 	   x);
 }
 
-static void n_knob_config_image(t_n_knob *x)
+void n_knob_config_image(t_n_knob *x)
 {
   if (x->img_w == -1) return;
   int ofs_x0, ofs_y0, ofs_x1, ofs_y1;
@@ -142,7 +151,7 @@ static void n_knob_config_image(t_n_knob *x)
            ofs_y1);
 }
 
-static void n_knob_coords_image(t_n_knob *x)
+void n_knob_coords_image(t_n_knob *x)
 {
   sys_vgui(".x%x.c coords I%x %d %d\n",
            glist_getcanvas(x->x_glist), 
@@ -151,7 +160,7 @@ static void n_knob_coords_image(t_n_knob *x)
            text_ypix(&x->x_obj, x->x_glist) + x->frame_h_2);
 }
 
-static void n_knob_erase_image(t_n_knob *x)
+void n_knob_erase_image(t_n_knob *x)
 {
   if (x->img_w == -1) return;
   sys_vgui(".x%x.c delete I%x\n",
@@ -159,37 +168,126 @@ static void n_knob_erase_image(t_n_knob *x)
            x);
 }
 
-static void n_knob_draw_frame(t_n_knob *x)
+// -------------------------------------------------------------------------- //
+void n_knob_bind_rect(t_n_knob *x)
+{
+  sys_vgui(".x%x.c bind R%x <Double-Button-1> \
+           {pdsend [concat %s _double \\;]}\n", 
+           glist_getcanvas(x->x_glist), 
+           x, 
+           x->x_bindname->s_name);
+}
+
+void n_knob_draw_rect(t_n_knob *x)
 {
   sys_vgui(".x%x.c create rectangle %d %d %d %d \
-           -tags F%x -outline blue\n",
+           -fill #%6.6x -outline #%6.6x -width 1 -tags R%x\n",
            glist_getcanvas(x->x_glist),
-           text_xpix(&x->x_obj, x->x_glist) - 1, 
-           text_ypix(&x->x_obj, x->x_glist) - 1,
-           text_xpix(&x->x_obj, x->x_glist) + x->frame_w, 
-           text_ypix(&x->x_obj, x->x_glist) + x->frame_h,
+           text_xpix(&x->x_obj, x->x_glist), 
+           text_ypix(&x->x_obj, x->x_glist),
+           text_xpix(&x->x_obj, x->x_glist) + x->r_w, 
+           text_ypix(&x->x_obj, x->x_glist) + x->r_h,
+	   x->b_col,
+	   x->f_col,
            x);
 }
 
-static void n_knob_coords_frame(t_n_knob *x)
+void n_knob_config_rect(t_n_knob *x)
 {
-  sys_vgui(".x%x.c coords F%x %d %d %d %d\n",
+  sys_vgui(".x%x.c itemconfigure R%x -fill #%6.6x -outline #%6.6x\n",
            glist_getcanvas(x->x_glist), 
            x,
-           text_xpix(&x->x_obj, x->x_glist) - 1, 
-           text_ypix(&x->x_obj, x->x_glist) - 1,
-           text_xpix(&x->x_obj, x->x_glist) + x->frame_w, 
-           text_ypix(&x->x_obj, x->x_glist) + x->frame_h);
+	   x->b_col,
+	   x->f_col);
 }
 
-static void n_knob_erase_frame(t_n_knob *x)
+void n_knob_coords_rect(t_n_knob *x)
+{
+  sys_vgui(".x%x.c coords R%x %d %d %d %d\n",
+           glist_getcanvas(x->x_glist), 
+           x,
+           text_xpix(&x->x_obj, x->x_glist), 
+           text_ypix(&x->x_obj, x->x_glist),
+           text_xpix(&x->x_obj, x->x_glist) + x->r_w, 
+           text_ypix(&x->x_obj, x->x_glist) + x->r_h);
+}
+
+void n_knob_erase_rect(t_n_knob *x)
+{
+  sys_vgui(".x%x.c delete R%x\n",
+           glist_getcanvas(x->x_glist), 
+           x);
+}
+
+// -------------------------------------------------------------------------- //
+void n_knob_draw_frame(t_n_knob *x)
+{
+  if (x->mode == MODE_PICT)
+    {
+      sys_vgui(".x%x.c create rectangle %d %d %d %d \
+           -tags F%x -outline blue\n",
+	       glist_getcanvas(x->x_glist),
+	       text_xpix(&x->x_obj, x->x_glist) - 1, 
+	       text_ypix(&x->x_obj, x->x_glist) - 1,
+	       text_xpix(&x->x_obj, x->x_glist) + x->frame_w, 
+	       text_ypix(&x->x_obj, x->x_glist) + x->frame_h,
+	       x);
+    }
+  else
+    {
+      sys_vgui(".x%x.c create rectangle %d %d %d %d \
+           -tags F%x -outline blue\n",
+	       glist_getcanvas(x->x_glist),
+	       text_xpix(&x->x_obj, x->x_glist) - 1, 
+	       text_ypix(&x->x_obj, x->x_glist) - 1,
+	       text_xpix(&x->x_obj, x->x_glist) + x->r_w, 
+	       text_ypix(&x->x_obj, x->x_glist) + x->r_h,
+	       x);
+    }
+}
+
+void n_knob_coords_frame(t_n_knob *x)
+{
+  if (x->mode == MODE_PICT)
+    {
+      sys_vgui(".x%x.c coords F%x %d %d %d %d\n",
+	       glist_getcanvas(x->x_glist), 
+	       x,
+	       text_xpix(&x->x_obj, x->x_glist) - 1, 
+	       text_ypix(&x->x_obj, x->x_glist) - 1,
+	       text_xpix(&x->x_obj, x->x_glist) + x->frame_w, 
+	       text_ypix(&x->x_obj, x->x_glist) + x->frame_h);
+    }
+  else
+    {
+      sys_vgui(".x%x.c coords F%x %d %d %d %d\n",
+	       glist_getcanvas(x->x_glist), 
+	       x,
+	       text_xpix(&x->x_obj, x->x_glist) - 1, 
+	       text_ypix(&x->x_obj, x->x_glist) - 1,
+	       text_xpix(&x->x_obj, x->x_glist) + x->r_w, 
+	       text_ypix(&x->x_obj, x->x_glist) + x->r_h);
+    }
+}
+
+void n_knob_erase_frame(t_n_knob *x)
 {
   sys_vgui(".x%x.c delete F%x\n",
            glist_getcanvas(x->x_glist), 
            x);
 }
 
-static void n_knob_draw_label(t_n_knob *x)
+// -------------------------------------------------------------------------- //
+void n_knob_bind_label(t_n_knob *x)
+{
+  sys_vgui(".x%x.c bind L%x <Double-Button-1> \
+           {pdsend [concat %s _double \\;]}\n", 
+           glist_getcanvas(x->x_glist), 
+           x, 
+           x->x_bindname->s_name);
+}
+
+void n_knob_draw_label(t_n_knob *x)
 {
   sys_vgui(".x%x.c create text %d %d -text {%s} \
        -anchor w -font {{%s} -%d %s} -fill #%6.6x -tags L%x\n",
@@ -204,7 +302,7 @@ static void n_knob_draw_label(t_n_knob *x)
            x);
 }
 
-static void n_knob_coords_label(t_n_knob *x)
+void n_knob_coords_label(t_n_knob *x)
 {
   sys_vgui(".x%x.c coords L%x %d %d\n",
            glist_getcanvas(x->x_glist), 
@@ -213,14 +311,24 @@ static void n_knob_coords_label(t_n_knob *x)
            text_ypix(&x->x_obj, x->x_glist) + x->lab_y);
 }
 
-static void n_knob_erase_label(t_n_knob *x)
+void n_knob_erase_label(t_n_knob *x)
 {
   sys_vgui(".x%x.c delete L%x\n",
            glist_getcanvas(x->x_glist), 
            x);
 }
 
-static void n_knob_draw_num(t_n_knob *x)
+// -------------------------------------------------------------------------- //
+void n_knob_bind_num(t_n_knob *x)
+{
+  sys_vgui(".x%x.c bind N%x <Double-Button-1> \
+           {pdsend [concat %s _double \\;]}\n", 
+           glist_getcanvas(x->x_glist), 
+           x, 
+           x->x_bindname->s_name);
+}
+
+void n_knob_draw_num(t_n_knob *x)
 {
   char buf[32];
   if (x->numint)
@@ -241,7 +349,7 @@ static void n_knob_draw_num(t_n_knob *x)
            x);
 }
 
-static void n_knob_config_num(t_n_knob *x)
+void n_knob_config_num(t_n_knob *x)
 {
   char buf[32];
   if (x->numint)
@@ -255,7 +363,7 @@ static void n_knob_config_num(t_n_knob *x)
            buf);
 }
 
-static void n_knob_coords_num(t_n_knob *x)
+void n_knob_coords_num(t_n_knob *x)
 {
   sys_vgui(".x%x.c coords N%x %d %d\n",
            glist_getcanvas(x->x_glist), 
@@ -264,7 +372,7 @@ static void n_knob_coords_num(t_n_knob *x)
            text_ypix(&x->x_obj, x->x_glist) + x->num_y);
 }
 
-static void n_knob_erase_num(t_n_knob *x)
+void n_knob_erase_num(t_n_knob *x)
 {
   sys_vgui(".x%x.c delete N%x\n",
            glist_getcanvas(x->x_glist), 
@@ -274,7 +382,7 @@ static void n_knob_erase_num(t_n_knob *x)
 // -------------------------------------------------------------------------- //
 // widget
 // -------------------------------------------------------------------------- //
-static void n_knob_getrect(t_gobj *z, 
+void n_knob_getrect(t_gobj *z, 
                            t_glist *glist,
                            int *xp1, 
                            int *yp1, 
@@ -284,11 +392,19 @@ static void n_knob_getrect(t_gobj *z,
   t_n_knob* x = (t_n_knob*)z;
   *xp1 = text_xpix(&x->x_obj, glist);
   *yp1 = text_ypix(&x->x_obj, glist);
-  *xp2 = text_xpix(&x->x_obj, glist) + x->frame_w;
-  *yp2 = text_ypix(&x->x_obj, glist) + x->frame_h;
+  if (x->mode == MODE_PICT)
+    {
+      *xp2 = text_xpix(&x->x_obj, glist) + x->frame_w;
+      *yp2 = text_ypix(&x->x_obj, glist) + x->frame_h;
+    }
+  else
+    {
+      *xp2 = text_xpix(&x->x_obj, glist) + x->r_w;
+      *yp2 = text_ypix(&x->x_obj, glist) + x->r_h;
+    }
 }
 
-static void n_knob_displace(t_gobj *z, 
+void n_knob_displace(t_gobj *z, 
                             t_glist *glist, 
                             int dx, 
                             int dy)
@@ -296,14 +412,15 @@ static void n_knob_displace(t_gobj *z,
   t_n_knob *x = (t_n_knob *)z;
   x->x_obj.te_xpix += dx;
   x->x_obj.te_ypix += dy;
-  n_knob_coords_image(x);
-  if (x->sel)      n_knob_coords_frame(x);
-  if (x->labdisp)  n_knob_coords_label(x);
-  if (x->num_vis)  n_knob_coords_num(x);
+  if (x->mode == MODE_PICT) n_knob_coords_image(x);
+  else                      n_knob_coords_rect(x);
+  if (x->sel)               n_knob_coords_frame(x);
+  if (x->labdisp)           n_knob_coords_label(x);
+  if (x->num_vis)           n_knob_coords_num(x);
   canvas_fixlinesfor(glist,(t_text*) x);
 }
 
-static void n_knob_select(t_gobj *z, t_glist *glist, int state)
+void n_knob_select(t_gobj *z, t_glist *glist, int state)
 {
   t_n_knob *x = (t_n_knob *)z;
   x->x_glist = glist;
@@ -319,27 +436,51 @@ static void n_knob_select(t_gobj *z, t_glist *glist, int state)
     }
 }
 
-static void n_knob_delete(t_gobj *z, t_glist *glist)
+void n_knob_delete(t_gobj *z, t_glist *glist)
 {
   t_text *x = (t_text *)z;
   canvas_deletelinesfor(glist, x);
 }
        
-static void n_knob_vis(t_gobj *z, t_glist *glist, int vis)
+void n_knob_vis(t_gobj *z, t_glist *glist, int vis)
 {
   t_n_knob* x = (t_n_knob*)z;
   x->x_glist = glist;
   if (vis)
     {
-      n_knob_draw_image(x);
-      n_knob_bind_image(x);
-      if (x->sel)       n_knob_draw_frame(x);
-      if (x->labdisp)   n_knob_draw_label(x);
-      if (x->num_vis)   n_knob_draw_num(x);
+      if (x->mode == MODE_PICT)
+	{
+	  n_knob_draw_image(x);
+	  n_knob_bind_image(x);
+	}
+      else
+	{
+	  n_knob_draw_rect(x);
+	  n_knob_bind_rect(x);
+	}
+      if (x->sel)
+	n_knob_draw_frame(x);
+      if (x->labdisp)
+	{
+	  n_knob_draw_label(x);
+	  n_knob_bind_label(x);
+	}
+      if (x->num_vis)
+	{
+	  n_knob_draw_num(x);
+	  n_knob_bind_num(x);
+	}
     }
   else
     {
-      n_knob_erase_image(x);
+      if (x->mode == MODE_PICT)
+	{
+	  n_knob_erase_image(x);
+	}
+      else
+	{
+	  n_knob_erase_rect(x);
+	}
       if (x->sel)       n_knob_erase_frame(x);
       if (x->labdisp)   n_knob_erase_label(x);
       if (x->num_vis)   n_knob_erase_num(x);
@@ -349,7 +490,7 @@ static void n_knob_vis(t_gobj *z, t_glist *glist, int vis)
 // -------------------------------------------------------------------------- //
 // various
 // -------------------------------------------------------------------------- //
-static void n_knob_out(t_n_knob *x)
+void n_knob_out(t_n_knob *x)
 {
   outlet_float(x->x_obj.ob_outlet, x->state);
   if (x->snd_able && x->snd_real->s_thing)
@@ -377,13 +518,13 @@ t_float quantize(t_float state, t_float step)
   return (state);
 }
 
-static void n_knob_calc_state_from_count(t_n_knob *x)
+void n_knob_calc_state_from_count(t_n_knob *x)
 {
   t_float f = ((x->count / x->resolution) * x->diff) + x->min;
   x->state = quantize(f, x->step);
 }
 
-static void n_knob_calc_state_from_float(t_n_knob *x, t_float f)
+void n_knob_calc_state_from_float(t_n_knob *x, t_float f)
 {
   if (x->minmaxdir)
     x->state = (f>x->min)?x->min:(f<x->max)?x->max:f;
@@ -392,7 +533,7 @@ static void n_knob_calc_state_from_float(t_n_knob *x, t_float f)
   x->state = quantize(x->state, x->step);
 }
 
-static void n_knob_calc_count_from_state(t_n_knob *x)
+void n_knob_calc_count_from_state(t_n_knob *x)
 {
   t_float f = x->state - x->min;
   f = f / x->diff; 
@@ -401,7 +542,7 @@ static void n_knob_calc_count_from_state(t_n_knob *x)
 }
 
 // motion
-static void n_knob_motion(t_n_knob *x, t_float dx, t_float dy)
+void n_knob_motion(t_n_knob *x, t_float dx, t_float dy)
 {
   if (x->orientation == VER)
     {
@@ -421,10 +562,17 @@ static void n_knob_motion(t_n_knob *x, t_float dx, t_float dy)
       x->framepos = ((x->state - x->min) / x->diff) * (x->frames - 1.0);
       if(visible(x))
         {
-          if (x->framepos != x->framepos_old)
-	    n_knob_config_image(x);
+	  if (x->mode == MODE_PICT)
+	    {
+	      if (x->framepos != x->framepos_old)
+		{
+		  n_knob_config_image(x);
+		}
+	    }
           if (x->num_vis)
-	    n_knob_config_num(x);
+	    {
+	      n_knob_config_num(x);
+	    }
         }
       x->framepos_old = x->framepos;
       x->state_old = x->state;
@@ -432,7 +580,7 @@ static void n_knob_motion(t_n_knob *x, t_float dx, t_float dy)
     }
 }
 
-static int n_knob_newclick(t_gobj *z, 
+int n_knob_newclick(t_gobj *z, 
                            t_glist *glist, 
                            int xpix, 
                            int ypix, 
@@ -458,17 +606,85 @@ static int n_knob_newclick(t_gobj *z,
 }
 
 // -------------------------------------------------------------------------- //
+// for all
+void n_knob_redraw(t_n_knob* x)
+{
+  if(visible(x))
+    {
+      // image or rect
+      n_knob_erase_image(x);
+      n_knob_erase_rect(x);
+      if (x->mode == MODE_PICT)
+	{
+	  n_knob_draw_image(x);
+	  n_knob_bind_image(x);
+	}
+      else
+	{
+	  n_knob_draw_rect(x);
+	  n_knob_bind_rect(x);
+	}
+      // frame
+      n_knob_erase_frame(x);
+      if (x->sel)
+        {
+          n_knob_draw_frame(x);
+        }
+      // label
+      n_knob_erase_label(x);
+      if (x->labdisp)
+	{
+	  n_knob_draw_label(x);
+	  n_knob_bind_label(x);
+	}
+      // num
+      n_knob_erase_num(x);
+      if (x->num_vis)
+	{
+	  n_knob_draw_num(x);
+	  n_knob_bind_num(x);
+	}
+    }
+}
+
+// -------------------------------------------------------------------------- //
 // methods
 // -------------------------------------------------------------------------- //
-static void n_knob_image(t_n_knob *x, 
-			 t_symbol *fn,
-			 t_floatarg orientation,
-			 t_floatarg frames)
+void n_knob_rsize_set(t_n_knob* x, t_floatarg w, t_floatarg h)
+{
+  x->r_w = (w<4)?4:w;
+  x->r_h = (h<4)?4:h;
+}
+
+void n_knob_rsize(t_n_knob* x, t_floatarg w, t_floatarg h)
+{
+  n_knob_rsize_set(x, w, h);
+  n_knob_redraw(x);
+}
+
+void n_knob_mode_set(t_n_knob* x, t_floatarg f)
+{
+  x->mode = (f > 0);
+}
+
+void n_knob_mode(t_n_knob* x, t_floatarg f)
+{
+  n_knob_mode_set(x, f);
+  n_knob_redraw(x);
+}
+
+void n_knob_orientation(t_n_knob* x, t_floatarg f)
+{
+  x->orientation = (f > 0);
+}
+
+void n_knob_image(t_n_knob *x, 
+		  t_symbol *fn,
+		  t_floatarg frames)
 {
   x->img_w = -1;
   x->img_h = -1;
   x->filename = fn;
-  x->orientation = orientation;
   x->frames = (frames<1)?1:frames;
   sys_vgui("image create photo IMG%x\n",x);
   sys_vgui("if { [file exists {%s/%s}] == 1 } {			 \
@@ -487,7 +703,7 @@ static void n_knob_image(t_n_knob *x,
            x->x_bindname->s_name);
 }
 
-static void n_knob_knobpar_set(t_n_knob* x, 
+void n_knob_knobpar_set(t_n_knob* x, 
 			       t_floatarg min, 
 			       t_floatarg max,
 			       t_floatarg step,
@@ -497,7 +713,6 @@ static void n_knob_knobpar_set(t_n_knob* x,
   int i;
   t_float f;
   t_float maxstep;
-
   x->min = min;
   x->max = max;
   if (x->min > x->max) x->minmaxdir = 1;
@@ -509,28 +724,24 @@ static void n_knob_knobpar_set(t_n_knob* x,
   if (maxstep < 0) maxstep = 0 - maxstep;
   if      (step < 0)       step = 0;
   else if (step > maxstep) step = maxstep;
-
   // int or float
   i = step;
   f = step - i;
   if (f == 0 && step > 0) x->numint = 1;
   else                    x->numint = 0;
-
   if (x->minmaxdir)
     x->default_state =
       (default_state>x->min)?x->min:(default_state<x->max)?x->max:default_state;
   else
     x->default_state =
       (default_state>x->max)?x->max:(default_state<x->min)?x->min:default_state;
-
   x->step = step;
   x->resolution = resolution;
-
   n_knob_calc_state_from_float(x, x->state);
   n_knob_calc_count_from_state(x);
 }
 
-static void n_knob_knobpar(t_n_knob* x, 
+void n_knob_knobpar(t_n_knob* x, 
 			   t_floatarg min, 
 			   t_floatarg max,
 			   t_floatarg step,
@@ -538,20 +749,10 @@ static void n_knob_knobpar(t_n_knob* x,
 			   t_floatarg resolution)
 {
   n_knob_knobpar_set(x, min, max, step, default_state, resolution);
-  if(visible(x))
-    {
-      n_knob_erase_image(x);
-      n_knob_draw_image(x);
-      n_knob_bind_image(x);
-      if (x->num_vis)
-	{
-	  n_knob_erase_num(x);
-	  n_knob_draw_num(x);
-	}
-    }
+  n_knob_redraw(x);
 }
 
-static void n_knob_snd(t_n_knob* x, t_symbol *s)
+void n_knob_snd(t_n_knob* x, t_symbol *s)
 {
   if ((!(strcmp(s->s_name, "empty"))) || (s->s_name[0]=='\0'))
     {
@@ -567,7 +768,7 @@ static void n_knob_snd(t_n_knob* x, t_symbol *s)
     }
 }
 
-static void n_knob_rcv(t_n_knob* x, t_symbol *s)
+void n_knob_rcv(t_n_knob* x, t_symbol *s)
 {
   if (x->rcv_able)
     pd_unbind(&x->x_obj.ob_pd, x->rcv_real);
@@ -587,7 +788,7 @@ static void n_knob_rcv(t_n_knob* x, t_symbol *s)
     pd_bind(&x->x_obj.ob_pd, x->rcv_real);
 }
 
-static void n_knob_lab_set(t_n_knob* x, t_symbol *s)
+void n_knob_lab_set(t_n_knob* x, t_symbol *s)
 {
   if ((!(strcmp(s->s_name, "empty"))) || (s->s_name[0]=='\0'))
     {
@@ -601,24 +802,13 @@ static void n_knob_lab_set(t_n_knob* x, t_symbol *s)
     }
 }
 
-static void n_knob_lab(t_n_knob* x, t_symbol *s)
+void n_knob_lab(t_n_knob* x, t_symbol *s)
 {
   n_knob_lab_set(x, s);
-  if(visible(x))
-    {
-      if (x->labdisp == 0)
-	{
-	  n_knob_erase_label(x);
-	}
-      else
-	{
-	  n_knob_erase_label(x);
-	  n_knob_draw_label(x);
-	}
-    }
+  n_knob_redraw(x);
 }
 
-static void n_knob_labpar_set(t_n_knob* x, 
+void n_knob_labpar_set(t_n_knob* x, 
 			      t_floatarg lab_fs, 
 			      t_floatarg lab_x,
 			      t_floatarg lab_y,
@@ -630,7 +820,7 @@ static void n_knob_labpar_set(t_n_knob* x,
   x->lab_col = lab_col;
 }
 
-static void n_knob_labpar(t_n_knob* x, 
+void n_knob_labpar(t_n_knob* x, 
 			  t_floatarg lab_fs, 
 			  t_floatarg lab_x,
 			  t_floatarg lab_y,
@@ -638,31 +828,24 @@ static void n_knob_labpar(t_n_knob* x,
 {
   lab_col = pdcolor(lab_col);
   n_knob_labpar_set(x, lab_fs, lab_x, lab_y, lab_col);
-  if(visible(x))
-    {
-      if (x->labdisp)
-	{
-	  n_knob_erase_label(x);
-	  n_knob_draw_label(x);
-	}
-    }
+  n_knob_redraw(x);
 }
 
-static void n_knob_numpar_set(t_n_knob* x, 
+void n_knob_numpar_set(t_n_knob* x, 
 			      t_floatarg num_w, 
 			      t_floatarg num_fs, 
 			      t_floatarg num_x,
 			      t_floatarg num_y,
 			      t_floatarg num_col)
 {
-  x->num_w = (num_w>32)?32:(num_w<1)?1:num_w;
+  x->num_w = (num_w>12)?12:(num_w<1)?1:num_w;
   x->num_fs = (num_fs>256)?256:(num_fs<4)?4:num_fs;
   x->num_x = num_x;
   x->num_y = num_y;
   x->num_col = num_col;
 }
 
-static void n_knob_numpar(t_n_knob* x, 
+void n_knob_numpar(t_n_knob* x, 
 			  t_floatarg num_w, 
 			  t_floatarg num_fs, 
 			  t_floatarg num_x,
@@ -671,79 +854,93 @@ static void n_knob_numpar(t_n_knob* x,
 {
   num_col = pdcolor(num_col);
   n_knob_numpar_set(x, num_w, num_fs, num_x, num_y, num_col);
-  if(visible(x))
-    {
-      if (x->num_vis)
-	{
-	  n_knob_erase_num(x);
-	  n_knob_draw_num(x);
-	}
-    }
+  n_knob_redraw(x);
 }
 
-static void n_knob_numvis_set(t_n_knob* x, t_floatarg f)
+void n_knob_numvis_set(t_n_knob* x, t_floatarg f)
 {
   x->num_vis = (f > 0);
 }
 
-static void n_knob_numvis(t_n_knob* x, t_floatarg f)
+void n_knob_numvis(t_n_knob* x, t_floatarg f)
 {
   n_knob_numvis_set(x, f);
-  if(visible(x))
-    {
-      if (x->num_vis)
-	{
-	  n_knob_erase_num(x);
-	  n_knob_draw_num(x);
-	}
-      else
-	{
-	  n_knob_erase_num(x);
-	}
-    }
+  n_knob_redraw(x);
 }
 
-static void n_knob_set(t_n_knob* x, t_floatarg f)
+void n_knob_rcolor_set(t_n_knob* x, 
+			      t_floatarg b_col,
+			      t_floatarg f_col)
+{
+  x->b_col = b_col;
+  x->f_col = f_col;
+}
+
+void n_knob_rcolor(t_n_knob* x, 
+			  t_floatarg b_col,
+			  t_floatarg f_col)
+{
+  b_col = pdcolor(b_col);
+  f_col = pdcolor(f_col);
+  n_knob_rcolor_set(x, b_col, f_col);
+  n_knob_redraw(x);
+}
+
+void n_knob_set(t_n_knob* x, t_floatarg f)
 {
   n_knob_calc_state_from_float(x, f);
   n_knob_calc_count_from_state(x);
   if(visible(x))
     {
-      if (x->framepos != x->framepos_old)
-	n_knob_config_image(x);
+      if (x->mode == MODE_PICT)
+	{
+	  if (x->framepos != x->framepos_old)
+	    {
+	      n_knob_config_image(x);
+	    }
+	}
       if (x->num_vis)
-	n_knob_config_num(x);
+	{
+	  n_knob_config_num(x);
+	}
     }
   x->framepos_old = x->framepos;
 }
 
-static void n_knob_init(t_n_knob* x, t_floatarg f)
+void n_knob_init(t_n_knob* x, t_floatarg f)
 {
   if (f > 0)  x->init = INIT;
   else        x->init = NOINIT;
 }
 
-static void n_knob_bang(t_n_knob* x)
+void n_knob_bang(t_n_knob* x)
 {
   n_knob_out(x);
 }
 
-static void n_knob_float(t_n_knob* x, t_float f)
+void n_knob_float(t_n_knob* x, t_float f)
 {
   n_knob_calc_state_from_float(x, f);
   n_knob_calc_count_from_state(x);
   if(visible(x))
     {
-      if (x->framepos != x->framepos_old)
-	n_knob_config_image(x);
+      if (x->mode == MODE_PICT)
+	{
+	  if (x->framepos != x->framepos_old)
+	    {
+	      n_knob_config_image(x);
+	    }
+	}
       if (x->num_vis)
-	n_knob_config_num(x);
+	{
+	  n_knob_config_num(x);
+	}
     }
   x->framepos_old = x->framepos;
   n_knob_out(x);
 }
 
-static void n_knob_default(t_n_knob* x)
+void n_knob_default(t_n_knob* x)
 {
   n_knob_float(x, x->default_state);
 }
@@ -751,7 +948,7 @@ static void n_knob_default(t_n_knob* x)
 // -------------------------------------------------------------------------- //
 // callback
 // -------------------------------------------------------------------------- //
-static void n_knob_loadbang(t_n_knob *x, t_floatarg action)
+void n_knob_loadbang(t_n_knob *x, t_floatarg action)
 {
   if(action == LB_LOAD && x->init)
     {
@@ -759,7 +956,7 @@ static void n_knob_loadbang(t_n_knob *x, t_floatarg action)
     }
 }
 
-static void n_knob_size_callback(t_n_knob *x, t_float w, t_float h)
+void n_knob_size_callback(t_n_knob *x, t_float w, t_float h)
 {
   if (w == -1)
     {
@@ -774,20 +971,10 @@ static void n_knob_size_callback(t_n_knob *x, t_float w, t_float h)
   x->frame_w_2 = x->frame_w / 2;
   x->frame_h_2 = x->frame_h / 2;
   n_knob_calc_count_from_state(x);
-  if(visible(x))
-    {
-      n_knob_erase_image(x);
-      n_knob_draw_image(x);
-      n_knob_bind_image(x);
-      n_knob_erase_frame(x);
-      if (x->sel)
-        {
-          n_knob_draw_frame(x);
-        }
-    }
+  n_knob_redraw(x);
 }
 
-static void n_knob_double_callback(t_n_knob* x)
+void n_knob_double_callback(t_n_knob* x)
 { 
   if(!x->x_glist->gl_edit)
     {
@@ -798,8 +985,11 @@ static void n_knob_double_callback(t_n_knob* x)
 // -------------------------------------------------------------------------- //
 // setup, save and properties
 // -------------------------------------------------------------------------- //
-static void n_knob_set_par(t_n_knob *x, t_int ac, t_atom *av)
+void n_knob_set_par(t_n_knob *x, t_int ac, t_atom *av)
 {
+  int r_w;
+  int r_h;
+  int mode;
   t_symbol *filename;
   int orientation;
   int frames;
@@ -822,58 +1012,73 @@ static void n_knob_set_par(t_n_knob *x, t_int ac, t_atom *av)
   int num_y;
   int lab_col;
   int num_col;
+  int b_col;
+  int f_col;
 
   // arguments
-  if (ac >= 22
-      && IS_A_SYMBOL(av, 0)
+  if (ac >= 27
+      && IS_A_FLOAT(av,  0)
       && IS_A_FLOAT(av,  1)
       && IS_A_FLOAT(av,  2)
-      && IS_A_FLOAT(av,  3)
+      && IS_A_SYMBOL(av, 3)
       && IS_A_FLOAT(av,  4)
       && IS_A_FLOAT(av,  5)
       && IS_A_FLOAT(av,  6)
       && IS_A_FLOAT(av,  7)
       && IS_A_FLOAT(av,  8)
-      && (IS_A_FLOAT(av, 9)  || IS_A_SYMBOL(av, 9))
-      && (IS_A_FLOAT(av, 10) || IS_A_SYMBOL(av, 10))
-      && (IS_A_FLOAT(av, 11) || IS_A_SYMBOL(av, 11))
-      && IS_A_FLOAT(av,  12)
-      && IS_A_FLOAT(av,  13)
-      && IS_A_FLOAT(av,  14)
+      && IS_A_FLOAT(av,  9)
+      && IS_A_FLOAT(av,  10)
+      && IS_A_FLOAT(av,  11)
+      && (IS_A_FLOAT(av, 12) || IS_A_SYMBOL(av, 12))
+      && (IS_A_FLOAT(av, 13) || IS_A_SYMBOL(av, 13))
+      && (IS_A_FLOAT(av, 14) || IS_A_SYMBOL(av, 14))
       && IS_A_FLOAT(av,  15)
       && IS_A_FLOAT(av,  16)
       && IS_A_FLOAT(av,  17)
       && IS_A_FLOAT(av,  18)
       && IS_A_FLOAT(av,  19)
-      && (IS_A_FLOAT(av, 20) || IS_A_SYMBOL(av, 20))
-      && (IS_A_FLOAT(av, 21) || IS_A_SYMBOL(av, 21)))
+      && IS_A_FLOAT(av,  20)
+      && IS_A_FLOAT(av,  21)
+      && IS_A_FLOAT(av,  22)
+      && (IS_A_FLOAT(av, 23) || IS_A_SYMBOL(av, 23))
+      && (IS_A_FLOAT(av, 24) || IS_A_SYMBOL(av, 24))
+      && (IS_A_FLOAT(av, 25) || IS_A_SYMBOL(av, 25))
+      && (IS_A_FLOAT(av, 26) || IS_A_SYMBOL(av, 26)))
     {
-      filename      = atom_getsymbolarg(0,ac,av);
-      orientation   = atom_getfloatarg(1,ac,av);
-      frames        = atom_getfloatarg(2,ac,av);
-      min           = atom_getfloatarg(3,ac,av);
-      max           = atom_getfloatarg(4,ac,av);
-      step          = atom_getfloatarg(5,ac,av);
-      default_state = atom_getfloatarg(6,ac,av);
-      resolution    = atom_getfloatarg(7,ac,av);
-      init          = atom_getfloatarg(8,ac,av);
-      snd           = mygetsymbolarg(9,ac,av);
-      rcv           = mygetsymbolarg(10,ac,av);
-      lab           = mygetsymbolarg(11,ac,av);
-      lab_fs        = atom_getfloatarg(12,ac,av);
-      lab_x         = atom_getfloatarg(13,ac,av);
-      lab_y         = atom_getfloatarg(14,ac,av);
-      num_vis       = atom_getfloatarg(15,ac,av);
-      num_w         = atom_getfloatarg(16,ac,av);
-      num_fs        = atom_getfloatarg(17,ac,av);
-      num_x         = atom_getfloatarg(18,ac,av);
-      num_y         = atom_getfloatarg(19,ac,av);
-      lab_col       = mygetintarg(20,ac,av);
-      num_col       = mygetintarg(21,ac,av);
+      r_w           = atom_getfloatarg(0,ac,av);
+      r_h           = atom_getfloatarg(1,ac,av);
+      mode          = atom_getfloatarg(2,ac,av);
+      filename      = atom_getsymbolarg(3,ac,av);
+      orientation   = atom_getfloatarg(4,ac,av);
+      frames        = atom_getfloatarg(5,ac,av);
+      min           = atom_getfloatarg(6,ac,av);
+      max           = atom_getfloatarg(7,ac,av);
+      step          = atom_getfloatarg(8,ac,av);
+      default_state = atom_getfloatarg(9,ac,av);
+      resolution    = atom_getfloatarg(10,ac,av);
+      init          = atom_getfloatarg(11,ac,av);
+      snd           = mygetsymbolarg(12,ac,av);
+      rcv           = mygetsymbolarg(13,ac,av);
+      lab           = mygetsymbolarg(14,ac,av);
+      lab_fs        = atom_getfloatarg(15,ac,av);
+      lab_x         = atom_getfloatarg(16,ac,av);
+      lab_y         = atom_getfloatarg(17,ac,av);
+      num_vis       = atom_getfloatarg(18,ac,av);
+      num_w         = atom_getfloatarg(19,ac,av);
+      num_fs        = atom_getfloatarg(20,ac,av);
+      num_x         = atom_getfloatarg(21,ac,av);
+      num_y         = atom_getfloatarg(22,ac,av);
+      lab_col       = mygetintarg(23,ac,av);
+      num_col       = mygetintarg(24,ac,av);
+      b_col         = mygetintarg(25,ac,av);
+      f_col         = mygetintarg(26,ac,av);
     }
   else
     {
       // default state
+      r_w           = 40;
+      r_h           = 20;
+      mode          = MODE_PICT;
       filename      = gensym("default.gif");
       orientation   = VER;
       frames        = 33;
@@ -896,7 +1101,18 @@ static void n_knob_set_par(t_n_knob *x, t_int ac, t_atom *av)
       num_y         = 42;
       lab_col       = pdcolor(22);
       num_col       = pdcolor(22);
+      b_col         = pdcolor(10);
+      f_col         = pdcolor(28);
     }
+
+  // rsize
+  n_knob_rsize_set(x, r_w, r_h);
+
+  // mode
+  n_knob_mode_set(x, mode);
+
+  // orientation
+  n_knob_orientation(x, orientation);
   
   // label
   n_knob_lab_set(x, lab);
@@ -913,45 +1129,36 @@ static void n_knob_set_par(t_n_knob *x, t_int ac, t_atom *av)
   // knob
   n_knob_knobpar_set(x, min, max, step, default_state, resolution);
 
+  // rcolor
+  n_knob_rcolor_set(x, b_col, f_col);
+
   // init
   x->init = init;
 
-  // image
-  n_knob_image(x, filename, orientation, frames);
-
-  // redraw
-  if(visible(x))
-    {
-      if (x->labdisp)
-	{
-	  n_knob_erase_label(x);
-	  n_knob_draw_label(x);
-	}
-      if (x->num_vis)
-	{
-	  n_knob_erase_num(x);
-	  n_knob_draw_num(x);
-	}
-    }
+  // image (there callback ... and redraw)
+  n_knob_image(x, filename, frames);
   return;
 }
 
-static void n_knob_save(t_gobj *z, t_binbuf *b)
+void n_knob_save(t_gobj *z, t_binbuf *b)
 {
   t_n_knob *x = (t_n_knob *)z;
   char buf[256];
   t_symbol *snd;
   t_symbol *rcv;
   t_symbol *lab;
-  sprintf(buf,"%s",x->snd->s_name); dollarinstring(buf); snd     = gensym(buf); 
-  sprintf(buf,"%s",x->rcv->s_name); dollarinstring(buf); rcv     = gensym(buf); 
-  sprintf(buf,"%s",x->lab->s_name); dollarinstring(buf); lab     = gensym(buf); 
-  binbuf_addv(b, "ssiissiiffffiisssiiiiiiiiiif", 
+  sprintf(buf,"%s",x->snd->s_name); dollarinstring(buf); snd = gensym(buf); 
+  sprintf(buf,"%s",x->rcv->s_name); dollarinstring(buf); rcv = gensym(buf); 
+  sprintf(buf,"%s",x->lab->s_name); dollarinstring(buf); lab = gensym(buf); 
+  binbuf_addv(b, "ssiisiiisiiffffiisssiiiiiiiiiiiif", 
               gensym("#X"), 
               gensym("obj"),
               (int)x->x_obj.te_xpix, 
               (int)x->x_obj.te_ypix,   
               gensym("n_knob"),
+              (int)x->r_w,
+              (int)x->r_h,
+              (int)x->mode,
               x->filename,
               (int)x->orientation,
               (int)x->frames,
@@ -974,11 +1181,13 @@ static void n_knob_save(t_gobj *z, t_binbuf *b)
               (int)x->num_y,
               (int)x->lab_col,
               (int)x->num_col,
+              (int)x->b_col,
+              (int)x->f_col,
               x->state);
   binbuf_addv(b, ";");
 }
 
-static void n_knob_properties(t_gobj *z, t_glist *owner)
+void n_knob_properties(t_gobj *z, t_glist *owner)
 {
   t_n_knob *x = (t_n_knob *)z;
   char buf[MAXPDSTRING];
@@ -988,7 +1197,10 @@ static void n_knob_properties(t_gobj *z, t_glist *owner)
   sprintf(buf,"%s",x->snd->s_name); dollarinstring(buf); snd = gensym(buf); 
   sprintf(buf,"%s",x->rcv->s_name); dollarinstring(buf); rcv = gensym(buf); 
   sprintf(buf,"%s",x->lab->s_name); dollarinstring(buf); lab = gensym(buf); 
-  sprintf(buf, "pdtk_n_knob_dialog %%s %s %d %d %g %g %g %g %d %d %s %s %s %d %d %d %d %d %d %d %d %d %d\n",
+  sprintf(buf, "pdtk_n_knob_dialog %%s %d %d %d %s %d %d %g %g %g %g %d %d %s %s %s %d %d %d %d %d %d %d %d %d %d %d %d\n",
+          (int)x->r_w,
+          (int)x->r_h,
+          (int)x->mode,
           x->filename->s_name,
           (int)x->orientation,
           (int)x->frames,
@@ -1010,12 +1222,14 @@ static void n_knob_properties(t_gobj *z, t_glist *owner)
           (int)x->num_x,
           (int)x->num_y,
           (int)x->lab_col,
-          (int)x->num_col);
+          (int)x->num_col,
+          (int)x->b_col,
+          (int)x->f_col);
   gfxstub_new(&x->x_obj.ob_pd, x, buf);
   NOUSE(owner);
 }
 
-static void n_knob_dialog(t_n_knob *x, t_symbol *s, int ac, t_atom *av)
+void n_knob_dialog(t_n_knob *x, t_symbol *s, int ac, t_atom *av)
 {
   if (!x)
     {
@@ -1026,22 +1240,18 @@ static void n_knob_dialog(t_n_knob *x, t_symbol *s, int ac, t_atom *av)
   NOUSE(s);
 }
 
-static void *n_knob_new(t_symbol *s, t_int ac, t_atom *av)
-{
+void *n_knob_new(t_symbol *s, t_int ac, t_atom *av)
+{ 
   char buf[MAXPDSTRING];
-
   t_n_knob *x = (t_n_knob *)pd_new(n_knob_class);
   x->x_glist = (t_glist*) canvas_getcurrent();
   outlet_new(&x->x_obj, &s_float);
-  
   // const
   x->dollarzero = canvas_getdollarzero();
   x->curdir = canvas_getcurrentdir();
-  
   // bind
   sprintf(buf, "#%lx", (long)x);
   pd_bind(&x->x_obj.ob_pd, x->x_bindname = gensym(buf));
-
   // init internal par.
   x->img_w = -1;
   x->img_h = -1;
@@ -1050,19 +1260,17 @@ static void *n_knob_new(t_symbol *s, t_int ac, t_atom *av)
   x->framepos_old = NEVERST;
   x->snd_able = 0;
   x->rcv_able = 0;
-  
+  // state
   n_knob_set_par(x, ac, av);
-  if (ac == 23 && x->init)
-    x->state = atom_getfloatarg(22,ac,av);
+  if (ac == 28 && x->init)
+    x->state = atom_getfloatarg(27,ac,av);
   else
     x->state = x->default_state;
-
   return (void*)x;
   NOUSE(s);
 }
 
-
-static void n_knob_free(t_n_knob* x)
+void n_knob_free(t_n_knob* x)
 {
   pd_unbind(&x->x_obj.ob_pd, x->x_bindname);
   if (x->rcv_able)
@@ -1076,8 +1284,14 @@ void n_knob_setup(void)
 			   (t_method)n_knob_free,
 			   sizeof(t_n_knob),
 			   0,A_GIMME,0);
+  class_addmethod(n_knob_class,(t_method)n_knob_rsize,
+		  gensym("rsize"),A_FLOAT,A_FLOAT,0);
+  class_addmethod(n_knob_class,(t_method)n_knob_mode,
+		  gensym("mode"),A_FLOAT,0);
+  class_addmethod(n_knob_class,(t_method)n_knob_orientation,
+		  gensym("orientation"),A_FLOAT,0);
   class_addmethod(n_knob_class,(t_method)n_knob_image,
-		  gensym("image"),A_SYMBOL,A_FLOAT,A_FLOAT,0);
+		  gensym("image"),A_SYMBOL,A_FLOAT,0);
   class_addmethod(n_knob_class,(t_method)n_knob_knobpar,
 		  gensym("knobpar"),A_FLOAT,A_FLOAT,A_FLOAT,A_FLOAT,A_FLOAT,0);
   class_addmethod(n_knob_class,(t_method)n_knob_snd,
@@ -1092,6 +1306,8 @@ void n_knob_setup(void)
 		  gensym("numpar"),A_FLOAT,A_FLOAT,A_FLOAT,A_FLOAT,A_FLOAT,0);
   class_addmethod(n_knob_class,(t_method)n_knob_numvis,
 		  gensym("numvis"),A_FLOAT,0);
+  class_addmethod(n_knob_class,(t_method)n_knob_rcolor,
+		  gensym("rcolor"),A_FLOAT,A_FLOAT,0);
   class_addmethod(n_knob_class,(t_method)n_knob_set,
 		  gensym("set"),A_FLOAT,0);
   class_addmethod(n_knob_class,(t_method)n_knob_init,

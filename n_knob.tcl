@@ -59,6 +59,9 @@ proc n_knob_this_string {s} {
 ##############################################################################
 proc n_knob_apply {id} {
     set vid             [string trimleft $id .]
+    set v_rw            [concat v_rw_$vid]
+    set v_rh            [concat v_rh_$vid]
+    set v_mode          [concat v_mode_$vid]
     set v_filename      [concat v_filename_$vid]
     set v_orientation   [concat v_orientation_$vid]
     set v_frames        [concat v_frames_$vid]
@@ -81,7 +84,12 @@ proc n_knob_apply {id} {
     set v_ndy           [concat v_ndy_$vid]
     set v_lcol          [concat v_lcol_$vid]
     set v_ncol          [concat v_ncol_$vid]
+    set v_bcol          [concat v_bcol_$vid]
+    set v_fcol          [concat v_fcol_$vid]
 
+    global $v_rw      
+    global $v_rh      
+    global $v_mode      
     global $v_filename      
     global $v_orientation   
     global $v_frames        
@@ -104,7 +112,12 @@ proc n_knob_apply {id} {
     global $v_ndy           
     global $v_lcol          
     global $v_ncol          
+    global $v_bcol          
+    global $v_fcol          
 
+    set $v_rw            [n_knob_this_integer [set $v_rw] 40]
+    set $v_rh            [n_knob_this_integer [set $v_rh] 20]
+    set $v_mode          [n_knob_this_integer [set $v_mode] 0]
     set b_filename       [n_knob_this_string  [set $v_filename]]
     set $v_orientation   [n_knob_this_integer [set $v_orientation] 0]
     set $v_frames        [n_knob_this_integer [set $v_frames] 1]
@@ -127,8 +140,13 @@ proc n_knob_apply {id} {
     set $v_ndy           [n_knob_this_integer [set $v_ndy] 0]
     set $v_lcol          [n_knob_this_integer [set $v_lcol] 0]
     set $v_ncol          [n_knob_this_integer [set $v_ncol] 0]
+    set $v_bcol          [n_knob_this_integer [set $v_bcol] 0]
+    set $v_fcol          [n_knob_this_integer [set $v_fcol] 0]
 
     set cmd [concat $id dialog \
+                 [eval concat $$v_rw] \
+                 [eval concat $$v_rh] \
+                 [eval concat $$v_mode] \
                  $b_filename \
                  [eval concat $$v_orientation] \
                  [eval concat $$v_frames] \
@@ -151,6 +169,8 @@ proc n_knob_apply {id} {
                  [eval concat $$v_ndy] \
                  [eval concat $$v_lcol] \
                  [eval concat $$v_ncol] \
+                 [eval concat $$v_bcol] \
+                 [eval concat $$v_fcol] \
                  \;]
     pdsend $cmd
 }
@@ -175,11 +195,28 @@ proc n_knob_csel {id sel} {
 
     set $v_csel $sel
     if {[set $v_csel] == "0"} {
-	$id.csel.0 configure -text {[color label]} 
-	$id.csel.1 configure -text {color num}
-    } else {
-	$id.csel.0 configure -text {color label}
-	$id.csel.1 configure -text {[color num]}
+	$id.csel.0 configure -text {[label]} 
+	$id.csel.1 configure -text {num}
+	$id.csel.2 configure -text {back} 
+	$id.csel.3 configure -text {frame}
+    } 
+    if {[set $v_csel] == "1"} {
+	$id.csel.0 configure -text {label} 
+	$id.csel.1 configure -text {[num]}
+	$id.csel.2 configure -text {back} 
+	$id.csel.3 configure -text {frame}
+    } 
+    if {[set $v_csel] == "2"} {
+	$id.csel.0 configure -text {label} 
+	$id.csel.1 configure -text {num}
+	$id.csel.2 configure -text {[back]} 
+	$id.csel.3 configure -text {frame}
+    } 
+    if {[set $v_csel] == "3"} {
+	$id.csel.0 configure -text {label} 
+	$id.csel.1 configure -text {num}
+	$id.csel.2 configure -text {back} 
+	$id.csel.3 configure -text {[frame]}
     } 
 }
 
@@ -188,9 +225,13 @@ proc n_knob_set_color {id hexcol} {
     set vid             [string trimleft $id .]
     set v_lcol          [concat v_lcol_$vid]
     set v_ncol          [concat v_ncol_$vid]
+    set v_bcol          [concat v_bcol_$vid]
+    set v_fcol          [concat v_fcol_$vid]
     set v_csel          [concat v_csel_$vid]
     global $v_lcol
     global $v_ncol
+    global $v_bcol
+    global $v_fcol
     global $v_csel
 
     scan [string range $hexcol 1 2] %x decimal
@@ -212,18 +253,28 @@ proc n_knob_set_color {id hexcol} {
 
     if {[set $v_csel] == "0"} {
         set $v_lcol $dec
-    } else {
+    }
+    if {[set $v_csel] == "1"} {
         set $v_ncol $dec
+    }
+    if {[set $v_csel] == "2"} {
+        set $v_bcol $dec
+    }
+    if {[set $v_csel] == "3"} {
+        set $v_fcol $dec
     }
 }
 
 ##############################################################################
-proc pdtk_n_knob_dialog {id filename orientation frames min max step \
+proc pdtk_n_knob_dialog {id rw rh mode filename orientation frames min max step \
                              default_state resolution init \
 			     snd rcv lab lab_fs ldx ldy \
                              num_vis numw num_fs ndx ndy \
-			     lcol ncol} {
+			     lcol ncol bcol fcol} {
     set vid             [string trimleft $id .]
+    set v_rw            [concat v_rw_$vid]
+    set v_rh            [concat v_rh_$vid]
+    set v_mode          [concat v_mode_$vid]
     set v_filename      [concat v_filename_$vid]
     set v_orientation   [concat v_orientation_$vid]
     set v_frames        [concat v_frames_$vid]
@@ -246,7 +297,12 @@ proc pdtk_n_knob_dialog {id filename orientation frames min max step \
     set v_ndy           [concat v_ndy_$vid]
     set v_lcol          [concat v_lcol_$vid]
     set v_ncol          [concat v_ncol_$vid]
+    set v_bcol          [concat v_bcol_$vid]
+    set v_fcol          [concat v_fcol_$vid]
 
+    global $v_rw      
+    global $v_rh      
+    global $v_mode      
     global $v_filename      
     global $v_orientation   
     global $v_frames        
@@ -269,7 +325,12 @@ proc pdtk_n_knob_dialog {id filename orientation frames min max step \
     global $v_ndy           
     global $v_lcol          
     global $v_ncol          
+    global $v_bcol          
+    global $v_fcol          
 
+    set $v_rw            $rw      
+    set $v_rh            $rh      
+    set $v_mode          $mode      
     set $v_filename      $filename      
     set $v_orientation   $orientation   
     set $v_frames        $frames        
@@ -292,6 +353,8 @@ proc pdtk_n_knob_dialog {id filename orientation frames min max step \
     set $v_ndy           $ndy
     set $v_lcol          $lcol
     set $v_ncol          $ncol
+    set $v_bcol          $bcol
+    set $v_fcol          $fcol
 
     ##########################################################################
     # compare string
@@ -320,6 +383,29 @@ proc pdtk_n_knob_dialog {id filename orientation frames min max step \
 
     ##########################################################################
     # param
+    # rs
+    frame $id.rs
+    pack  $id.rs -side top
+
+    frame $id.rs.f_rw
+    pack  $id.rs.f_rw -side left
+    label $id.rs.f_rw.l -text            "     rw:"
+    entry $id.rs.f_rw.e -textvariable $v_rw -width 8
+    pack  $id.rs.f_rw.l $id.rs.f_rw.e -side left
+
+    frame $id.rs.f_rh
+    pack  $id.rs.f_rh -side left
+    label $id.rs.f_rh.l -text            "     rh:"
+    entry $id.rs.f_rh.e -textvariable $v_rh -width 8
+    pack  $id.rs.f_rh.l $id.rs.f_rh.e -side left
+
+    #
+    frame $id.f_mode
+    pack  $id.f_mode -side top
+    label $id.f_mode.l -text "mode:"
+    checkbutton $id.f_mode.c -variable $v_mode
+    pack  $id.f_mode.l $id.f_mode.c -side left
+
     #
     frame $id.f_filename
     pack  $id.f_filename -side top
@@ -478,9 +564,11 @@ proc pdtk_n_knob_dialog {id filename orientation frames min max step \
     global $v_csel
     
     frame $id.csel
-    button $id.csel.0 -text {color label} -width 10 -command "n_knob_csel $id 0"
-    button $id.csel.1 -text {color num} -width 10 -command "n_knob_csel $id 1"
-    pack $id.csel.0 $id.csel.1 -fill y -side left -expand yes
+    button $id.csel.0 -text {label} -width 10 -command "n_knob_csel $id 0"
+    button $id.csel.1 -text {num} -width 10 -command "n_knob_csel $id 1"
+    button $id.csel.2 -text {back} -width 10 -command "n_knob_csel $id 2"
+    button $id.csel.3 -text {frame} -width 10 -command "n_knob_csel $id 3"
+    pack $id.csel.0 $id.csel.1 $id.csel.2 $id.csel.3 -fill y -side left -expand yes
     pack $id.csel -fill x -pady 2m
     n_knob_csel $id 0
 
