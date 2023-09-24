@@ -1,3 +1,7 @@
 *.o
 *.pd_linux
 TODO.md
+images/my_knobs
+images/my_knobs/
+images/my_images
+images/my_images/
