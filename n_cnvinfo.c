@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdlib.h>
 #include "m_pd.h"
 #include "g_canvas.h"
 
@@ -25,19 +26,24 @@ typedef struct _n_cnvinfo
 static void n_cnvinfo_canvas(t_n_cnvinfo *x, t_floatarg f)
 {
   t_canvas *canvas = x->canvas;
-  int d = f;
+  int depth = f;
   t_atom a[1];
-  if (d < 0) d = 0;
-  while (d && canvas)
+  if (depth < 0) depth = 0;
+  while (depth && canvas)
     {
       canvas = canvas->gl_owner;
-      d--;
+      depth--;
     }
   char buf[MAXPDSTRING];
   snprintf(buf, MAXPDSTRING, ".x%lx", (long unsigned int)canvas);
   OUTLETS("id", buf);
   if (canvas)
     {
+      t_symbol *dollzero = canvas_realizedollar(canvas, gensym("$0"));
+      int dz = atoi(dollzero->s_name);
+
+      OUTLETF("dollarzero",   dz);
+
       OUTLETF("screenx1",   canvas->gl_screenx1);
       OUTLETF("screeny1",   canvas->gl_screeny1);
       OUTLETF("screenx2",   canvas->gl_screenx2);
@@ -54,6 +60,8 @@ static void n_cnvinfo_canvas(t_n_cnvinfo *x, t_floatarg f)
     }
   else
     {
+      OUTLETF("dollarzero",   0);
+
       OUTLETF("screenx1",   0);
       OUTLETF("screeny1",   0);
       OUTLETF("screenx2",   0);
