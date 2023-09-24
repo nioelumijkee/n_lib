@@ -53,14 +53,23 @@ void n_env_get(t_n_env *x, t_symbol *s)
   if (var != NULL)
     outlet_symbol(x->x_obj.ob_outlet, gensym(var));
   else
-    outlet_symbol(x->x_obj.ob_outlet, gensym("NULL"));
+    {
+      post("n_env: getenv: cannot get '%s'", s->s_name);
+      outlet_float(x->x_obj.ob_outlet, 1);
+    }
 }
 
-void n_env_set(t_n_env *x, t_symbol *s0, t_symbol *s1)
+void n_env_set(t_n_env *x, t_symbol *s_env, t_symbol *s_val)
 {
-  if (setenv (s0->s_name, s1->s_name, OVWR) != 0)
-    post("n_env: setenv: cannot set '%s'\n", s0->s_name);
-  if (x) {} // disabled
+  if (setenv (s_env->s_name, s_val->s_name, OVWR) != 0)
+    {
+      post("n_env: setenv: cannot set '%s'", s_env->s_name);
+      outlet_float(x->x_obj.ob_outlet, 1);
+    }
+  else
+    {
+      outlet_float(x->x_obj.ob_outlet, 0);
+    }
 }
 
 void *n_env_new(void)
