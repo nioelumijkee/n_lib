@@ -18,7 +18,8 @@ n_print.c \
 n_r.c \
 n_random.c \
 n_rec1p~.c \
-n_sysgui.c
+n_sysgui.c \
+n_ds~.c
 sources = \
 ./include/*
 datafiles = \
