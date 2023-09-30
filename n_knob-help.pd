@@ -1,5 +1,5 @@
 #N canvas 218 27 924 678 10;
-#X obj 41 166 n_knob 60 20 1 default_24.gif 1 65 -100 50 2 -12 512 1 empty empty Par: 10 6 -8 1 4 10 -2 40 0 9.1771e+06 1.67116e+07 65793 -22;
+#X obj 41 166 n_knob 64 20 0 default_24.gif 1 65 -100 50 2 -12 512 1 empty empty Par: 10 2 10 1 4 10 32 10 0 9.1771e+06 1.67116e+07 65793 34;
 #X floatatom 41 238 5 0 0 0 - - - 0;
 #X obj 321 59 s \$0-to;
 #X obj 12 8 cnv 17 113 68 empty empty empty 20 12 0 10 #bbbbbb #404040 0;
@@ -92,8 +92,6 @@
 #X msg 751 257 rcolor 5 17;
 #X obj 346 647 s \$0-to;
 #X text 378 544 switch between two modes...;
-#X msg 346 565 mode 0 \, rsize 60 20 \, label Par: \, labpar 10 2 10 22 \, numvis 1 \, numpar 4 10 24 10 23;
-#X msg 354 601 mode 1 \, label Par: \, labpar 10 6 -8 22 \, numvis 1 \, numpar 4 10 -2 40 23;
 #X msg 321 37 image default.gif 33;
 #X msg 473 42 image default_24.gif 65;
 #X text 298 17 set image. filename \, frames;
@@ -101,6 +99,8 @@
 #X obj 218 126 tgl 17 0 empty empty empty 0 -9 0 10 #fcfcfc #000000 #000000 0 1;
 #X text 176 105 orientation(0-HOR \, 1-VER);
 #X msg 218 145 orientation \$1;
+#X msg 354 601 mode 1 \, label Par: \, labpar 10 6 -8 22 \, numvis 1 \, numpar 4 10 2 40 23;
+#X msg 346 565 mode 0 \, rsize 64 20 \, label Par: \, labpar 10 2 10 22 \, numvis 1 \, numpar 4 10 32 10 23;
 #X connect 0 0 1 0;
 #X connect 0 0 72 0;
 #X connect 8 0 6 0;
@@ -149,9 +149,9 @@
 #X connect 84 0 85 0;
 #X connect 89 0 87 0;
 #X connect 90 0 87 0;
-#X connect 93 0 91 0;
-#X connect 94 0 91 0;
-#X connect 95 0 2 0;
-#X connect 96 0 2 0;
-#X connect 99 0 101 0;
-#X connect 101 0 98 0;
+#X connect 93 0 2 0;
+#X connect 94 0 2 0;
+#X connect 97 0 99 0;
+#X connect 99 0 96 0;
+#X connect 100 0 91 0;
+#X connect 101 0 91 0;

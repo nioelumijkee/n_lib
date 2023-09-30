@@ -328,14 +328,29 @@ void n_knob_bind_num(t_n_knob *x)
            x->x_bindname->s_name);
 }
 
+void n_knob_make_num(int numint, t_float state, int num_w, char *buf)
+{
+  if (numint)
+    {
+      if (state>=0)
+	sprintf(buf," %d",(int)state);
+      else
+	sprintf(buf,"%d",(int)state);
+    }
+  else
+    {
+      if (state>=0)
+	sprintf(buf," %f",state);
+      else
+	sprintf(buf,"%f",state);
+    }
+  buf[num_w + 1] = '\0';
+}
+
 void n_knob_draw_num(t_n_knob *x)
 {
   char buf[32];
-  if (x->numint)
-    sprintf(buf," %-d",(int)x->state);
-  else
-    sprintf(buf," %-f",x->state);
-  buf[x->num_w + 1] = '\0';
+  n_knob_make_num(x->numint, x->state, x->num_w, buf);
   sys_vgui(".x%x.c create text %d %d -text {%s} \
            -anchor w -font {{%s} -%d %s} -fill #%6.6x -tags N%x\n",
            glist_getcanvas(x->x_glist),
@@ -352,11 +367,7 @@ void n_knob_draw_num(t_n_knob *x)
 void n_knob_config_num(t_n_knob *x)
 {
   char buf[32];
-  if (x->numint)
-    sprintf(buf," %-d",(int)x->state);
-  else
-    sprintf(buf," %-f",x->state);
-  buf[x->num_w + 1] = '\0';
+  n_knob_make_num(x->numint, x->state, x->num_w, buf);
   sys_vgui(".x%x.c itemconfigure N%x -text {%s}\n",
            glist_getcanvas(x->x_glist),
 	   x,
