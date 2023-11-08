@@ -2,9 +2,8 @@
 #include "m_pd.h"
 #include "include/parsearg.h"
 
-#define MAX_IN  16
-#define MAX_OUT 16
-#define MAX_SEQ 1024
+#define MAX_IN  64 // MAX PD INLET ???
+#define MAX_OUT 64 // MAX PD OUTLET ???
 #define NOUSE(X) if(X){};
 
 static t_class *n_matrix_class;
@@ -17,9 +16,12 @@ typedef struct _n_matrix
   t_int all_out;    /* number out's */
   t_int all;        /* in's + out's */
   t_int **v_d;      /* vector for dsp_addv */
-  t_float l[MAX_IN][MAX_OUT]; /* level's */
-  int seq_in[MAX_SEQ];
-  int seq_out[MAX_SEQ];
+  t_float **l; /* level's */
+  int *seq_in;
+  int *seq_out;
+  /* t_float l[MAX_IN][MAX_OUT]; /\* level's *\/ */
+  /* int seq_in[MAX_SEQ]; */
+  /* int seq_out[MAX_SEQ]; */
   int seq_len;
 } t_n_matrix;
 
@@ -131,12 +133,21 @@ static void *n_matrix_new(t_symbol *s, int ac, t_atom *av)
   x->all_out = (x->all_out>MAX_OUT)?MAX_OUT:(x->all_out<1)?1:x->all_out;
   x->all = x->all_in + x->all_out;
   for (i = 1; i < x->all_in; i++)
-      inlet_new(&x->x_obj, &x->x_obj.ob_pd, &s_signal, &s_signal);
+    inlet_new(&x->x_obj, &x->x_obj.ob_pd, &s_signal, &s_signal);
   for (i = 0; i < x->all_out; i++)
-      outlet_new(&x->x_obj, &s_signal);
-  for (i=0; i<MAX_IN; i++)
-    for (j=0; j<MAX_OUT; j++)
-      x->l[i][j] = 0.0;
+    outlet_new(&x->x_obj, &s_signal);
+  // seq
+  x->seq_in = getbytes(sizeof(t_int) * x->all_in);
+  x->seq_out = getbytes(sizeof(t_int) * x->all_out);
+  x->l = getbytes(sizeof(t_float *) * x->all_in);
+  for (i=0; i<x->all_in; i++)
+    {
+      x->l[i] = getbytes(sizeof(t_float) * x->all_out);
+      for (j=0; j<x->all_out; j++)
+	{
+	  x->l[i][j] = 0.0;
+	}
+    }
   x->v_d = getbytes(sizeof(t_int *) *(x->all + 2));
   return (x);
   NOUSE(s);
@@ -144,7 +155,15 @@ static void *n_matrix_new(t_symbol *s, int ac, t_atom *av)
 
 static void n_matrix_free(t_n_matrix *x)
 {
+  int i;
   freebytes(x->v_d, sizeof(t_int *) * (x->all + 2));
+  freebytes(x->seq_in, sizeof(t_int) * x->all_in);
+  freebytes(x->seq_out, sizeof(t_int) * x->all_out);
+  for (i=0; i<x->all_in; i++)
+    {
+      freebytes(x->l[i], sizeof(t_float) * x->all_out);
+    }
+  freebytes(x->l, sizeof(t_float *) * x->all_in);
 }
 
 void n_matrix_tilde_setup(void)

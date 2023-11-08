@@ -167,6 +167,14 @@ void n_s_init(t_n_s *x)
     }
 }
 
+void n_s_reset(t_n_s *x)
+{
+  for (int i=0; i<MAX_SAMPLER; i++)
+    {
+      x->sampler[i].on=0;
+    }
+}
+
 void n_s_calc_level(t_n_s *x, int n)
 {
   t_float l = 1 - x->sampler[n].pan; 
@@ -271,6 +279,8 @@ void n_s_calc_ms(t_n_s *x)
   for (int i=0; i<MAX_SAMPLER; i++)
     {
       x->sampler[i].ms = (x->sampler[i].solo == solo) && (!x->sampler[i].mute);
+      if (x->sampler[i].ms == 0) 
+	x->sampler[i].on=0;
     }
 }
 
@@ -375,6 +385,7 @@ void n_s_array(t_n_s *x, t_floatarg n, t_symbol *s, t_floatarg sr)
   n_s_calc_l_start_end(x, i);
   n_s_calc_sdel(x, i);
   n_s_calc_disp(x, i);
+  n_s_reset(x);
 }
 
 void n_s_sample(t_n_s *x, t_floatarg n, t_floatarg f)
@@ -386,6 +397,8 @@ void n_s_sample(t_n_s *x, t_floatarg n, t_floatarg f)
   n_s_calc_start_end(x, i);
   n_s_calc_l_start_end(x, i);
   n_s_calc_sdel(x, i);
+  n_s_calc_disp(x, i);
+  n_s_reset(x);
 }
 
 void n_s_level(t_n_s *x, t_floatarg n, t_floatarg f)
