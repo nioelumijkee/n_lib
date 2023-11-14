@@ -1,4 +1,4 @@
-#N canvas 738 225 508 417 10;
+#N canvas 721 132 508 417 10;
 #X msg 442 134 info;
 #N canvas 0 50 450 250 (subpatch) 0;
 #X array \$0-imp 10176 float 2;
@@ -8,7 +8,7 @@
 #X obj 105 49 mtof;
 #X obj 105 69 phasor~;
 #X text 36 307 Arguments: array_imp size;
-#X obj 13 15 vradio 17 1 1 8 empty empty empty 0 -9 0 10 #bbbbbb #000000 #000000 2;
+#X obj 13 15 vradio 17 1 1 8 empty empty empty 0 -9 0 10 #bbbbbb #000000 #000000 7;
 #X text 29 20 _64;
 #X text 29 37 _128;
 #X text 29 54 _256;
@@ -35,7 +35,7 @@
 #X obj 271 317 s \$0-to;
 #X msg 271 298 open \$1-imp \, info;
 #X obj 304 243 bng 17 250 50 0 empty empty empty 0 -9 0 10 #fcfcfc #000000 #000000;
-#X obj 144 231 nbx 3 15 0 1e+37 0 1 empty empty post 0 -9 0 10 #bbbbbb #000000 #000000 1 256;
+#X obj 144 231 nbx 3 15 0 1e+37 0 1 empty empty post 0 -9 0 10 #bbbbbb #000000 #000000 2 256;
 #X obj 144 248 * 0.01;
 #X obj 104 243 *~ 1;
 #X obj 104 266 dac~;
@@ -131,6 +131,9 @@
 #X connect 41 0 6 0;
 #X restore 29 349 pd many;
 #X obj 29 373 dac~;
+#X msg 111 369 21.75 %;
+#X msg 432 382 22.625 %;
+#X msg 432 359 21.75 %;
 #X connect 0 0 22 0;
 #X connect 2 0 3 0;
 #X connect 3 0 4 0;
@@ -156,6 +159,7 @@
 #X connect 35 0 36 0;
 #X connect 35 0 36 1;
 #X connect 37 0 19 0;
+#X connect 38 0 43 0;
 #X connect 39 0 40 0;
 #X connect 40 0 27 0;
 #X connect 41 0 42 0;

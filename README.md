@@ -21,4 +21,5 @@ Various object for Pure Data.
 - n_sysgui - interface to function "vsys_gui"(analogy 'hcs/sys_gui')
 - n_ds~ - simply drum sampler
 - n_sampler~ - audio sampler
+- n_conv~ - convolver
 

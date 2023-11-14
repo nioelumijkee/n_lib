@@ -7,9 +7,7 @@
 
 #define MAX_SIZE_IMP    8192
 #define MAX_SIZE_IMP_1  8191
-
 #define MAX_SIZE_IMP2   16384
-
 #define MAX_SIZE_M      1024 // IMP/8
 #define MAX_SIZE_MD     2048 // (IMP/8)*2
 
@@ -19,10 +17,8 @@ typedef struct _n_conv
   t_object x_obj;
   int on;
   int bs;
-
   float z[MAX_SIZE_IMP2];
-  float imp[MAX_SIZE_IMP];
-
+  __m256 imp[MAX_SIZE_M];
   int size_i;
   int size;
   int size_m;
@@ -82,9 +78,10 @@ void calc_size(t_n_conv *x)
   x->size_m = x->size / 8;
 
   // copy imp
+  float *f = (float*)x->imp;
   for (i=0; i<x->size; i++)
     {
-      x->imp[i] = x->w_a[i].w_float;
+      f[i] = x->w_a[i].w_float;
     }
 
   // clear mem
@@ -130,7 +127,7 @@ t_int *n_conv_perform(t_int *w)
       int count  = x->count;
       for (i = 0; i < x->bs; i++)
 	{
-	  x->z[count] = x->z[count+MAX_SIZE_IMP] = (t_float)*(in++);
+	  x->z[count] = x->z[count+MAX_SIZE_IMP] = (float)*(in++);
 	  count--;
 	}
 
@@ -146,11 +143,8 @@ t_int *n_conv_perform(t_int *w)
 	  // mult
 	  for (j=0; j<size_m; j++)
 	    {
-	      int pos_z = count + (j<<3);
-	      int pos_imp = j<<3;
-	      __m256 _z   = _mm256_loadu_ps(x->z   + pos_z);
-	      __m256 _imp = _mm256_loadu_ps(x->imp + pos_imp);
-	      sa_m[j] = _mm256_mul_ps(_z, _imp);
+	      __m256 _z   = _mm256_loadu_ps(x->z   + count + (j<<3));
+	      sa_m[j] = _mm256_mul_ps(_z, x->imp[j]);
 	    }
 	  // sum
 	  s1_m = _mm256_setzero_ps();
