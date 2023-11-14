@@ -58,10 +58,7 @@ typedef struct _n_sample
 
 typedef struct _n_disp
 {
-  t_symbol *s; //in
-  t_word   *w;
-  t_garray *g;
-  int       l;
+  int      *a;
   t_float   xr; //in
   t_float   xo; //in
 } t_n_disp;
@@ -139,21 +136,29 @@ typedef struct _n_sampler
 typedef struct _n_s
 {
   t_object x_obj;
+  t_outlet *out_disp;
+  t_outlet *out_par;
   t_float sr;
   t_float div_1_sr;
   t_float div_sr_8;
   t_float div_2pi_sr;
   int seed; /* random */
   t_n_sampler sampler[MAX_SAMPLER];
-  t_n_disp disp[MAX_SAMPLER];
   t_n_sample sample[MAX_SAMPLE];
   t_float env_t[ENV_SIZE];
+  int sel_sampler;
+  t_n_disp disp[MAX_SAMPLER];
+  int disp_w;
+  int disp_h;
 } t_n_s;
 
 ////////////////////////////////////////////////////////////////////////////////
 // calc
 void n_s_init(t_n_s *x)
 {
+  x->sel_sampler=0;
+  x->disp_w=0;
+  x->disp_h=0;
   for (int i=0; i<MAX_SAMPLER; i++)
     {
       x->sampler[i].on=0;
@@ -279,8 +284,10 @@ void n_s_calc_ms(t_n_s *x)
   for (int i=0; i<MAX_SAMPLER; i++)
     {
       x->sampler[i].ms = (x->sampler[i].solo == solo) && (!x->sampler[i].mute);
-      if (x->sampler[i].ms == 0) 
-	x->sampler[i].on=0;
+      if (x->sampler[i].ms == 0)
+	{
+	  x->sampler[i].on=0;
+	}
     }
 }
 
@@ -703,7 +710,7 @@ void n_s_g(t_n_s *x, t_floatarg n, t_floatarg f)
 {
   int i=n;
   _clip_minmax(0, MAX_SAMPLER_1, i);
-  if (f > 0)
+  if (f > 0 && x->sampler[i].ms)
     {
       x->sampler[i].on = 1;
       x->sampler[i].stage = STG_START;
@@ -720,6 +727,14 @@ void n_s_g(t_n_s *x, t_floatarg n, t_floatarg f)
       x->sampler[i].env_stage = ENV_REL;
     }
 }
+
+void n_s_sel_sampler(t_n_s *x, t_floatarg n)
+{
+  int i=n;
+  _clip_minmax(0, MAX_SAMPLER_1, i);
+  x->sel_sampler=i;
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // dsp
@@ -912,11 +927,11 @@ t_int *n_s_perform(t_int *w)
 			  S.on=0;
 			}
 		    }
-		  out = out * S.vel * S.env * S.ms;
+		  out = out * S.vel * S.env;
 		}
 	      else
 		{
-		  out = out * S.vel * S.ms;
+		  out = out * S.vel;
 		}
 	      // out ///////////////////////////////////////////////////////////
 	      out_l[S.group][n] += out * S.level_l;
@@ -973,6 +988,8 @@ void *n_s_new()
   outlet_new(&x->x_obj, &s_signal);
   outlet_new(&x->x_obj, &s_signal); // s1
   outlet_new(&x->x_obj, &s_signal); // s2
+  x->out_dsip = outlet_new(&x->x_obj, 0);
+  x->out_par = outlet_new(&x->x_obj, 0);
   return (void *)x;
 }
 
@@ -1028,6 +1045,9 @@ void n_sampler_tilde_setup(void)
 
   class_addmethod(n_s_class,(t_method)n_s_mute,gensym("mute"),A_FLOAT,A_FLOAT,0);
   class_addmethod(n_s_class,(t_method)n_s_solo,gensym("solo"),A_FLOAT,A_FLOAT,0);
+
+  class_addmethod(n_s_class,(t_method)n_s_init_disp,gensym("init_disp"),A_FLOAT,0);
+  class_addmethod(n_s_class,(t_method)n_s_sel_sampler,gensym("sel_sampler"),A_FLOAT,0);
 
   class_addmethod(n_s_class,(t_method)n_s_g,gensym("g"),A_FLOAT,A_FLOAT,0);
 }
