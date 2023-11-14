@@ -20,7 +20,8 @@ n_random.c \
 n_rec1p~.c \
 n_sysgui.c \
 n_ds~.c \
-n_conv~.c
+n_conv~.c \
+n_euklid.c
 # n_sampler~.c \
 sources = \
 ./include/*
