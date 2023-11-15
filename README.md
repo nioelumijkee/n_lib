@@ -22,4 +22,5 @@ Various object for Pure Data.
 - n_ds~ - simply drum sampler
 - n_sampler~ - audio sampler
 - n_conv~ - convolver
-
+- n_euklid - euklidian rhythms
+- n_graincloud~ - granular synthesizer
