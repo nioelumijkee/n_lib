@@ -22,7 +22,8 @@ n_sysgui.c \
 n_ds~.c \
 n_conv~.c \
 n_euklid.c \
-n_graincloud~.c
+n_graincloud~.c \
+n_seq_drum.c
 # n_sampler~.c \
 sources = \
 ./include/*
