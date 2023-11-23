@@ -37,7 +37,8 @@
 #define MOD_HEIGHT_MIN 1
 #define MOD_HEIGHT_MAX 256
 
-#define FLAM_MAX 8
+#define FLAM_MAX 71
+#define FLAM_MAX_1 70
 
 #define M(OFS) x->w_mem[OFS].w_float
 
@@ -60,7 +61,7 @@ typedef struct _nsqd_note
   int y0;
   int x1;
   int y1;
-  int state; // off on acc
+  /* int state; // off on acc */
 } t_nsqd_note;
 
 typedef struct _nsqd_flam
@@ -68,35 +69,26 @@ typedef struct _nsqd_flam
   int id;
   int x0;
   int y0;
-  int state; // off ... maxflam
+  /* int state; // off ... maxflam */
 } t_nsqd_flam;
 
 typedef struct _nsqd_mod
-{
-  int id[MOD_MAX];
-  int x0[MOD_MAX];
-  int y0[MOD_MAX];
-  int x1[MOD_MAX];
-  int y1[MOD_MAX];
-  int state[MOD_MAX]; // off on
-} t_nsqd_mod;
-
-typedef struct _nsqd_column
-{
-  t_nsqd_back back;
-  t_nsqd_note note[ROW_MAX];
-  t_nsqd_note flam[ROW_MAX];
-  t_nsqd_back mod;
-} t_nsqd_column;
-
-typedef struct _nsqd_playpos
 {
   int id;
   int x0;
   int y0;
   int x1;
   int y1;
-} t_nsqd_playpos;
+  /* int state[MOD_MAX]; // off on */
+} t_nsqd_mod;
+
+typedef struct _nsqd_column
+{
+  t_nsqd_back back;
+  t_nsqd_note note[ROW_MAX];
+  t_nsqd_flam flam[ROW_MAX];
+  t_nsqd_mod mod[MOD_MAX];
+} t_nsqd_column;
 
 typedef struct _nsqd_split_hor
 {
@@ -179,12 +171,13 @@ typedef struct _nsqd
 
   t_nsqd_patt p[PATT_MAX];
   t_nsqd_column c[COLUMN_MAX];
-  t_nsqd_playpos playpos;
   t_nsqd_split_hor split_hor[ROW_MAX];
   t_nsqd_split_hor split_ver[COLUMN_MAX_1];
   
-  // 
-  t_symbol *flam_sym[71];
+  t_symbol *flam_sym[FLAM_MAX];
+  int flam_font_size;
+  int flam_font_ox;
+  int flam_font_oy;
   
   int mem_size;
   t_symbol *s_mem;
@@ -228,7 +221,6 @@ static void nsqd_init_patt(t_nsqd *x)
       x->p[i].ofs_minor = ofs+1;
       ofs+=PAR_MAX;
     }
-  /* post("%d = %d", x->mem_size, ofs); */
 }
 
 static void nsqd_check_mem(t_nsqd *x)
@@ -255,7 +247,7 @@ static void nsqd_check_mem(t_nsqd *x)
 	  
 	  // check flam
 	  j = M(x->p[i].ofs_track[k].flam);
-	  _clip_minmax(0, FLAM_MAX, j);
+	  _clip_minmax(0, FLAM_MAX_1, j);
 	  M(x->p[i].ofs_track[k].flam) = j;
 	  
 	  // check mod
@@ -315,18 +307,22 @@ static void nsqd_calc_major_minor(t_nsqd *x)
 
 static void nsqd_calc_disp(t_nsqd *x)
 {
-  int i,j;
+  int i,j,k;
   int id = 0;
 
   // disp size
   x->disp_w = (x->size * x->column);
-  x->disp_h = (x->size * x->row) + x->mod_height;
+  x->disp_h = (x->size * x->row) + x->mod_height + 1;
 
   // back
   for (i=0; i<x->column; i++)
     {
       int cx0 = (i * x->size) + 1;
-      int cx1 = ((i+1) * x->size) + 1;
+      int cx1;
+      if (i==x->column-1)
+	cx1 = ((i+1) * x->size) -1;
+      else
+	cx1 = ((i+1) * x->size);
       x->c[i].back.id = id;
       x->c[i].back.x0 = cx0;
       x->c[i].back.y0 = 1;
@@ -338,7 +334,7 @@ static void nsqd_calc_disp(t_nsqd *x)
   // split hor
   for (i=0; i<x->row; i++)
     {
-      int cy = ((i+1) * x->size) + 1;
+      int cy = ((i+1) * x->size);
       x->split_hor[i].id = id;
       x->split_hor[i].x0 = 1;
       x->split_hor[i].y0 = cy;
@@ -350,7 +346,7 @@ static void nsqd_calc_disp(t_nsqd *x)
   // split vert
   for (i=0; i<x->column-1; i++)
     {
-      int cx = ((i+1) * x->size) + 1;
+      int cx = ((i+1) * x->size);
       x->split_ver[i].id = id;
       x->split_ver[i].x0 = cx;
       x->split_ver[i].y0 = 1;
@@ -363,11 +359,11 @@ static void nsqd_calc_disp(t_nsqd *x)
   for (i=0; i<x->column; i++)
     {
       int cx0 = (i * x->size) + 1 + 2;
-      int cx1 = ((i+1) * x->size) + 1 - 3;
+      int cx1 = ((i+1) * x->size) + 1 - 4;
       for (j=0; j<x->row; j++)
 	{
 	  int cy0 = (j * x->size) + 1 + 2;
-	  int cy1 = ((j+1) * x->size) + 1 - 3;
+	  int cy1 = ((j+1) * x->size) + 1 - 4;
 	  x->c[i].note[j].id = id;
 	  x->c[i].note[j].x0 = cx0;
 	  x->c[i].note[j].y0 = cy0;
@@ -379,39 +375,48 @@ static void nsqd_calc_disp(t_nsqd *x)
   // flam
   for (i=0; i<x->column; i++)
     {
-      int cx0 = (i * x->size) + 1;
+      int cx0 = (i * x->size);
       for (j=0; j<x->row; j++)
 	{
-	  int cy0 = (j * x->size) + 1;
+	  int cy0 = (j * x->size);
 	  x->c[i].flam[j].id = id;
-	  x->c[i].flam[j].x0 = cx0;
-	  x->c[i].flam[j].y1 = cy0;
+	  x->c[i].flam[j].x0 = cx0 + x->flam_font_ox;
+	  x->c[i].flam[j].y0 = cy0 + x->flam_font_oy;
 	  id++;
 	}
     }
   // mod
-  // playpos
-  {
-      x->playpos.id = id;
-      x->playpos.x0 = 0;
-      x->playpos.y0 = 0;
-      x->playpos.x1 = 0;
-      x->playpos.y1 = x->disp_h;
-      id++;
-  }
+  for (i=0; i<x->column; i++)
+    {
+      int cx = (i * x->size);
+      for (k=0; k<x->mods; k++)
+	{
+	  int cx_ofs = k * x->mod_width;
+	  x->c[i].mod[k].id = id;
+	  x->c[i].mod[k].x0 = cx + cx_ofs + 1;
+	  x->c[i].mod[k].y0 = x->disp_h;
+	  x->c[i].mod[k].x1 = cx + cx_ofs + x->mod_width;
+	  if (k==1)
+	    x->c[i].mod[k].y1 = x->disp_h - 1;
+	  else
+	    x->c[i].mod[k].y1 = x->disp_h - 1 -
+	      (((float)(k+1) / (float)x->mods) * ((float)x->mod_height-1));
+	  id++;
+	}
+    }
   // maxel
   x->disp_maxel = id;
 }
 
 static void nsqd_draw_disp(t_nsqd *x)
 {
-  int i,j;
+  int i,j,k;
   t_atom a[10];
   // maxel
   SETFLOAT(a, (t_float)x->disp_maxel);
   outlet_anything(x->out_disp, gensym("maxel"), 1, a);
   // disp size
-  SETFLOAT(a, (t_float)x->disp_w+1);
+  SETFLOAT(a, (t_float)x->disp_w);
   SETFLOAT(a+1, (t_float)x->disp_h+1);
   outlet_anything(x->out_disp, gensym("size"), 2, a);
   // back (rect filled)
@@ -471,9 +476,59 @@ static void nsqd_draw_disp(t_nsqd *x)
 	  outlet_list(x->out_disp, &s_list, 9, a);
 	}
     }
-  // flam
-  // mod
-  // playpos
+  // flam (text)
+  SETFLOAT(a, (t_float)8);
+  for (i=0; i<x->column; i++)
+    {
+      for (j=0; j<x->row; j++)
+	{
+	  SETFLOAT(a+1, (t_float)x->c[i].flam[j].id);
+	  SETFLOAT(a+2, (t_float)x->color_flam);
+	  SETFLOAT(a+3, (t_float)x->flam_font_size);
+	  SETFLOAT(a+4, (t_float)x->c[i].flam[j].x0);
+	  SETFLOAT(a+5, (t_float)x->c[i].flam[j].y0);
+	  SETSYMBOL(a+6, x->flam_sym[0]);
+	  outlet_list(x->out_disp, &s_list, 7, a);
+	}
+    }
+  // mod (rect filled)
+  SETFLOAT(a, (t_float)3);
+  for (i=0; i<x->column; i++)
+    {
+      for (k=0; k<x->mods; k++)
+	{
+	  int color_f;
+	  if (k == x->sel_mod)
+	    color_f = x->color_mod_sel;
+	  else
+	    color_f = x->color_mod[k];
+	  SETFLOAT(a+1, (t_float)x->c[i].mod[k].id);
+	  SETFLOAT(a+2, (t_float)color_f);
+	  SETFLOAT(a+3, (t_float)x->color_mod[k]);
+	  SETFLOAT(a+4, (t_float)1);
+	  SETFLOAT(a+5, (t_float)x->c[i].mod[k].x0);
+	  SETFLOAT(a+6, (t_float)x->c[i].mod[k].y0);
+	  SETFLOAT(a+7, (t_float)x->c[i].mod[k].x1);
+	  SETFLOAT(a+8, (t_float)x->c[i].mod[k].y1);
+	  outlet_list(x->out_disp, &s_list, 9, a);
+	}
+    }
+}
+
+static void nsqd_redraw_disp_playpos(t_nsqd *x)
+{
+}
+
+static void nsqd_redraw_disp_major_minor(t_nsqd *x)
+{
+}
+
+static void nsqd_redraw_disp_mod(t_nsqd *x)
+{
+}
+
+static void nsqd_redraw_disp(t_nsqd *x)
+{
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -655,6 +710,18 @@ static void nsqd_color_playpos(t_nsqd *x, t_floatarg f)
   x->color_playpos = f;
 }
 
+static void nsqd_flam_font_size(t_nsqd *x, t_floatarg f)
+{
+  _clip_minmax(4, 256, f);
+  x->flam_font_size = f;
+}
+
+static void nsqd_flam_font_pos(t_nsqd *x, t_floatarg ox, t_floatarg oy)
+{
+  x->flam_font_ox = ox;
+  x->flam_font_oy = oy;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // setup
 ////////////////////////////////////////////////////////////////////////////////
@@ -743,4 +810,8 @@ void n_seq_drum_setup(void)
 		  gensym("color_mod_sel"), A_FLOAT, 0);
   class_addmethod(nsqd_class, (t_method)nsqd_color_playpos,
 		  gensym("color_playpos"), A_FLOAT, 0);
+  class_addmethod(nsqd_class, (t_method)nsqd_flam_font_size,
+		  gensym("flam_font_size"), A_FLOAT, 0);
+  class_addmethod(nsqd_class, (t_method)nsqd_flam_font_pos,
+		  gensym("flam_font_pos"), A_FLOAT, A_FLOAT, 0);
 }
