@@ -533,9 +533,9 @@
 #X obj 363 360 s \$0-to;
 #X obj 328 142 nbx 4 14 2 16 0 1 empty empty bit 0 -8 0 10 #bbbbbb #000000 #000000 6 256;
 #X obj 435 362 s \$0-to;
-#X obj 167 180 nbx 6 14 0 100 0 1 empty empty start 0 -8 0 10 #bbbbbb #000000 #000000 47.08 256;
+#X obj 167 180 nbx 6 14 0 100 0 1 empty empty start 0 -8 0 10 #bbbbbb #000000 #000000 22.08 256;
 #X obj 138 449 s \$0-to;
-#X obj 229 180 nbx 6 14 0 100 0 1 empty empty end 0 -8 0 10 #bbbbbb #000000 #000000 68.6002 256;
+#X obj 229 180 nbx 6 14 0 100 0 1 empty empty end 0 -8 0 10 #bbbbbb #000000 #000000 100 256;
 #X obj 208 449 s \$0-to;
 #X obj 291 180 nbx 6 14 0 100 0 1 empty empty l-st 0 -8 0 10 #bbbbbb #000000 #000000 63.8498 256;
 #X obj 278 449 s \$0-to;
@@ -555,7 +555,7 @@
 #X msg 278 430 l-st 0 \$1;
 #X msg 348 430 l-end 0 \$1;
 #X msg 70 429 sdel 0 \$1;
-#X obj 385 226 nbx 4 14 -1e+37 1e+37 0 1 empty empty semi 0 -8 0 10 #bbbbbb #000000 #000000 6 256;
+#X obj 385 226 nbx 4 14 -1e+37 1e+37 0 1 empty empty semi 0 -8 0 10 #bbbbbb #000000 #000000 3 256;
 #X obj 316 521 s \$0-to;
 #X obj 430 226 nbx 4 14 -100 100 0 1 empty empty fine 0 -8 0 10 #bbbbbb #000000 #000000 0 256;
 #X obj 386 521 s \$0-to;
@@ -572,7 +572,7 @@
 #X obj 129 578 s \$0-to;
 #X obj 195 250 nbx 4 14 0 100 0 1 empty empty sus 0 -8 0 10 #bbbbbb #000000 #000000 100 256;
 #X obj 189 578 s \$0-to;
-#X obj 240 250 nbx 4 14 0 100 0 1 empty empty rel 0 -8 0 10 #bbbbbb #000000 #000000 0 256;
+#X obj 240 250 nbx 4 14 0 100 0 1 empty empty rel 0 -8 0 10 #bbbbbb #000000 #000000 100 256;
 #X obj 249 578 s \$0-to;
 #X msg 129 559 dec 0 \$1;
 #X msg 189 559 sus 0 \$1;
@@ -642,6 +642,9 @@
 #X obj 507 163 s \$0-to;
 #X msg 507 144 drive 0 \$1;
 #X obj 507 122 * 0.01;
+#X obj 418 115 nbx 4 14 0 7 0 1 empty empty link 0 -8 0 10 #bbbbbb #000000 #000000 7 256;
+#X obj 450 83 s \$0-to;
+#X msg 450 64 link 0 \$1;
 #X connect 0 0 97 0;
 #X connect 2 0 98 0;
 #X connect 4 0 99 0;
@@ -726,6 +729,8 @@
 #X connect 118 0 121 0;
 #X connect 120 0 119 0;
 #X connect 121 0 120 0;
+#X connect 122 0 124 0;
+#X connect 124 0 123 0;
 #X coords 0 -1 1 1 380 200 1 100 100;
 #X restore 28 38 pd sampler 1;
 #N canvas 321 11 717 711 sampler 0;
@@ -781,7 +786,7 @@
 #X obj 129 578 s \$0-to;
 #X obj 195 250 nbx 4 14 0 100 0 1 empty empty sus 0 -8 0 10 #bbbbbb #000000 #000000 100 256;
 #X obj 189 578 s \$0-to;
-#X obj 240 250 nbx 4 14 0 100 0 1 empty empty rel 0 -8 0 10 #bbbbbb #000000 #000000 0 256;
+#X obj 240 250 nbx 4 14 0 100 0 1 empty empty rel 0 -8 0 10 #bbbbbb #000000 #000000 100 256;
 #X obj 249 578 s \$0-to;
 #X msg 129 559 dec 1 \$1;
 #X msg 189 559 sus 1 \$1;
@@ -851,6 +856,9 @@
 #X obj 507 163 s \$0-to;
 #X obj 507 122 * 0.01;
 #X msg 507 144 drive 1 \$1;
+#X obj 418 115 nbx 4 14 0 7 0 1 empty empty link 0 -8 0 10 #bbbbbb #000000 #000000 7 256;
+#X obj 450 83 s \$0-to;
+#X msg 450 64 link 1 \$1;
 #X connect 0 0 97 0;
 #X connect 2 0 98 0;
 #X connect 4 0 99 0;
@@ -935,6 +943,8 @@
 #X connect 118 0 120 0;
 #X connect 120 0 121 0;
 #X connect 121 0 119 0;
+#X connect 122 0 124 0;
+#X connect 124 0 123 0;
 #X coords 0 -1 1 1 380 200 1 100 100;
 #X restore 538 38 pd sampler 2;
 #X obj 482 132 bng 17 250 50 0 empty empty empty 0 -9 0 10 #fcfcfc #000000 #000000;

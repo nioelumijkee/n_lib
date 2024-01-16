@@ -24,6 +24,8 @@
 #define ENV_SIZE 512
 #define ENV_SIZE_1 510
 #define PPFPS 30
+#define MAX_LINKS 8
+#define MAX_LINKS_1 7
 
 #define _mix(a, b, x, out) {			\
     out = (b-a)*x+a;				\
@@ -57,6 +59,12 @@ enum {
 #define _clip_max(max, v) v=(v>max)?max:v;
 
 static t_class *n_s_class;
+
+typedef struct _n_linkturn
+{
+  int       l;
+  int       t[MAX_PLAYER];
+} t_n_linkturn;
 
 typedef struct _n_sample
 {
@@ -149,6 +157,7 @@ typedef struct _n_player
   t_float h_g; //in
   t_float hfw;
   t_float hfz;
+  int link; // in
   int stage; // sampler
   t_float phase_sample;
   t_float out;
@@ -188,6 +197,7 @@ typedef struct _n_s
   int id_playpos;
   int mcpp;
   int mcpp_count;
+  t_n_linkturn lt[MAX_LINKS];
 } t_n_s;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -726,6 +736,28 @@ void n_s_redraw_disp(t_n_s *x, int n)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// link turn
+void n_s_turn_remove(t_n_s *x, int n, int t)
+{
+  int i,j;
+  for (i=0, j=0; i<MAX_PLAYER; i++)
+    {
+      if (x->lt[t].t[i] != n)
+	{
+	  x->lt[t].t[j] = x->lt[t].t[i];
+	  j++;
+	}
+    }
+  x->lt[t].l = j;
+}
+
+void n_s_turn_add(t_n_s *x, int n, int t)
+{
+  x->lt[t].t[x->lt[t].l] = n;
+  x->lt[t].l++;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // input
 void n_s_array(t_n_s *x, t_floatarg n, t_symbol *s, t_floatarg sr)
 {
@@ -827,6 +859,23 @@ void n_s_group(t_n_s *x, t_floatarg n, t_floatarg f)
   _clip_minmax(0, MAX_PLAYER_1, i);
   _clip_minmax(0, 3, f);
   x->player[i].group=f;
+}
+
+void n_s_link(t_n_s *x, t_floatarg n, t_floatarg f)
+{
+  int i=n;
+  _clip_minmax(0, MAX_PLAYER_1, i);
+  int t = f;
+  _clip_minmax(0, MAX_LINKS_1, t);
+  if (x->player[i].link != 0)
+    {
+      n_s_turn_remove(x, i, t);
+    }
+  if (t != 0)
+    {
+      n_s_turn_add(x, i, t);
+    }
+  x->player[i].link=t;
 }
 
 void n_s_bit(t_n_s *x, t_floatarg n, t_floatarg f)
@@ -1083,29 +1132,6 @@ void n_s_solo(t_n_s *x, t_floatarg n, t_floatarg f)
   n_s_calc_ms(x);
 }
 
-
-void n_s_g(t_n_s *x, t_floatarg n, t_floatarg f)
-{
-  int i=n;
-  _clip_minmax(0, MAX_PLAYER_1, i);
-  if (f > 0 && x->player[i].ms)
-    {
-      x->player[i].on = 1;
-      x->player[i].stage = STG_START;
-      x->player[i].phase_sample = x->player[i].start_c;
-      x->player[i].env_stage = ENV_ATT;
-      x->player[i].vel = f;
-    }
-  else
-    {
-      if (x->player[i].loop)
-	{
-	  x->player[i].stage = STG_END;
-	}
-      x->player[i].env_stage = ENV_REL;
-    }
-}
-
 void n_s_sel_sampler(t_n_s *x, t_floatarg n)
 {
   int i=n;
@@ -1159,6 +1185,36 @@ void n_s_color_loop(t_n_s *x, t_floatarg c)
 {
   x->color_loop = c;
   n_s_redraw_disp(x, x->sel_player);
+}
+
+void n_s_g(t_n_s *x, t_floatarg n, t_floatarg f)
+{
+  int i=n;
+  _clip_minmax(0, MAX_PLAYER_1, i);
+  if (f > 0 && x->player[i].ms)
+    {
+      // mute links
+      if (x->player[i].link != 0)
+	{
+	  for (int k=0; k<x->lt[x->player[i].link].l; k++)
+	    {
+	      x->player[k].on = 0;
+	    }
+	}
+      x->player[i].on = 1;
+      x->player[i].stage = STG_START;
+      x->player[i].phase_sample = x->player[i].start_c;
+      x->player[i].env_stage = ENV_ATT;
+      x->player[i].vel = f;
+    }
+  else
+    {
+      if (x->player[i].loop)
+	{
+	  x->player[i].stage = STG_END;
+	}
+      x->player[i].env_stage = ENV_REL;
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1448,6 +1504,7 @@ void n_sampler_tilde_setup(void)
   class_addmethod(n_s_class,(t_method)n_s_s2,gensym("s2"),A_FLOAT,A_FLOAT,0);
   class_addmethod(n_s_class,(t_method)n_s_rnda,gensym("rnda"),A_FLOAT,A_FLOAT,0);
   class_addmethod(n_s_class,(t_method)n_s_group,gensym("group"),A_FLOAT,A_FLOAT,0);
+  class_addmethod(n_s_class,(t_method)n_s_link,gensym("link"),A_FLOAT,A_FLOAT,0);
   class_addmethod(n_s_class,(t_method)n_s_bit,gensym("bit"),A_FLOAT,A_FLOAT,0);
   class_addmethod(n_s_class,(t_method)n_s_drive,gensym("drive"),A_FLOAT,A_FLOAT,0);
 
