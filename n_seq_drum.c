@@ -81,6 +81,9 @@ typedef struct _nsqd
   t_word *w_mem;
   t_garray * g_mem;
   int l_mem;
+
+  t_float buf[TRACK_MAX][COLUMN_MAX];
+  t_float bufp[PAR_MAX];
 } t_nsqd;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -314,6 +317,20 @@ static void nsqd_pos(t_nsqd *x, t_floatarg f)
   nsqd_redraw_playpos(x);
 }
 
+static void nsqd_posl(t_nsqd *x, t_floatarg f)
+{
+  int pos = f;
+  _clip_minmax(0, x->columns_1, pos);
+  x->playpos = pos;
+  t_atom a[TRACK_MAX];
+  for (int i=0; i<x->tracks; i++)
+    {
+      SETFLOAT(a + i, M(x->p[x->sel_patt].track_ofs[i] + pos));
+    }
+  outlet_list(x->out_seq, &s_list, x->tracks, a);
+  nsqd_redraw_playpos(x);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // const
 ////////////////////////////////////////////////////////////////////////////////
@@ -395,6 +412,60 @@ static void nsqd_color_playpos(t_nsqd *x, t_floatarg f)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// add
+////////////////////////////////////////////////////////////////////////////////
+static void nsqd_copy(t_nsqd *x)
+{
+  for (int i=0; i<x->tracks; i++)
+    {
+      for (int j=0; j<x->columns; j++)
+	{
+	  x->buf[i][j] = M(x->p[x->sel_patt].patt_ofs + (i * x->columns) + j);
+	}
+    }
+  for (int i=0; i<x->pars; i++)
+    {
+      x->bufp[i] = M(x->p[x->sel_patt].par_ofs + i);
+    }
+}
+
+static void nsqd_paste(t_nsqd *x)
+{
+  for (int i=0; i<x->tracks; i++)
+    {
+      for (int j=0; j<x->columns; j++)
+	{
+	  M(x->p[x->sel_patt].patt_ofs + (i * x->columns) + j) = x->buf[i][j];
+	}
+    }
+  for (int i=0; i<x->pars; i++)
+    {
+      M(x->p[x->sel_patt].par_ofs + i) = x->bufp[i];
+    }
+  nsqd_redraw_disp(x);
+  nsqd_dump_par(x);
+}
+
+static void nsqd_default(t_nsqd *x, t_symbol *s, int ac, t_atom *av)
+{
+  for (int i=0; i<x->tracks; i++)
+    {
+      for (int j=0; j<x->columns; j++)
+	{
+	  M(x->p[x->sel_patt].patt_ofs + (i * x->columns) + j) = 0;
+	}
+    }
+  
+  for (int i=0; i<x->pars && i<ac; i++)
+    {
+      M(x->p[x->sel_patt].par_ofs + i) = atom_getfloatarg(i,ac,av);
+    }
+  nsqd_redraw_disp(x);
+  nsqd_dump_par(x);
+  NOUSE(s);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // setup
 ////////////////////////////////////////////////////////////////////////////////
 static void *nsqd_new(void)
@@ -439,6 +510,11 @@ void n_seq_drum_setup(void)
 		  A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
   class_addmethod(nsqd_class, (t_method)nsqd_pos, gensym("pos"),
 		  A_FLOAT, 0);
+  class_addmethod(nsqd_class, (t_method)nsqd_posl, gensym("posl"),
+		  A_FLOAT, 0);
   class_addmethod(nsqd_class, (t_method)nsqd_par,
 		  gensym("par"), A_FLOAT, A_FLOAT, 0);
+  class_addmethod(nsqd_class, (t_method)nsqd_copy, gensym("copy"), 0);
+  class_addmethod(nsqd_class, (t_method)nsqd_paste, gensym("paste"), 0);
+  class_addmethod(nsqd_class, (t_method)nsqd_default, gensym("default"), A_GIMME, 0);
 }
