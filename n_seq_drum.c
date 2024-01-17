@@ -12,8 +12,8 @@
 #define PATT_MAX_1 63
 
 #define COLUMN_MIN 1
-#define COLUMN_MAX 32
-#define COLUMN_MAX_1 31
+#define COLUMN_MAX 64
+#define COLUMN_MAX_1 63
 
 #define TRACK_MIN 1
 #define TRACK_MAX 16
@@ -44,6 +44,7 @@ typedef struct _nsqd
   t_object x_obj;
   t_outlet *out_seq;
   t_outlet *out_par;
+  t_outlet *out_dump;
   t_outlet *out_sel;
   t_outlet *out_disp;
 
@@ -412,6 +413,30 @@ static void nsqd_color_playpos(t_nsqd *x, t_floatarg f)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// set/dump
+////////////////////////////////////////////////////////////////////////////////
+static void nsqd_set(t_nsqd *x, t_floatarg p, t_floatarg t, t_floatarg c, t_floatarg v)
+{
+  _clip_minmax(0, PATT_MAX_1, p);
+  _clip_minmax(0, x->tracks_1, t);
+  _clip_minmax(0, x->columns_1, c);
+  M(x->p[(int)p].track_ofs[(int)t] + (int)c) = (v>0);
+  if (p == x->sel_patt)
+    {
+      nsqd_redraw_disp(x);
+    }
+}
+
+static void nsqd_dump(t_nsqd *x, t_floatarg p, t_floatarg t, t_floatarg c)
+{
+  _clip_minmax(0, PATT_MAX_1, p);
+  _clip_minmax(0, x->tracks_1, t);
+  _clip_minmax(0, x->columns_1, c);
+  t_float v = M(x->p[(int)p].track_ofs[(int)t] + (int)c);
+  outlet_float(x->out_dump, v);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // add
 ////////////////////////////////////////////////////////////////////////////////
 static void nsqd_copy(t_nsqd *x)
@@ -473,6 +498,7 @@ static void *nsqd_new(void)
   t_nsqd *x = (t_nsqd *)pd_new(nsqd_class);
   x->out_seq = outlet_new(&x->x_obj, 0);
   x->out_par = outlet_new(&x->x_obj, 0);
+  x->out_dump = outlet_new(&x->x_obj, 0);
   x->out_sel = outlet_new(&x->x_obj, 0);
   x->out_disp = outlet_new(&x->x_obj, 0);
   x->color_label=22;
@@ -517,4 +543,8 @@ void n_seq_drum_setup(void)
   class_addmethod(nsqd_class, (t_method)nsqd_copy, gensym("copy"), 0);
   class_addmethod(nsqd_class, (t_method)nsqd_paste, gensym("paste"), 0);
   class_addmethod(nsqd_class, (t_method)nsqd_default, gensym("default"), A_GIMME, 0);
+  class_addmethod(nsqd_class, (t_method)nsqd_set,
+		  gensym("set"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
+  class_addmethod(nsqd_class, (t_method)nsqd_dump,
+		  gensym("dump"), A_FLOAT, A_FLOAT, A_FLOAT, 0);
 }
