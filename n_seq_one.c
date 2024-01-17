@@ -307,7 +307,7 @@ static void nsqo_mouse(t_nsqo *x,
       nsqo_redraw_note(x, column, x->state[column], state);
       x->state[column] = state;
     }
-  else if (ml==2)
+  else if (ml==2 && sh)
     {
       int column = cx / (t_float)x->size;
       int row = cy / (t_float)x->size;
@@ -339,7 +339,6 @@ static void nsqo_mouse(t_nsqo *x,
 	    }
 	}
     }
-  NOUSE(sh);
   NOUSE(ctrl);
 }
 

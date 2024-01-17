@@ -290,7 +290,7 @@ static void nsqd_mouse(t_nsqd *x,
       nsqd_redraw_note(x, track, column, x->draw_state);
       outlet_float(x->out_sel, track);
     }
-  else if (ml==2)
+  else if (ml==2 && sh)
     {
       int column = cx / (t_float)x->size;
       _clip_minmax(0, x->columns_1, column);
@@ -299,7 +299,6 @@ static void nsqd_mouse(t_nsqd *x,
       x->state[x->draw_track][column] = x->draw_state;
       nsqd_redraw_note(x, x->draw_track, column, x->draw_state);
     }
-  NOUSE(sh);
   NOUSE(ctrl);
 }
 
