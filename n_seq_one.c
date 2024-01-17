@@ -454,6 +454,23 @@ static void nsqo_dump(t_nsqo *x, t_floatarg p, t_floatarg c)
   outlet_float(x->out_dump, v);
 }
 
+static void nsqo_dump_par_list(t_nsqo *x, t_symbol *s, int ac, t_atom *av)
+{
+  t_atom a[PAR_MAX];
+  int p = atom_getfloatarg(0, ac, av);
+  _clip_minmax(0, PATT_MAX_1, p);
+  _clip_minmax(0, PAR_MAX, ac);
+  for (int i=1; i<ac; i++)
+    {
+      int n = atom_getfloatarg(i, ac, av);
+      _clip_minmax(0, x->pars_1, n);
+      t_float v = M(x->p[(int)p].par_ofs + n);
+      SETFLOAT(a + i - 1, v);
+    }
+  outlet_list(x->out_dump, &s_list, ac-1, a);
+  NOUSE(s);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // add
 ////////////////////////////////////////////////////////////////////////////////
@@ -552,4 +569,6 @@ void n_seq_one_setup(void)
 		  gensym("set"), A_FLOAT, A_FLOAT, A_FLOAT, 0);
   class_addmethod(nsqo_class, (t_method)nsqo_dump,
 		  gensym("dump"), A_FLOAT, A_FLOAT, 0);
+  class_addmethod(nsqo_class, (t_method)nsqo_dump_par_list,
+		  gensym("dump_par"), A_GIMME, 0);
 }
