@@ -23,8 +23,10 @@ n_ds~.c \
 n_conv~.c \
 n_euklid.c \
 n_graincloud~.c \
-n_seq_drum.c
-# n_sampler~.c \
+n_sampler~.c \
+n_seq_drum.c \
+n_seq_one.c \
+n_seq_mod.c
 sources = \
 ./include/*
 datafiles = \

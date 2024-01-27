@@ -172,15 +172,19 @@ typedef struct _n_s
 {
   t_object x_obj;
   t_outlet *out_disp;
+
   t_float sr;
   t_float div_1_sr;
   t_float div_sr_8;
   t_float div_2pi_sr;
+
   int seed; /* random */
+
   t_n_player player[MAX_PLAYER];
   t_n_sample sample[MAX_SAMPLE];
   t_float env_t[ENV_SIZE];
   int sel_player;
+
   int disp_maxel;
   int disp_w;
   int disp_h;
@@ -191,12 +195,15 @@ typedef struct _n_s
   int color_playpos;
   int color_se;
   int color_loop;
+
   int id_se;
   int id_sample;
   int id_loop;
   int id_playpos;
+
   int mcpp;
   int mcpp_count;
+
   t_n_linkturn lt[MAX_LINKS];
 } t_n_s;
 
